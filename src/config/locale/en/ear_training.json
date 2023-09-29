@@ -1,0 +1,37 @@
+{
+	"interval": {
+		"m2": "Minor 2nd",
+		"M2": "Major 2nd",
+		"m3": "Minor 3rd",
+		"M3": "Major 3rd",
+		"P4": "Perfect 4th",
+		"d5": "Tritone",
+		"P5": "Perfect 5th",
+		"m6": "Minor 6th",
+		"M6": "Major 6th",
+		"m7": "Minor 7th",
+		"M7": "Major 7th",
+		"P8": "Perfect Octave"
+	},
+	"chord": {
+		"maj": "Major",
+		"min": "Minor",
+		"aug": "Augmented",
+		"dim": "Diminished",
+		"maj7": "Major 7th",
+		"mM7": "Minor-major 7th",
+		"7": "Dominant 7th",
+		"min7": "Minor 7th",
+		"dim7": "Diminished 7th",
+		"m7b5": "Half-diminished 7th"
+	},
+	"mode": {
+		"ionian": "Ionian",
+		"aeolian": "Aeolian",
+		"lydian": "Lydian",
+		"mixolydian": "Mixolydian",
+		"dorian": "Dorian",
+		"phrygian": "Phrygian",
+		"locrian": "Locrian"
+	}
+}

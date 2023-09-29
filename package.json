@@ -1,27 +1,35 @@
 {
-  "name": "client",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "react": "latest",
-    "react-dom": "latest",
-    "next": "latest"
-  },
-  "devDependencies": {
-    "typescript": "latest",
-    "@types/react": "latest",
-    "@types/node": "latest",
-    "@types/react-dom": "latest",
-    "autoprefixer": "latest",
-    "postcss": "latest",
-    "tailwindcss": "latest",
-    "eslint": "latest",
-    "eslint-config-next": "latest"
-  }
+	"name": "music-lab",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@mantine/core": "^6.0.19",
+		"@tabler/icons-react": "^2.37.0",
+		"i18next": "^23.5.1",
+		"next": "latest",
+		"react": "latest",
+		"react-dom": "latest",
+		"react-i18next": "^13.2.2",
+		"tonal": "^5.0.0",
+		"tone": "^14.7.77"
+	},
+	"devDependencies": {
+		"@types/node": "latest",
+		"@types/react": "latest",
+		"@types/react-dom": "latest",
+		"autoprefixer": "latest",
+		"eslint": "latest",
+		"eslint-config-next": "latest",
+		"postcss": "latest",
+		"prettier": "^3.0.3",
+		"prettier-plugin-tailwindcss": "^0.5.4",
+		"tailwindcss": "latest",
+		"typescript": "latest"
+	}
 }
