@@ -7,32 +7,26 @@ const PracticeHome = () => {
 				<h1 className='text-center text-2xl font-semibold'>Music Lab - Ear Training</h1>
 				<Link
 					href={'/ear-training/practice/interval'}
-					className='from relative block w-full rounded-full bg-violet-500 bg-gradient-to-r to-purple-500 p-2'
+					className='from block w-full rounded-xl border border-purple-600 bg-gradient-to-tr from-sky-600/25 to-purple-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
 				>
-					<div className='rounded-full bg-slate-900/20 px-8 py-3 backdrop-blur-sm'>
-						<h3 className='text-xl font-medium'>Interval</h3>
-						<p>Practice your Interval Identification skill</p>
-					</div>
+					<h3 className='text-xl font-medium'>Interval</h3>
+					<p>Practice your Interval Identification skill</p>
 				</Link>
 
 				<Link
 					href={'/ear-training/practice/chord'}
-					className='from relative block w-full rounded-full bg-violet-500 bg-gradient-to-r to-purple-500 p-2'
+					className='from block w-full rounded-xl border border-purple-600 bg-gradient-to-tr from-sky-600/25 to-purple-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
 				>
-					<div className='rounded-full bg-slate-900/20 px-8 py-3 backdrop-blur-sm'>
-						<h3 className='text-xl font-medium'>Chord</h3>
-						<p>Practice your Chord Identification skill</p>
-					</div>
+					<h3 className='text-xl font-medium'>Chord</h3>
+					<p>Practice your Chord Identification skill</p>
 				</Link>
 
 				<Link
 					href={'/ear-training/practice/mode'}
-					className='from relative block w-full rounded-full bg-violet-500 bg-gradient-to-r to-purple-500 p-2'
+					className='from block w-full rounded-xl border border-purple-600 bg-gradient-to-tr from-sky-600/25 to-purple-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
 				>
-					<div className='rounded-full bg-slate-900/20 px-8 py-3 backdrop-blur-sm'>
-						<h3 className='text-xl font-medium'>Mode</h3>
-						<p>Practice your Mode Identification skill.</p>
-					</div>
+					<h3 className='text-xl font-medium'>Mode</h3>
+					<p>Practice your Mode Identification skill.</p>
 				</Link>
 			</div>
 		</main>

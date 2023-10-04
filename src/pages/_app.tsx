@@ -3,11 +3,14 @@ import '@/config/locale';
 
 import Head from 'next/head';
 
-import type { AppProps } from 'next/app';
+import { MantineProvider } from '@mantine/core';
 
+import type { AppProps } from 'next/app';
 export default function App({ Component, pageProps }: AppProps) {
 	return (
-		<>
+		<MantineProvider
+			theme={{ fontFamily: 'Euclid Circular A, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif' }}
+		>
 			<Head>
 				<title>Music Lab</title>
 				<meta
@@ -16,6 +19,6 @@ export default function App({ Component, pageProps }: AppProps) {
 				/>
 			</Head>
 			<Component {...pageProps} />
-		</>
+		</MantineProvider>
 	);
 }

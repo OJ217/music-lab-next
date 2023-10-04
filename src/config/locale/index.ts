@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 import en from './en';
 import mn from './mn';
 
-export const DEFAULT_LOCALE = 'en';
+export const DEFAULT_LOCALE = 'mn';
 export const RESOURCES = { mn, en } as const;
 export const NAMESPACES = ['ear_training'] as const;
 export const DEFAULT_NS = 'ear_training';
@@ -16,7 +16,7 @@ i18next.use(initReactI18next).init({
 	ns: NAMESPACES,
 	defaultNS: DEFAULT_NS,
 	resources: RESOURCES,
-	returnNull: false,
+	returnNull: false
 });
 
 export default i18next;

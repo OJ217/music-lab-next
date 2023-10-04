@@ -6,7 +6,7 @@ const HomePage = () => {
 
 	useEffect(() => {
 		router.replace('/ear-training/practice');
-	}, []);
+	}, [router]);
 };
 
 export default HomePage;

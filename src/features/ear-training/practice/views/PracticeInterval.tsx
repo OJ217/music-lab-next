@@ -202,7 +202,7 @@ const PracticeInterval = () => {
 									key={interval.value}
 									disabled={sessionEnded || !sessionQuestions.length}
 									onClick={() => answerQuestion(interval.value)}
-									className='rounded-full border border-purple-600 bg-purple-600/25 px-4 py-1 text-sm transition-opacity duration-200 ease-in-out disabled:opacity-50'
+									className='rounded-2xl border border-purple-600 bg-purple-600/25 px-4 py-1 text-sm transition-opacity duration-200 ease-in-out disabled:opacity-50'
 								>
 									{interval.label}
 								</button>
