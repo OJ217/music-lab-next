@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { notify } from '@/utils/notification.util';
 import { Box, Button, Collapse, NumberInput, Select, Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -34,10 +32,6 @@ const Settings = () => {
 	const practiceSettingsForm = useForm<PracticeSettings>({
 		initialValues
 	});
-
-	useEffect(() => {
-		console.log({ values: practiceSettingsForm.values });
-	}, [practiceSettingsForm]);
 
 	const handleSettingsFormSubmit = (formValues: PracticeSettings) => {
 		notify({
