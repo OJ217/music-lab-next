@@ -34,6 +34,7 @@ const PracticeInterval = () => {
 	// -------------------- STATES --------------------
 	const [isMounted, setIsMounted] = useState<boolean>(false);
 	const samplerInstance = useRef<Tone.Sampler>();
+
 	// Practice Session States
 	const [sessionQuestions, setSessionQuestions] = useState<Array<IntervalQuestion>>([]);
 	const [totalAnsweredQuestions, setTotalAnsweredQuestions] = useState<number>(0);
@@ -177,7 +178,9 @@ const PracticeInterval = () => {
 			<EarTrainingLayout>
 				<div>
 					<div className='space-y-4'>
-						<h1 className='text-center text-xl font-semibold'>Music Lab - Interval Identification</h1>
+						<h1 className='text-center text-xl font-semibold'>
+							Music Lab - Interval Identification Practice
+						</h1>
 						<Progress
 							color='#7E3AF2'
 							value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}

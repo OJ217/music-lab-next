@@ -15,7 +15,10 @@ const NavigationAffix = () => {
 							radius={'xl'}
 							size={'xl'}
 						>
-							<IconMusic size={rem(28)} />
+							<IconMusic
+								size={28}
+								className='stroke-purple-600'
+							/>
 						</ActionIcon>
 					</Menu.Target>
 
@@ -54,7 +57,7 @@ const NavigationAffix = () => {
 								</Menu.Item>
 							</Link>
 
-							<Menu.Divider className='!my-4 border-t-purple-500/50' />
+							<Menu.Divider className='!my-4 border-t-purple-600/50' />
 
 							<Link
 								href={'/'}

@@ -7,7 +7,7 @@ const PracticeHome = () => {
 				<h1 className='text-center text-2xl font-semibold'>Music Lab - Ear Training</h1>
 				<Link
 					href={'/ear-training/practice/interval'}
-					className='from block w-full rounded-xl border border-purple-600 bg-gradient-to-tr from-sky-600/25 to-purple-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
+					className='from block w-full rounded-xl border border-purple-600 bg-gradient-to-tr from-cyan-600/20 to-purple-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
 				>
 					<h3 className='text-xl font-medium'>Interval</h3>
 					<p>Practice your Interval Identification skill</p>
@@ -15,7 +15,7 @@ const PracticeHome = () => {
 
 				<Link
 					href={'/ear-training/practice/chord'}
-					className='from block w-full rounded-xl border border-purple-600 bg-gradient-to-tr from-sky-600/25 to-purple-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
+					className='from block w-full rounded-xl border border-purple-600 bg-gradient-to-tr from-cyan-600/20 to-purple-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
 				>
 					<h3 className='text-xl font-medium'>Chord</h3>
 					<p>Practice your Chord Identification skill</p>
@@ -23,7 +23,7 @@ const PracticeHome = () => {
 
 				<Link
 					href={'/ear-training/practice/mode'}
-					className='from block w-full rounded-xl border border-purple-600 bg-gradient-to-tr from-sky-600/25 to-purple-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
+					className='from block w-full rounded-xl border border-purple-600 bg-gradient-to-tr from-cyan-600/20 to-purple-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
 				>
 					<h3 className='text-xl font-medium'>Mode</h3>
 					<p>Practice your Mode Identification skill.</p>
