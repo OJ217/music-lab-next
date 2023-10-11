@@ -54,12 +54,13 @@ const Settings = () => {
 					<NumberInput
 						min={1}
 						max={100}
+						allowNegative={false}
+						clampBehavior='strict'
 						description='Number of questions'
 						placeholder='Select number between 5 - 100'
 						{...practiceSettingsForm.getInputProps('numberOfQuestions')}
 						classNames={{
-							input: 'focus:bg-purple-600/25 transition-all duration-200 ease-in-out',
-							rightSection: 'hidden'
+							input: 'focus:bg-purple-600/25'
 						}}
 					/>
 
@@ -68,11 +69,10 @@ const Settings = () => {
 						data={playingModeSelectOptions}
 						description='Playing mode'
 						placeholder='Select playing mode'
-						dropdownPosition='bottom'
 						{...practiceSettingsForm.getInputProps('playingMode')}
 						classNames={{
-							input: 'focus:bg-purple-600/25 transition-all duration-200 ease-in-out',
-							rightSection: 'hidden'
+							input: 'focus-within:bg-purple-600/25',
+							section: 'hidden'
 						}}
 					/>
 
@@ -94,8 +94,7 @@ const Settings = () => {
 								placeholder='Select toor note'
 								{...practiceSettingsForm.getInputProps('fixedRoot.rootNote')}
 								classNames={{
-									input: 'focus:bg-purple-600/25 transition-all duration-200 ease-in-out',
-									rightSection: 'hidden'
+									input: 'focus:bg-purple-600/25'
 								}}
 							/>
 						</Collapse>
