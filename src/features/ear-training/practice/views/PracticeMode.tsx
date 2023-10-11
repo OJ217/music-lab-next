@@ -41,7 +41,7 @@ const PracticeMode = () => {
 
 	// Util States
 	const [resultsModalOpened, setResultsModalOpened] = useState<boolean>(false);
-	const [settingsModalOpened, { open: openSettingsModal, close: closeSettingsModal }] = useDisclosure(true);
+	const [settingsModalOpened, { open: openSettingsModal, close: closeSettingsModal }] = useDisclosure(false);
 	const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(false);
 
 	const initializeSampler = useCallback(() => {
