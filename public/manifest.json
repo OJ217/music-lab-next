@@ -1,0 +1,32 @@
+{
+	"theme_color": "#7C3AED",
+	"background_color": "#FFF",
+	"display": "standalone",
+	"scope": "/",
+	"start_url": "/",
+	"description": "Platform for practicing and learning academic music knowledge and skills.",
+	"name": "Music Lab",
+	"short_name": "Music Lab",
+	"icons": [
+		{
+			"src": "/icon-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/icon-256x256.png",
+			"sizes": "256x256",
+			"type": "image/png"
+		},
+		{
+			"src": "/icon-384x384.png",
+			"sizes": "384x384",
+			"type": "image/png"
+		},
+		{
+			"src": "/icon-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	]
+}
