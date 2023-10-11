@@ -12,7 +12,14 @@ import type { AppProps } from 'next/app';
 
 const theme = createTheme({
 	fontFamily: 'Euclid Circular A',
-	primaryColor: 'violet'
+	primaryColor: 'violet',
+	components: {
+		Combobox: {
+			defaultProps: {
+				transitionProps: { transition: 'pop', duration: 200, timingFunction: 'ease' }
+			}
+		}
+	}
 });
 
 export default function App({ Component, pageProps }: AppProps) {

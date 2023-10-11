@@ -1,6 +1,8 @@
 import { notify } from '@/utils/notification.util';
-import { Box, Button, Collapse, NumberInput, Select, Switch } from '@mantine/core';
+import { ActionIcon, Box, Button, Collapse, Modal, NumberInput, Select, Switch } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useDisclosure } from '@mantine/hooks';
+import { IconSettings } from '@tabler/icons-react';
 
 type PlayingMode = 'ascending' | 'descending' | 'harmonic';
 
@@ -38,80 +40,103 @@ const Settings = () => {
 			type: 'success',
 			title: 'Practice settings configured succesfully',
 			message: `${formValues.numberOfQuestions} questions played in ${formValues.playingMode} mode${
-				formValues.fixedRoot.enabled ? 'with a fixed ' + formValues.fixedRoot.rootNote + ' root note' : ''
+				formValues.fixedRoot.enabled ? ' with a fixed ' + formValues.fixedRoot.rootNote + ' root note' : ''
 			}.`
 		});
+		closeSettingsModal();
 	};
+
+	const [settingsModalOpened, { open: openSettingsModal, close: closeSettingsModal }] = useDisclosure(false);
 
 	return (
 		<div className='grid min-h-screen place-items-center p-6'>
-			<form
-				onSubmit={practiceSettingsForm.onSubmit(handleSettingsFormSubmit)}
-				onReset={practiceSettingsForm.onReset}
-				className='w-full max-w-md space-y-8'
+			<ActionIcon
+				size='xl'
+				variant='light'
+				onClick={openSettingsModal}
 			>
-				<section className='space-y-6'>
-					<NumberInput
-						min={1}
-						max={100}
-						allowNegative={false}
-						clampBehavior='strict'
-						description='Number of questions'
-						placeholder='Select number between 5 - 100'
-						{...practiceSettingsForm.getInputProps('numberOfQuestions')}
-						classNames={{
-							input: 'focus:bg-purple-600/25'
-						}}
-					/>
-
-					<Select
-						maxDropdownHeight={120}
-						data={playingModeSelectOptions}
-						description='Playing mode'
-						placeholder='Select playing mode'
-						{...practiceSettingsForm.getInputProps('playingMode')}
-						classNames={{
-							input: 'focus-within:bg-purple-600/25',
-							section: 'hidden'
-						}}
-					/>
-
-					<div>
-						<Switch
-							label='Root note'
-							checked={practiceSettingsForm.values.fixedRoot.enabled}
-							onChange={e => practiceSettingsForm.setFieldValue('fixedRoot.enabled', e.target.checked)}
+				<IconSettings />
+			</ActionIcon>
+			<Modal
+				centered
+				opened={settingsModalOpened}
+				onClose={closeSettingsModal}
+				closeButtonProps={{ size: 'sm' }}
+				title={'Practice Settings'}
+			>
+				<form
+					onSubmit={practiceSettingsForm.onSubmit(handleSettingsFormSubmit)}
+					onReset={practiceSettingsForm.onReset}
+					className='w-full max-w-md space-y-8'
+				>
+					<section className='space-y-6'>
+						<NumberInput
+							min={1}
+							max={100}
+							allowNegative={false}
+							clampBehavior='strict'
+							description='Number of questions'
+							placeholder='Select number between 5 - 100'
+							{...practiceSettingsForm.getInputProps('numberOfQuestions')}
+							classNames={{
+								input: 'focus:bg-violet-600/25'
+							}}
 						/>
 
-						<Collapse in={practiceSettingsForm.values.fixedRoot.enabled}>
-							<Box h={16} />
-						</Collapse>
+						<Select
+							allowDeselect={false}
+							maxDropdownHeight={120}
+							data={playingModeSelectOptions}
+							description='Playing mode'
+							placeholder='Select playing mode'
+							{...practiceSettingsForm.getInputProps('playingMode')}
+							classNames={{
+								input: 'focus-within:bg-violet-600/25',
+								section: 'hidden'
+							}}
+						/>
 
-						<Collapse in={practiceSettingsForm.values.fixedRoot.enabled}>
-							<Select
-								data={fixedRootNoteOptions}
-								description='Root note'
-								placeholder='Select toor note'
-								{...practiceSettingsForm.getInputProps('fixedRoot.rootNote')}
-								classNames={{
-									input: 'focus:bg-purple-600/25'
-								}}
+						<div>
+							<Switch
+								label='Root note'
+								checked={practiceSettingsForm.values.fixedRoot.enabled}
+								onChange={e =>
+									practiceSettingsForm.setFieldValue('fixedRoot.enabled', e.target.checked)
+								}
 							/>
-						</Collapse>
-					</div>
-				</section>
 
-				<div className='flex justify-end gap-2'>
-					<Button
-						type='reset'
-						variant='light'
-						disabled={!practiceSettingsForm.isDirty()}
-					>
-						Reset
-					</Button>
-					<Button type='submit'>Done</Button>
-				</div>
-			</form>
+							<Collapse in={practiceSettingsForm.values.fixedRoot.enabled}>
+								<Box h={16} />
+							</Collapse>
+
+							<Collapse in={practiceSettingsForm.values.fixedRoot.enabled}>
+								<Select
+									allowDeselect={false}
+									data={fixedRootNoteOptions}
+									description='Root note'
+									placeholder='Select toor note'
+									{...practiceSettingsForm.getInputProps('fixedRoot.rootNote')}
+									classNames={{
+										input: 'focus:bg-violet-600/25',
+										section: 'hidden'
+									}}
+								/>
+							</Collapse>
+						</div>
+					</section>
+
+					<div className='flex justify-end gap-2'>
+						<Button
+							type='reset'
+							variant='light'
+							disabled={!practiceSettingsForm.isDirty()}
+						>
+							Reset
+						</Button>
+						<Button type='submit'>Done</Button>
+					</div>
+				</form>
+			</Modal>
 		</div>
 	);
 };

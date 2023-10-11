@@ -3,8 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Mode, Note } from 'tonal';
 import * as Tone from 'tone';
 
-import { Modal, Progress } from '@mantine/core';
+import { ActionIcon, Modal, Progress } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { IconSettings } from '@tabler/icons-react';
 
+import PracticeSettingsModal from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
 import { SelectItem } from '../types';
 
@@ -29,6 +32,7 @@ const PracticeMode = () => {
 	// -------------------- STATES --------------------
 	const [isMounted, setIsMounted] = useState<boolean>(false);
 	const samplerInstance = useRef<Tone.Sampler>();
+
 	// Practice Session States
 	const [sessionQuestions, setSessionQuestions] = useState<Array<ModeQuestion>>([]);
 	const [totalAnsweredQuestions, setTotalAnsweredQuestions] = useState<number>(0);
@@ -37,6 +41,7 @@ const PracticeMode = () => {
 
 	// Util States
 	const [resultsModalOpened, setResultsModalOpened] = useState<boolean>(false);
+	const [settingsModalOpened, { open: openSettingsModal, close: closeSettingsModal }] = useDisclosure(true);
 	const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(false);
 
 	const initializeSampler = useCallback(() => {
@@ -58,6 +63,7 @@ const PracticeMode = () => {
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
 			setIsMounted(true);
+			openSettingsModal();
 		}
 	}, []);
 
@@ -168,11 +174,24 @@ const PracticeMode = () => {
 			<EarTrainingLayout>
 				<div>
 					<div className='space-y-4'>
-						<h1 className='text-center text-xl font-semibold'>Music Lab - Mode Identification</h1>
+						<div className='flex items-center justify-center gap-4'>
+							<h1 className='text-center text-xl font-semibold'>Mode Identification Practice</h1>
+							<ActionIcon
+								p={4}
+								radius='sm'
+								variant='light'
+								onClick={openSettingsModal}
+							>
+								<IconSettings />
+							</ActionIcon>
+						</div>
 						<Progress
 							color='#7E3AF2'
 							value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
-							classNames={{ root: '!bg-white max-w-[80%] mx-auto' }}
+							classNames={{
+								root: 'bg-white max-w-[60%] mx-auto',
+								section: 'transition-all duration-300 ease-in-out'
+							}}
 						/>
 					</div>
 
@@ -180,7 +199,7 @@ const PracticeMode = () => {
 						<button
 							disabled={buttonsDisabled}
 							onClick={sessionEnded ? resetSession : replayMode}
-							className='rounded-3xl bg-purple-600 px-6 py-2 transition-all duration-500 ease-in-out hover:bg-purple-600/80 disabled:pointer-events-none disabled:opacity-50'
+							className='rounded-3xl bg-violet-600 px-6 py-2 transition-all duration-500 ease-in-out hover:bg-violet-600/50 disabled:pointer-events-none disabled:opacity-50'
 						>
 							{sessionEnded
 								? 'Practice Again'
@@ -194,7 +213,7 @@ const PracticeMode = () => {
 									key={mode.value}
 									disabled={sessionEnded || !sessionQuestions.length || buttonsDisabled}
 									onClick={() => answerQuestion(mode.value)}
-									className='rounded-full border border-purple-600 bg-purple-600/25 px-4 py-1 text-sm transition-all duration-500 ease-in-out hover:bg-purple-600/80 disabled:pointer-events-none disabled:opacity-50'
+									className='rounded-full border border-violet-600 bg-violet-600/25 px-4 py-1 text-sm transition-all duration-500 ease-in-out hover:bg-violet-600/50 hover:opacity-80 disabled:pointer-events-none disabled:opacity-50'
 								>
 									{mode.label}
 								</button>
@@ -209,9 +228,9 @@ const PracticeMode = () => {
 				padding={24}
 				opened={resultsModalOpened}
 				onClose={() => setResultsModalOpened(false)}
+				closeButtonProps={{ size: 'sm' }}
 				title={'Practice Session Result'}
 				classNames={{
-					root: 'text-gray-900',
 					header: 'font-medium'
 				}}
 			>
@@ -232,12 +251,17 @@ const PracticeMode = () => {
 							setResultsModalOpened(false);
 							resetSession();
 						}}
-						className='text rounded-3xl bg-purple-600 px-6 py-2 text-white transition-opacity duration-200 ease-in-out disabled:opacity-50'
+						className='rounded-3xl bg-violet-600 px-6 py-2 transition-all duration-500 ease-in-out hover:bg-violet-600/50 disabled:pointer-events-none disabled:opacity-50'
 					>
 						Practice Again
 					</button>
 				</div>
 			</Modal>
+
+			<PracticeSettingsModal
+				opened={settingsModalOpened}
+				close={closeSettingsModal}
+			/>
 		</>
 	);
 };
