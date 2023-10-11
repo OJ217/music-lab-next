@@ -2,8 +2,8 @@ import Link from 'next/link';
 
 const PracticeHome = () => {
 	return (
-		<main className='grid min-h-screen place-content-center p-16 text-white'>
-			<div className=' w-full max-w-lg space-y-8'>
+		<main className='grid min-h-screen place-content-center p-8 text-white'>
+			<div className='w-full max-w-lg space-y-8'>
 				<h1 className='text-center text-2xl font-semibold'>Music Lab - Ear Training</h1>
 				<Link
 					href={'/ear-training/practice/interval'}
