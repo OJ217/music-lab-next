@@ -18,6 +18,11 @@ const theme = createTheme({
 			defaultProps: {
 				transitionProps: { transition: 'pop', duration: 200, timingFunction: 'ease' }
 			}
+		},
+		Menu: {
+			defaultProps: {
+				transitionProps: { transition: 'pop', duration: 200, timingFunction: 'ease' }
+			}
 		}
 	}
 });

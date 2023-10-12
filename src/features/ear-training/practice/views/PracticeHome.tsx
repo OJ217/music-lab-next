@@ -1,5 +1,9 @@
 import Link from 'next/link';
 
+import { Text } from '@mantine/core';
+
+import NavigationAffix from '../components/overlay/NavigationAffix';
+
 const PracticeHome = () => {
 	return (
 		<main className='grid min-h-screen place-content-center p-8 text-white'>
@@ -11,7 +15,18 @@ const PracticeHome = () => {
 				>
 					<h3 className='text-xl font-medium'>Interval</h3>
 					<p>
-						Practice your <b>Interval Identification</b> skill
+						Practice your{' '}
+						<span className='font-medium'>
+							<Text
+								span
+								variant='gradient'
+								fw={600}
+								gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
+							>
+								Interval Identification
+							</Text>
+						</span>{' '}
+						skill
 					</p>
 				</Link>
 
@@ -21,7 +36,18 @@ const PracticeHome = () => {
 				>
 					<h3 className='text-xl font-medium'>Chord</h3>
 					<p>
-						Practice your <b>Chord Identification</b> skill
+						Practice your{' '}
+						<span className='font-medium'>
+							<Text
+								span
+								variant='gradient'
+								fw={600}
+								gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
+							>
+								Chord Identification
+							</Text>
+						</span>{' '}
+						skill
 					</p>
 				</Link>
 
@@ -31,10 +57,23 @@ const PracticeHome = () => {
 				>
 					<h3 className='text-xl font-medium'>Mode</h3>
 					<p>
-						Practice your <b>Mode Identification</b> skill.
+						Practice your{' '}
+						<span className='font-medium'>
+							<Text
+								span
+								variant='gradient'
+								fw={600}
+								gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
+							>
+								Mode Identification
+							</Text>
+						</span>{' '}
+						skill
 					</p>
 				</Link>
 			</div>
+
+			<NavigationAffix />
 		</main>
 	);
 };
