@@ -7,7 +7,7 @@ import { ActionIcon, Modal, Progress } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconSettings } from '@tabler/icons-react';
 
-import PracticeSettingsModal from '../components/overlay/PracticeSettingsModal';
+import { ChordPracticeSettingsModal } from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
 import { SelectItem } from '../types';
 
@@ -65,6 +65,7 @@ const PracticeChord = () => {
 			setIsMounted(true);
 			openSettingsModal();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -261,7 +262,7 @@ const PracticeChord = () => {
 				</div>
 			</Modal>
 
-			<PracticeSettingsModal
+			<ChordPracticeSettingsModal
 				opened={settingsModalOpened}
 				close={closeSettingsModal}
 			/>

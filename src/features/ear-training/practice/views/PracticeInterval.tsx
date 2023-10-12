@@ -69,6 +69,7 @@ const PracticeInterval = () => {
 			setIsMounted(true);
 			openSettingsModal();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
