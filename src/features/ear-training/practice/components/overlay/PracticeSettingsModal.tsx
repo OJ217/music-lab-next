@@ -8,11 +8,18 @@ import { useForm } from '@mantine/form';
 import { SelectData } from '../../types';
 
 type PlayingMode = 'ascending' | 'descending' | 'harmonic' | 'ascending-descending';
+type NonHarmonicPlayingMode = Exclude<PlayingMode, 'harmonic'>;
 
 const playingModeSelectOptions: SelectData<PlayingMode> = [
 	{ label: 'Ascending', value: 'ascending' },
 	{ label: 'Descending', value: 'descending' },
 	{ label: 'Harmonic', value: 'harmonic' }
+];
+
+const nonHarmonicPlayingModeSelectOptions: SelectData<NonHarmonicPlayingMode> = [
+	{ label: 'Ascending', value: 'ascending' },
+	{ label: 'Descending', value: 'descending' },
+	{ label: 'Ascending and Descending', value: 'ascending-descending' }
 ];
 
 const fixedRootNotes = ['C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4', 'G#4', 'A4', 'A#4', 'B4'];
@@ -33,7 +40,7 @@ interface IntervalPracticeSettings {
 		enabled: boolean;
 		rootNote: NoteLiteral;
 	};
-	playingMode: Exclude<PlayingMode, 'ascending-descending'>;
+	playingMode: PlayingMode;
 	tempo: number;
 	questionDuration: number;
 	autoFeedback: boolean;
@@ -255,7 +262,7 @@ interface ChordPracticeSettings {
 		enabled: boolean;
 		rootNote: IntervalLiteral;
 	};
-	playingMode: Exclude<PlayingMode, 'ascending-descending'>;
+	playingMode: PlayingMode;
 	tempo: number;
 	questionDuration: number;
 	autoFeedback: boolean;
@@ -499,7 +506,7 @@ interface ModePracticeSettings {
 		enabled: boolean;
 		rootNote: NoteLiteral;
 	};
-	playingMode: Exclude<PlayingMode, 'harmonic'>;
+	playingMode: NonHarmonicPlayingMode;
 	tempo: number;
 	questionDuration: number;
 	autoFeedback: boolean;
@@ -629,7 +636,7 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps> = 
 									<Select
 										allowDeselect={false}
 										maxDropdownHeight={120}
-										data={playingModeSelectOptions}
+										data={nonHarmonicPlayingModeSelectOptions}
 										description='Playing mode'
 										placeholder='Select playing mode'
 										{...practiceSettingsForm.getInputProps('playingMode')}
