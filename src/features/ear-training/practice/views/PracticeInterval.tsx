@@ -7,7 +7,7 @@ import { ActionIcon, Modal, Progress } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconSettings } from '@tabler/icons-react';
 
-import PracticeSettingsModal from '../components/overlay/PracticeSettingsModal';
+import { IntervalPracticeSettingsModal } from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
 import { SelectItem } from '../types';
 
@@ -266,7 +266,7 @@ const PracticeInterval = () => {
 				</div>
 			</Modal>
 
-			<PracticeSettingsModal
+			<IntervalPracticeSettingsModal
 				opened={settingsModalOpened}
 				close={closeSettingsModal}
 			/>
