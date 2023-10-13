@@ -51,7 +51,7 @@ export default function App({ Component, pageProps }: AppProps) {
 			<Notifications
 				autoClose={8000}
 				containerWidth={400}
-				position='top-center'
+				position='top-right'
 				zIndex={10000}
 			/>
 			<Component {...pageProps} />

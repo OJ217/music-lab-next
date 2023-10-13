@@ -1,15 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Mode, Note } from 'tonal';
 import * as Tone from 'tone';
 
 import { ActionIcon, Modal, Progress } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { IconSettings } from '@tabler/icons-react';
 
 import { ModePracticeSettingsModal } from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
-import { SelectItem } from '../types';
+import { DEFAULT_MODE_PRACTICE_SETTINGS, MODE_TYPE_GROUPS, ModePracticeSettings } from '../types/settings.type';
 
 // Types and Interfaces
 type PracticeResultLevel = 'high' | 'medium' | 'low';
@@ -27,11 +28,27 @@ const TOTAL_QUESTIONS = 10;
 const PracticeMode = () => {
 	// Translation
 	const { t } = useTranslation('');
-	const MODES: SelectItem[] = Mode.names().map(modeName => ({ label: t(`mode.${modeName}`), value: modeName }));
 
 	// -------------------- STATES --------------------
-	const [isMounted, setIsMounted] = useState<boolean>(false);
 	const samplerInstance = useRef<Tone.Sampler>();
+
+	// Practice Settings
+	const modePracticeSettingsForm = useForm<ModePracticeSettings>({
+		initialValues: DEFAULT_MODE_PRACTICE_SETTINGS
+	});
+
+	const { values: modePracticeSettings } = modePracticeSettingsForm;
+
+	const MODES = useMemo(
+		() =>
+			MODE_TYPE_GROUPS[modePracticeSettings.modeTypeGroup].map(modeName => ({
+				label: t(`mode.${modeName}`),
+				value: modeName
+			})),
+		[modePracticeSettings.modeTypeGroup, t]
+	);
+	const TOTAL_QUESTIONS = modePracticeSettings.numberOfQuestions;
+	const ROOT_NOTE = modePracticeSettings.fixedRoot.enabled ? modePracticeSettings.fixedRoot.rootNote : null;
 
 	// Practice Session States
 	const [sessionQuestions, setSessionQuestions] = useState<Array<ModeQuestion>>([]);
@@ -62,14 +79,7 @@ const PracticeMode = () => {
 
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
-			setIsMounted(true);
 			openSettingsModal();
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	useEffect(() => {
-		if (isMounted) {
 			initializeSampler();
 
 			return () => {
@@ -77,7 +87,8 @@ const PracticeMode = () => {
 				samplerInstance.current = undefined;
 			};
 		}
-	}, [isMounted, initializeSampler]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const playMode = (modeNotes: string[]) => {
 		setButtonsDisabled(true);
@@ -93,7 +104,7 @@ const PracticeMode = () => {
 	};
 
 	const playRandomMode = () => {
-		const rootNote = Note.fromMidi(Math.floor(Math.random() * 13) + 48);
+		const rootNote = ROOT_NOTE ?? Note.fromMidi(Math.floor(Math.random() * 13) + 48);
 		const modeName = MODES[Math.floor(Math.random() * MODES.length)].value;
 		const modeNotes = [...Mode.notes(modeName, rootNote), Note.transpose(rootNote, 'P8')];
 
@@ -186,14 +197,19 @@ const PracticeMode = () => {
 								<IconSettings />
 							</ActionIcon>
 						</div>
-						<Progress
-							color='#7E3AF2'
-							value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
-							classNames={{
-								root: 'bg-white max-w-[60%] mx-auto',
-								section: 'transition-all duration-300 ease-in-out'
-							}}
-						/>
+						<div className='space-y-2'>
+							<Progress
+								color='#7E3AF2'
+								value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
+								classNames={{
+									root: 'bg-white max-w-[60%] mx-auto',
+									section: 'transition-all duration-300 ease-in-out'
+								}}
+							/>
+							<p className='text-center text-xs text-gray-500'>
+								{sessionQuestions.length}/{TOTAL_QUESTIONS}
+							</p>
+						</div>
 					</div>
 
 					<div className='mt-24 flex flex-col items-center'>
@@ -262,6 +278,7 @@ const PracticeMode = () => {
 			<ModePracticeSettingsModal
 				opened={settingsModalOpened}
 				close={closeSettingsModal}
+				practiceSettingsForm={modePracticeSettingsForm}
 			/>
 		</>
 	);

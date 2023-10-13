@@ -1,15 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Note } from 'tonal';
 import * as Tone from 'tone';
 
 import { ActionIcon, Modal, Progress } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { IconSettings } from '@tabler/icons-react';
 
 import { IntervalPracticeSettingsModal } from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
-import { SelectItem } from '../types';
+import {
+	DEFAULT_INTERVAL_PRACTICE_SETTINGS,
+	INTERVAL_TYPE_GROUPS,
+	IntervalPracticeSettings
+} from '../types/settings.type';
 
 // Types and Interfaces
 type IntervalTuple = [string, string];
@@ -22,21 +27,30 @@ interface IntervalQuestion {
 	correct?: boolean;
 }
 
-// CONSTANTS
-const TOTAL_QUESTIONS = 10;
-const INTERVAL_NAMES = ['m2', 'M2', 'm3', 'M3', 'P4', 'd5', 'P5', 'm6', 'M6', 'm7', 'M7', 'P8'];
-
 const PracticeInterval = () => {
 	// Translation
 	const { t } = useTranslation();
-	const INTERVALS: SelectItem[] = INTERVAL_NAMES.map(intervalName => ({
-		label: t(`interval.${intervalName}`),
-		value: intervalName
-	}));
 
 	// -------------------- STATES --------------------
-	const [isMounted, setIsMounted] = useState<boolean>(false);
 	const samplerInstance = useRef<Tone.Sampler>();
+
+	// Practice Settings
+	const intervalPracticeSettingsForm = useForm<IntervalPracticeSettings>({
+		initialValues: DEFAULT_INTERVAL_PRACTICE_SETTINGS
+	});
+
+	const { values: intervalPracticeSettings } = intervalPracticeSettingsForm;
+
+	const INTERVALS = useMemo(
+		() =>
+			INTERVAL_TYPE_GROUPS[intervalPracticeSettings.intervalTypeGroup].map(intervalName => ({
+				label: t(`interval.${intervalName}`),
+				value: intervalName
+			})),
+		[intervalPracticeSettings.intervalTypeGroup, t]
+	);
+	const TOTAL_QUESTIONS = intervalPracticeSettings.numberOfQuestions;
+	const ROOT_NOTE = intervalPracticeSettings.fixedRoot.enabled ? intervalPracticeSettings.fixedRoot.rootNote : null;
 
 	// Practice Session States
 	const [sessionQuestions, setSessionQuestions] = useState<Array<IntervalQuestion>>([]);
@@ -66,14 +80,7 @@ const PracticeInterval = () => {
 
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
-			setIsMounted(true);
 			openSettingsModal();
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	useEffect(() => {
-		if (isMounted) {
 			initializeSampler();
 
 			return () => {
@@ -81,7 +88,8 @@ const PracticeInterval = () => {
 				samplerInstance.current = undefined;
 			};
 		}
-	}, [isMounted, initializeSampler]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	// Practice Session Handler Functions
 	const stopActiveInterval = (releaseTime?: number | undefined) => {
@@ -91,7 +99,7 @@ const PracticeInterval = () => {
 	};
 
 	const playRandomInterval = () => {
-		const rootNote = Note.fromMidi(Math.floor(Math.random() * 25) + 48);
+		const rootNote = ROOT_NOTE ?? Note.fromMidi(Math.floor(Math.random() * 25) + 48);
 		const intervalName = INTERVALS[Math.floor(Math.random() * INTERVALS.length)].value;
 		const upperNote = Note.transpose(rootNote, intervalName);
 		const intervalNotes: IntervalTuple = [rootNote, upperNote];
@@ -195,14 +203,19 @@ const PracticeInterval = () => {
 								<IconSettings />
 							</ActionIcon>
 						</div>
-						<Progress
-							color='#7E3AF2'
-							value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
-							classNames={{
-								root: 'bg-white max-w-[60%] mx-auto',
-								section: 'transition-all duration-300 ease-in-out'
-							}}
-						/>
+						<div className='space-y-2'>
+							<Progress
+								color='#7E3AF2'
+								value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
+								classNames={{
+									root: 'bg-white max-w-[60%] mx-auto',
+									section: 'transition-all duration-300 ease-in-out'
+								}}
+							/>
+							<p className='text-center text-xs text-gray-500'>
+								{sessionQuestions.length}/{TOTAL_QUESTIONS}
+							</p>
+						</div>
 					</div>
 
 					<div className='mt-24 flex flex-col items-center'>
@@ -216,7 +229,7 @@ const PracticeInterval = () => {
 								? 'Start Practice'
 								: 'Replay Interval'}
 						</button>
-						<div className='mt-12 flex max-w-sm flex-wrap items-center justify-center gap-6'>
+						<div className='mt-12 flex max-w-md flex-wrap items-center justify-center gap-6'>
 							{INTERVALS.map(interval => (
 								<button
 									key={interval.value}
@@ -270,6 +283,7 @@ const PracticeInterval = () => {
 			<IntervalPracticeSettingsModal
 				opened={settingsModalOpened}
 				close={closeSettingsModal}
+				practiceSettingsForm={intervalPracticeSettingsForm}
 			/>
 		</>
 	);

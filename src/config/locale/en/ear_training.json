@@ -23,6 +23,7 @@
 		"7": "Dominant 7th",
 		"min7": "Minor 7th",
 		"dim7": "Diminished 7th",
+		"maj7#5": "Augmented 7th",
 		"m7b5": "Half-diminished 7th"
 	},
 	"mode": {

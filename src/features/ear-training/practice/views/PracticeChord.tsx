@@ -1,15 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Chord, Note } from 'tonal';
 import * as Tone from 'tone';
 
 import { ActionIcon, Modal, Progress } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { IconSettings } from '@tabler/icons-react';
 
 import { ChordPracticeSettingsModal } from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
-import { SelectItem } from '../types';
+import { CHORD_TYPE_GROUPS, ChordPracticeSettings, DEFAULT_CHORD_PRACTICE_SETTINGS } from '../types/settings.type';
 
 // Types and Interfaces
 type PracticeResultLevel = 'high' | 'medium' | 'low';
@@ -21,18 +22,31 @@ interface ChordQuestion {
 	correct?: boolean;
 }
 
-// CONSTANTS
-const TOTAL_QUESTIONS = 10;
-const CHORD_NAMES = ['maj', 'min', 'aug', 'dim', 'maj7', 'min7', '7', 'mM7', 'dim7', 'm7b5'];
-
 const PracticeChord = () => {
 	// Translation
 	const { t } = useTranslation();
-	const CHORDS: SelectItem[] = CHORD_NAMES.map(chordName => ({ label: t(`chord.${chordName}`), value: chordName }));
 
 	// -------------------- STATES --------------------
-	const [isMounted, setIsMounted] = useState<boolean>(false);
 	const samplerInstance = useRef<Tone.Sampler>();
+
+	// Practice Settings
+	const chordPracticeSettingsForm = useForm<ChordPracticeSettings>({
+		initialValues: DEFAULT_CHORD_PRACTICE_SETTINGS
+	});
+
+	const { values: chordPracticeSettings } = chordPracticeSettingsForm;
+
+	const CHORDS = useMemo(
+		() =>
+			CHORD_TYPE_GROUPS[chordPracticeSettings.chordTypeGroup].map(chordName => ({
+				label: t(`chord.${chordName}`),
+				value: chordName
+			})),
+		[chordPracticeSettings.chordTypeGroup, t]
+	);
+	const TOTAL_QUESTIONS = chordPracticeSettings.numberOfQuestions;
+	const ROOT_NOTE = chordPracticeSettings.fixedRoot.enabled ? chordPracticeSettings.fixedRoot.rootNote : null;
+	const INVERSIONS = chordPracticeSettings.inversions;
 
 	// Practice Session States
 	const [sessionQuestions, setSessionQuestions] = useState<Array<ChordQuestion>>([]);
@@ -62,14 +76,7 @@ const PracticeChord = () => {
 
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
-			setIsMounted(true);
 			openSettingsModal();
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	useEffect(() => {
-		if (isMounted) {
 			initializeSampler();
 
 			return () => {
@@ -77,7 +84,8 @@ const PracticeChord = () => {
 				samplerInstance.current = undefined;
 			};
 		}
-	}, [isMounted, initializeSampler]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	// Practice Session Handler Functions
 	const stopActiveChord = (releaseTime?: number | undefined) => {
@@ -87,11 +95,21 @@ const PracticeChord = () => {
 	};
 
 	const playRandomChord = () => {
-		const rootNote = Note.fromMidi(Math.floor(Math.random() * 25) + 48);
+		const rootNote = ROOT_NOTE ?? Note.fromMidi(Math.floor(Math.random() * 25) + 48);
 		const chordName = CHORDS[Math.floor(Math.random() * CHORDS.length)].value;
 		const chordNotes = Chord.getChord(chordName, rootNote).notes;
 
-		console.log({ chordNotes, chordName });
+		const chordDegree = Chord.degrees([rootNote, chordName]);
+		const randomInversionStartIndex = parseInt(INVERSIONS[Math.floor(Math.random() * INVERSIONS.length)]) + 1;
+		const randomInversion = Array.from(
+			{ length: chordNotes.length },
+			(_, index) => randomInversionStartIndex + index
+		).map(i => {
+			console.log(i);
+			return chordDegree(i);
+		});
+
+		console.log({ chordNotes, chordName, randomInversion });
 
 		stopActiveChord();
 
@@ -190,14 +208,19 @@ const PracticeChord = () => {
 								<IconSettings />
 							</ActionIcon>
 						</div>
-						<Progress
-							color='#7E3AF2'
-							value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
-							classNames={{
-								root: 'bg-white max-w-[60%] mx-auto',
-								section: 'transition-all duration-300 ease-in-out'
-							}}
-						/>
+						<div className='space-y-2'>
+							<Progress
+								color='#7E3AF2'
+								value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
+								classNames={{
+									root: 'bg-white max-w-[60%] mx-auto',
+									section: 'transition-all duration-300 ease-in-out'
+								}}
+							/>
+							<p className='text-center text-xs text-gray-500'>
+								{sessionQuestions.length}/{TOTAL_QUESTIONS}
+							</p>
+						</div>
 					</div>
 
 					<div className='mt-24 flex flex-col items-center'>
@@ -211,7 +234,7 @@ const PracticeChord = () => {
 								? 'Start Practice'
 								: 'Replay Chord'}
 						</button>
-						<div className='mt-12 flex max-w-sm flex-wrap items-center justify-center gap-6'>
+						<div className='mt-12 flex max-w-md flex-wrap items-center justify-center gap-6'>
 							{CHORDS.map(chord => (
 								<button
 									key={chord.value}
@@ -265,6 +288,7 @@ const PracticeChord = () => {
 			<ChordPracticeSettingsModal
 				opened={settingsModalOpened}
 				close={closeSettingsModal}
+				practiceSettingsForm={chordPracticeSettingsForm}
 			/>
 		</>
 	);
