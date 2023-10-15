@@ -49,9 +49,9 @@ export default function App({ Component, pageProps }: AppProps) {
 				/>
 			</Head>
 			<Notifications
-				autoClose={8000}
-				containerWidth={400}
 				position='top-right'
+				containerWidth={480}
+				autoClose={8000}
 				zIndex={10000}
 			/>
 			<Component {...pageProps} />
