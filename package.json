@@ -13,7 +13,10 @@
 		"@mantine/form": "^7.1.2",
 		"@mantine/hooks": "^7.1.2",
 		"@mantine/notifications": "^7.1.2",
+		"@react-oauth/google": "^0.11.1",
 		"@tabler/icons-react": "^2.37.0",
+		"@tanstack/react-query": "^5.0.5",
+		"axios": "^1.6.0",
 		"framer-motion": "^10.16.4",
 		"i18next": "^23.5.1",
 		"next": "latest",
@@ -37,7 +40,7 @@
 		"postcss-preset-mantine": "^1.8.0",
 		"postcss-simple-vars": "^7.0.1",
 		"prettier": "latest",
-		"prettier-plugin-tailwindcss": "^0.5.4",
+		"prettier-plugin-tailwindcss": "^0.5.6",
 		"tailwindcss": "latest",
 		"typescript": "latest"
 	}

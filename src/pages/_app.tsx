@@ -1,60 +1,38 @@
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import '@/styles/globals.css';
-import '@/config/locale';
+import '@/config/locales';
+import '@/config/_lib/axios-interceptor';
 
 import Head from 'next/head';
 
-import { createTheme, MantineProvider } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
+import MantineProvider from '@/config/_lib/mantine-provider';
+import QueryClientProvider from '@/config/_lib/react-query-provider';
 
 import type { AppProps } from 'next/app';
 
-const theme = createTheme({
-	fontFamily: 'Euclid Circular A',
-	primaryColor: 'violet',
-	components: {
-		Combobox: {
-			defaultProps: {
-				transitionProps: { transition: 'pop', duration: 200, timingFunction: 'ease' }
-			}
-		},
-		Menu: {
-			defaultProps: {
-				transitionProps: { transition: 'pop', duration: 200, timingFunction: 'ease' }
-			}
-		}
-	}
-});
-
 export default function App({ Component, pageProps }: AppProps) {
 	return (
-		<MantineProvider
-			defaultColorScheme='dark'
-			theme={theme}
-		>
-			<Head>
-				<title>Music Lab</title>
-				<meta
-					name='description'
-					content='Platform for practicing and learning academic music knowledge and skills.'
-				/>
-				<meta
-					name='viewport'
-					content='width=device-width, initial-scale=1, maximum-scale=1'
-				/>
-				<meta
-					name='apple-mobile-web-app-status-bar-style'
-					content='black-translucent'
-				/>
-			</Head>
-			<Notifications
-				position='top-center'
-				containerWidth={400}
-				autoClose={8000}
-				zIndex={10000}
-			/>
-			<Component {...pageProps} />
+		<MantineProvider>
+			<QueryClientProvider>
+				<Head>
+					<title>Music Lab</title>
+					<meta
+						name='description'
+						content='Platform for practicing and learning academic music knowledge and skills.'
+					/>
+					<meta
+						name='viewport'
+						content='width=device-width, initial-scale=1, maximum-scale=1'
+					/>
+					<meta
+						name='apple-mobile-web-app-status-bar-style'
+						content='black-translucent'
+					/>
+				</Head>
+
+				<Component {...pageProps} />
+			</QueryClientProvider>
 		</MantineProvider>
 	);
 }

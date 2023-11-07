@@ -14,7 +14,7 @@ export const notify = ({
 	autoClose = 10
 }: {
 	type: NotificationType;
-	title: string;
+	title: string | React.ReactNode;
 	message?: string | React.ReactNode | null;
 	autoClose?: number;
 }) => {
@@ -50,7 +50,7 @@ export const notify = ({
 
 	notifications.clean();
 
-	return notifications.show({
+	notifications.show({
 		title,
 		message,
 		withCloseButton: true,
