@@ -9,7 +9,7 @@ const Test = () => {
 		notify({
 			type: 'success',
 			title: 'Articles data',
-			message: JSON.stringify(articles.data?.docs[0]).substring(0, 320) + '...'
+			message: JSON.stringify(articles.data).substring(0, 320) + '...'
 		});
 	};
 
@@ -18,13 +18,13 @@ const Test = () => {
 		notify({
 			type: 'success',
 			title: 'Users data',
-			message: JSON.stringify(users.data?.docs[0])
+			message: JSON.stringify(users.data).substring(0, 320) + '...'
 		});
 	};
 
 	const fecthMe = async () => {
-		const users = await axios.get('/users/me', { isPrivate: true });
-		notify({ type: 'success', title: 'Users data', message: JSON.stringify(users.data?.user) });
+		const user = await axios.get('/users/me', { isPrivate: true });
+		notify({ type: 'success', title: 'User data', message: JSON.stringify(user.data) });
 	};
 
 	return (
