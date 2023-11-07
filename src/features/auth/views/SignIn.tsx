@@ -43,35 +43,24 @@ const SignInPage = () => {
 		flow: 'auth-code'
 	});
 
-	const signInRequestSchema = z
-		.object({
-			email: z.string().email(),
-			username: z.string().min(4).max(20),
-			password: z.string().min(8).max(20),
-			passwordConfirmation: z.string()
-		})
-		.refine(
-			({ password, passwordConfirmation }) => {
-				return password === passwordConfirmation;
-			},
-			{ message: 'Passwords must match', path: ['passwordConfirmation'] }
-		);
+	const signInRequestSchema = z.object({
+		email: z.string().email(),
+		password: z.string().min(8).max(20)
+	});
 
 	type SignInRequestData = z.infer<typeof signInRequestSchema>;
 
 	const signInForm = useForm<SignInRequestData>({
 		initialValues: {
 			email: '',
-			username: '',
-			password: '',
-			passwordConfirmation: ''
+			password: ''
 		},
 		validate: zodResolver(signInRequestSchema)
 	});
 
 	const { mutateSignIn, signInPending } = useSignInMutation();
 
-	const handleSignIn = async (values: { email: string; password: string }) => {
+	const handleSignIn = async (values: SignInRequestData) => {
 		try {
 			const signInResponse = await mutateSignIn(values);
 
@@ -184,9 +173,9 @@ const SignInPage = () => {
 					</div>
 
 					<Button
+						fullWidth
 						type='submit'
 						loading={signInPending}
-						fullWidth
 						className='font-normal hover:shadow-lg hover:shadow-violet-600/30'
 					>
 						Sign In
