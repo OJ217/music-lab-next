@@ -5,6 +5,7 @@ import { notify } from '@/utils/notification.util';
 import { Button, Paper, TextInput } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { IconArrowLeft } from '@tabler/icons-react';
+import PublicOnlyRoute from '@/context/auth/hoc/PublicRoute';
 
 const ForgotPassword = () => {
 	const forgotPasswordRequestSchema = z.object({ email: z.string().email() });

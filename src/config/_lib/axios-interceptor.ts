@@ -20,6 +20,20 @@ axios.interceptors.request.use((config: InternalAxiosRequestConfig<any>) => {
 		...(config.headers as RawAxiosRequestHeaders)
 	};
 
+	if (config.isPrivate) {
+		const authStore = JSON.parse(window.localStorage.getItem('music_lab.auth_store') as string);
+		const accessToken = authStore?.accessToken;
+		const refreshToken = authStore?.refreshToken;
+
+		if (accessToken) {
+			config.headers['Music-Lab-X-Access-Token'] = accessToken;
+		}
+
+		if (refreshToken) {
+			config.headers['Music-Lab-X-Refresh-Token'] = refreshToken;
+		}
+	}
+
 	config.withCredentials = true;
 
 	if (config.url && !config.url.startsWith('http')) {
@@ -43,7 +57,12 @@ axios.interceptors.response.use(
 				message: errorObj?.message
 			};
 		} else if (error?.response?.status === 401) {
-			errorNotification.title = 'Please sign in to continue.';
+			window.localStorage.removeItem('music_lab.auth_store');
+			if (window.location.pathname !== '/auth/sign-in') {
+				window.location.pathname = '/auth/sign-in';
+			}
+			notify({ type: 'warning', title: 'Please sign in to continue.' });
+			return Promise.reject(error?.response);
 		}
 
 		notify({
@@ -55,8 +74,3 @@ axios.interceptors.response.use(
 		return Promise.reject(error?.response);
 	}
 );
-
-export const apiClient = axios.create({
-	baseURL: API_URL.public,
-	withCredentials: true
-});

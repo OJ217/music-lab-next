@@ -1,4 +1,6 @@
 export interface AuthResponse {
+	accessToken: string;
+	refreshToken: string;
 	user: {
 		_id: string;
 		email: string;
@@ -76,7 +78,8 @@ export const useGoogleOAuthMutation = () => {
 	const handleGoogleOAuth = async (
 		googleOAuthCredentials: Omit<CodeResponse, 'error' | 'error_description' | 'error_uri'>
 	) => {
-		const googleOAuthResponse = await axios.post<IResponse<AuthResponse>>('/auth/google', googleOAuthCredentials);
+		const googleOAuthResponse = (await axios.post<IResponse<AuthResponse>>('/auth/google', googleOAuthCredentials))
+			.data;
 		return googleOAuthResponse?.data;
 	};
 

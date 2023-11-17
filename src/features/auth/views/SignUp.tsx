@@ -8,8 +8,14 @@ import { useForm, zodResolver } from '@mantine/form';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
 import { useGoogleOAuthMutation, useSignUpMutation } from '../services/auth.mutation';
+import PublicOnlyRoute from '@/context/auth/hoc/PublicRoute';
+import { useAuth } from '@/context/auth/auth.context';
+import { useRouter } from 'next/router';
 
 const SignUpPage = () => {
+	const router = useRouter();
+	const { setAuthStore } = useAuth();
+
 	const { mutateGoogleOAuth, googleOAuthPending } = useGoogleOAuthMutation();
 
 	const handleGoogleOAuth = useGoogleLogin({
@@ -17,7 +23,8 @@ const SignUpPage = () => {
 			try {
 				const googleOAuthResponse = await mutateGoogleOAuth(credentialResponse);
 
-				console.log({ googleOAuthResponse });
+				setAuthStore(googleOAuthResponse);
+				router.push('/ear-training/practice');
 
 				notify({
 					type: 'success',
@@ -75,7 +82,8 @@ const SignUpPage = () => {
 		try {
 			const signUpResponse = await mutateSignUp(data);
 
-			console.log({ signUpResponse });
+			setAuthStore(signUpResponse.data);
+			router.push('/ear-training/practice');
 
 			notify({
 				type: 'success',

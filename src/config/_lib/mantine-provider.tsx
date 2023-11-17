@@ -1,4 +1,5 @@
 import { createTheme, MantineProvider as DefaultMantineProvider } from '@mantine/core';
+import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
 
 interface IMantineProviderProps {
@@ -55,7 +56,9 @@ const MantineProvider: React.FC<IMantineProviderProps> = ({ children }) => {
 				autoClose={8000}
 				zIndex={10000}
 			/>
-			{children}
+			<ModalsProvider>
+				{children}
+			</ModalsProvider>
 		</DefaultMantineProvider>
 	);
 };

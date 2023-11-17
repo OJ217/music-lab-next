@@ -17,6 +17,6 @@
 			"@/*": ["./src/*"]
 		}
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/config/_lib/axios-interceptor.tss"],
 	"exclude": ["node_modules"]
 }
