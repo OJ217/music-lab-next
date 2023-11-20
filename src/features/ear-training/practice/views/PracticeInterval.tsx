@@ -358,7 +358,7 @@ const PracticeInterval = () => {
 								fullWidth
 								onClick={() => {
 									closeResultsModal();
-									resetSession({ startSession: true });
+									resetSession({ startSession: false });
 									intervalPracticeSettingsForm.setFieldValue('settingsLocked', false);
 									openSettingsModal();
 								}}
@@ -371,7 +371,6 @@ const PracticeInterval = () => {
 			</Modal>
 
 			<Drawer
-				size={'xs'}
 				position='left'
 				title='Practice Detail'
 				opened={practiceDetailDrawerOpened}
