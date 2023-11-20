@@ -1,16 +1,15 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { z } from 'zod';
 
 import { GOOGLE_OAUTH } from '@/config/constants/api.constant';
+import { useAuth } from '@/context/auth/auth.context';
 import { notify } from '@/utils/notification.util';
 import { Button, Divider, Paper, PasswordInput, TextInput } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
 import { useGoogleOAuthMutation, useSignUpMutation } from '../services/auth.mutation';
-import PublicOnlyRoute from '@/context/auth/hoc/PublicRoute';
-import { useAuth } from '@/context/auth/auth.context';
-import { useRouter } from 'next/router';
 
 const SignUpPage = () => {
 	const router = useRouter();

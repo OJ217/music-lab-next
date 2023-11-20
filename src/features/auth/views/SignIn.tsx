@@ -10,7 +10,6 @@ import { useForm, zodResolver } from '@mantine/form';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
 import { useGoogleOAuthMutation, useSignInMutation } from '../services/auth.mutation';
-import PublicOnlyRoute from '@/context/auth/hoc/PublicRoute';
 
 const SignInPage = () => {
 	const router = useRouter();

@@ -45,6 +45,8 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 			}.`
 		});
 
+		practiceSettingsForm.setFieldValue('settingsLocked', true);
+
 		close();
 	};
 
@@ -230,6 +232,8 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 				settings.fixedRoot.enabled ? ' with a fixed ' + settings.fixedRoot.rootNote + ' root note' : ''
 			}.`
 		});
+
+		practiceSettingsForm.setFieldValue('settingsLocked', true);
 
 		close();
 	};
@@ -423,6 +427,8 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 				settings.fixedRoot.enabled ? ' with a fixed ' + settings.fixedRoot.rootNote + ' root note' : ''
 			}.`
 		});
+
+		practiceSettingsForm.setFieldValue('settingsLocked', true);
 
 		close();
 	};

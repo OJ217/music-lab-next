@@ -4,7 +4,7 @@ import { useAuth } from '@/context/auth/auth.context';
 import ProtectedRoute from '@/context/auth/hoc/ProtectedRoute';
 import { ActionIcon, Avatar, Menu, rem, Skeleton } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { IconChartBar, IconFlask, IconFlask2, IconLogout, IconSettings, IconUser } from '@tabler/icons-react';
+import { IconChartBar, IconFlask2, IconLogout, IconSettings, IconUser } from '@tabler/icons-react';
 
 import NavigationAffix from '../components/overlay/NavigationAffix';
 
@@ -88,24 +88,27 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children }) => {
 
 							<Menu.Dropdown>
 								<Link href={'/profile/dashboard'}>
-									<Menu.Item leftSection={<IconChartBar />}>Dashboard</Menu.Item>
+									<Menu.Item leftSection={<IconChartBar stroke={1.6} />}>Progress</Menu.Item>
 								</Link>
 
-								<Menu.Divider />
-
 								<Link href={'/profile'}>
-									<Menu.Item leftSection={<IconUser />}>Profile</Menu.Item>
+									<Menu.Item leftSection={<IconUser stroke={1.6} />}>Profile</Menu.Item>
 								</Link>
 
 								<Link href={'/profile/settings'}>
-									<Menu.Item leftSection={<IconSettings />}>Settings</Menu.Item>
+									<Menu.Item leftSection={<IconSettings stroke={1.6} />}>Settings</Menu.Item>
 								</Link>
 
 								<Menu.Divider />
 
 								<Menu.Item
 									onClick={openSignOutConfirmationModal}
-									leftSection={<IconLogout className='ml-0.5' />}
+									leftSection={
+										<IconLogout
+											stroke={1.6}
+											className='ml-0.5'
+										/>
+									}
 								>
 									Sign out
 								</Menu.Item>

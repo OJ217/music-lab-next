@@ -3,10 +3,24 @@ import { useTranslation } from 'react-i18next';
 import { Note } from 'tonal';
 import * as Tone from 'tone';
 
-import { ActionIcon, Modal, Progress } from '@mantine/core';
+import { notify } from '@/utils/notification.util';
+import {
+	Accordion,
+	ActionIcon,
+	Button,
+	Center,
+	Divider,
+	Drawer,
+	List,
+	Modal,
+	Paper,
+	Progress,
+	RingProgress,
+	ScrollArea
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { IconSettings } from '@tabler/icons-react';
+import { IconCheck, IconSettings, IconX } from '@tabler/icons-react';
 
 import { IntervalPracticeSettingsModal } from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
@@ -25,6 +39,14 @@ interface IntervalQuestion {
 	intervalNotes: IntervalTuple;
 	answered: boolean;
 	correct?: boolean;
+}
+
+interface IntervalPracticeDetail {
+	intervalName: string;
+	correctAnswers: number;
+	incorrectAnswers: number;
+	correctPercentage: string;
+	numberOfQuestions: number;
 }
 
 const PracticeInterval = () => {
@@ -59,8 +81,10 @@ const PracticeInterval = () => {
 	const [sessionEnded, setSessionEnded] = useState<boolean>(false);
 
 	// Util States
-	const [resultsModalOpened, setResultsModalOpened] = useState<boolean>(false);
+	const [resultsModalOpened, { open: openResultsModal, close: closeResultsModal }] = useDisclosure(false);
 	const [settingsModalOpened, { open: openSettingsModal, close: closeSettingsModal }] = useDisclosure(false);
+	const [practiceDetailDrawerOpened, { open: openPracticeDetailDrawer, close: closePracticeDetailDrawer }] =
+		useDisclosure(false);
 
 	const initializeSampler = useCallback(() => {
 		const sampler = new Tone.Sampler({
@@ -84,6 +108,7 @@ const PracticeInterval = () => {
 			initializeSampler();
 
 			return () => {
+				notify({ type: 'warning', title: 'Sampler disconnected' });
 				samplerInstance.current?.disconnect();
 				samplerInstance.current = undefined;
 			};
@@ -153,19 +178,19 @@ const PracticeInterval = () => {
 		if (sessionQuestions.length === TOTAL_QUESTIONS) {
 			stopActiveInterval(5);
 			setSessionEnded(true);
-			setResultsModalOpened(true);
+			openResultsModal();
 			return;
 		}
 
 		playRandomInterval();
 	};
 
-	const resetSession = () => {
+	const resetSession = (options: { startSession?: boolean } = { startSession: true }) => {
 		setSessionQuestions([]);
 		setTotalAnsweredQuestions(0);
 		setTotalCorrectAnswer(0);
 		setSessionEnded(false);
-		playRandomInterval();
+		options?.startSession && playRandomInterval();
 	};
 
 	const resolvePracticeResultLevel = (): PracticeResultLevel => {
@@ -187,6 +212,42 @@ const PracticeInterval = () => {
 		high: 'You are on fire 🚀🔥'
 	};
 
+	const refinePracticeDetail = (practiceSessionQuestions: Array<IntervalQuestion>): Array<IntervalPracticeDetail> => {
+		return Object.entries(
+			practiceSessionQuestions.reduce(
+				(questionGroup: Record<string, Array<IntervalQuestion>>, question: IntervalQuestion) => {
+					const interval = question.intervalName;
+
+					if (!questionGroup[interval]) {
+						questionGroup[interval] = [];
+					}
+
+					questionGroup[interval].push(question);
+
+					return questionGroup;
+				},
+				{}
+			)
+		).map(([interval, questions]) => {
+			const correctAnswers = questions.filter(q => q.correct).length;
+			const incorrectAnswers = questions.length - correctAnswers;
+
+			console.log({ interval, label: t(`interval.${interval}`) });
+
+			return {
+				intervalName: t(`interval.${interval}`),
+				correctAnswers,
+				incorrectAnswers,
+				correctPercentage: ((correctAnswers / questions.length) * 100).toFixed(1),
+				numberOfQuestions: questions.length
+			};
+		});
+	};
+
+	const capitalize = (str: string) => {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	};
+
 	return (
 		<>
 			<EarTrainingLayout>
@@ -199,6 +260,7 @@ const PracticeInterval = () => {
 								radius='sm'
 								variant='light'
 								onClick={openSettingsModal}
+								disabled={intervalPracticeSettings.settingsLocked}
 							>
 								<IconSettings />
 							</ActionIcon>
@@ -220,14 +282,16 @@ const PracticeInterval = () => {
 
 					<div className='mt-24 flex flex-col items-center'>
 						<button
-							onClick={sessionEnded ? resetSession : replayInterval}
+							onClick={() => {
+								sessionEnded ? resetSession() : replayInterval();
+							}}
 							className='rounded-3xl bg-violet-600 px-6 py-2 transition-all duration-500 ease-in-out hover:bg-violet-600/50 disabled:pointer-events-none disabled:opacity-50'
 						>
 							{sessionEnded
 								? 'Practice Again'
 								: !sessionQuestions.length
-								? 'Start Practice'
-								: 'Replay Interval'}
+								  ? 'Start Practice'
+								  : 'Replay Interval'}
 						</button>
 						<div className='mt-12 flex max-w-md flex-wrap items-center justify-center gap-6'>
 							{INTERVALS.map(interval => (
@@ -249,36 +313,209 @@ const PracticeInterval = () => {
 				centered
 				padding={24}
 				opened={resultsModalOpened}
-				onClose={() => setResultsModalOpened(false)}
+				onClose={closeResultsModal}
 				closeButtonProps={{ size: 'sm' }}
-				title={'Practice Session Result'}
+				title={'Practice Result'}
 				classNames={{
 					header: 'font-medium'
 				}}
 			>
 				<div className='mt-4 flex flex-col items-center space-y-8 text-center'>
 					<div className='space-y-2'>
-						<p className='text-lg'>
-							Correct answer percentage -{' '}
-							<span className='font-semibold'>
-								{Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10}%
-							</span>
-						</p>
+						<h3 className='text-3xl font-semibold text-violet-500'>
+							{Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10}%
+						</h3>
 						<p className='mx-auto max-w-[240px] text-sm font-medium'>
-							{PracticeResultMessage[resolvePracticeResultLevel()]}
+							You had {totalCorrectAnswer} correct answers and {TOTAL_QUESTIONS - totalCorrectAnswer}{' '}
+							wrong answers. Keep going 🍀🚀.
 						</p>
 					</div>
-					<button
-						onClick={() => {
-							setResultsModalOpened(false);
-							resetSession();
-						}}
-						className='rounded-3xl bg-violet-600 px-6 py-2 transition-all duration-500 ease-in-out hover:bg-violet-600/50 disabled:pointer-events-none disabled:opacity-50'
-					>
-						Practice Again
-					</button>
+
+					<div className='w-full max-w-[200px] space-y-2'>
+						<Button
+							p={0}
+							h={'auto'}
+							w={'auto'}
+							size='compact-xs'
+							variant='transparent'
+							onClick={openPracticeDetailDrawer}
+						>
+							See practice details
+						</Button>
+
+						<div className='flex w-full items-center gap-4'>
+							<Button
+								fullWidth
+								variant='light'
+								onClick={() => {
+									closeResultsModal();
+									resetSession();
+								}}
+							>
+								Retry
+							</Button>
+							<Button
+								fullWidth
+								onClick={() => {
+									closeResultsModal();
+									resetSession({ startSession: true });
+									intervalPracticeSettingsForm.setFieldValue('settingsLocked', false);
+									openSettingsModal();
+								}}
+							>
+								Done
+							</Button>
+						</div>
+					</div>
 				</div>
 			</Modal>
+
+			<Drawer
+				size={'xs'}
+				position='left'
+				title='Practice Detail'
+				opened={practiceDetailDrawerOpened}
+				onClose={closePracticeDetailDrawer}
+				scrollAreaComponent={ScrollArea.Autosize}
+			>
+				<div className='mt-6 space-y-6'>
+					<Paper
+						p='sm'
+						radius='md'
+						withBorder
+						className='flex items-center gap-4'
+					>
+						<RingProgress
+							size={80}
+							roundCaps
+							thickness={4}
+							label={
+								<Center>
+									<ActionIcon
+										color='teal'
+										variant='light'
+										radius='xl'
+										size='xl'
+									>
+										<IconCheck />
+									</ActionIcon>
+								</Center>
+							}
+							sections={[
+								{
+									value: Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10,
+									color: 'green'
+								}
+							]}
+						/>
+						<div className=''>
+							<span className='text-xs text-gray-400'>Correct answer</span>
+							<h1 className='text-3xl font-medium'>
+								{Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10}%
+							</h1>
+							<p>
+								{totalCorrectAnswer}/{TOTAL_QUESTIONS}
+							</p>
+						</div>
+					</Paper>
+
+					<Accordion variant='separated'>
+						<Accordion.Item value={'interval_practice_settings'}>
+							<Accordion.Control
+								classNames={{ label: 'text-sm' }}
+								icon={
+									<ActionIcon
+										p={4}
+										radius='sm'
+										variant='light'
+									>
+										<IconSettings />
+									</ActionIcon>
+								}
+							>
+								Practice Settings
+							</Accordion.Control>
+							<Accordion.Panel>
+								<List
+									className='space-y-2 text-xs'
+									listStyleType='initial'
+								>
+									<List.Item>{intervalPracticeSettings.numberOfQuestions} questions</List.Item>
+									<List.Item>
+										{capitalize(intervalPracticeSettings.playingMode)} playing mode
+									</List.Item>
+									<List.Item>
+										{capitalize(intervalPracticeSettings.intervalTypeGroup)} intervals
+									</List.Item>
+									{intervalPracticeSettings.fixedRoot.enabled && (
+										<List.Item>
+											{intervalPracticeSettings.fixedRoot.rootNote} fixed root note
+										</List.Item>
+									)}
+								</List>
+							</Accordion.Panel>
+						</Accordion.Item>
+					</Accordion>
+
+					<div className='space-y-3'>
+						{refinePracticeDetail(sessionQuestions).map(
+							(
+								{
+									intervalName,
+									incorrectAnswers,
+									correctAnswers,
+									correctPercentage,
+									numberOfQuestions
+								},
+								index,
+								{ length: listLength }
+							) => {
+								return (
+									<>
+										<div
+											key={intervalName}
+											className='space-y-1'
+										>
+											<div className='flex items-center justify-between gap-4 text-sm'>
+												<p className='font-medium'>{intervalName}</p>
+												<div>
+													<div className='flex items-center gap-2 font-medium'>
+														<p>{correctPercentage}%</p>
+														<span className='h-[1.5px] w-1.5 bg-white'></span>
+														<p>
+															({correctAnswers}/{numberOfQuestions})
+														</p>
+													</div>
+												</div>
+											</div>
+											<div className='flex items-center justify-end gap-6 text-xs'>
+												<div className='flex items-center gap-3'>
+													<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
+														<IconCheck
+															size={12}
+															stroke={1.2}
+														/>
+													</div>
+													<p>{correctAnswers}</p>
+												</div>
+												<div className='flex items-center gap-3'>
+													<IconX
+														size={14}
+														stroke={1.2}
+														className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
+													/>
+													<p>{incorrectAnswers}</p>
+												</div>
+											</div>
+										</div>
+										{index + 1 < listLength && <Divider />}
+									</>
+								);
+							}
+						)}
+					</div>
+				</div>
+			</Drawer>
 
 			<IntervalPracticeSettingsModal
 				opened={settingsModalOpened}

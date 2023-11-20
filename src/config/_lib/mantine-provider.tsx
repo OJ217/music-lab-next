@@ -56,9 +56,7 @@ const MantineProvider: React.FC<IMantineProviderProps> = ({ children }) => {
 				autoClose={8000}
 				zIndex={10000}
 			/>
-			<ModalsProvider>
-				{children}
-			</ModalsProvider>
+			<ModalsProvider>{children}</ModalsProvider>
 		</DefaultMantineProvider>
 	);
 };

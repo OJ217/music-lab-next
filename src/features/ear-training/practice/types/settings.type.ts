@@ -30,6 +30,7 @@ export interface EarTrainingPracticeSettingsBase {
 	tempo: number;
 	questionDuration: number;
 	autoFeedback: boolean;
+	settingsLocked: boolean;
 }
 
 // ********************************
@@ -60,7 +61,8 @@ export const DEFAULT_INTERVAL_PRACTICE_SETTINGS: IntervalPracticeSettings = {
 	playingMode: 'harmonic',
 	tempo: 80,
 	questionDuration: 30,
-	autoFeedback: true
+	autoFeedback: true,
+	settingsLocked: false
 };
 
 export const INTERVAL_TYPE_GROUP_SELECT_OPTIONS: SelectData<IntervalTypeGroup> = [
@@ -105,7 +107,8 @@ export const DEFAULT_CHORD_PRACTICE_SETTINGS: ChordPracticeSettings = {
 	playingMode: 'harmonic',
 	tempo: 80,
 	questionDuration: 30,
-	autoFeedback: true
+	autoFeedback: true,
+	settingsLocked: false
 };
 
 export const CHORD_TYPE_GROUP_SELECT_OPTIONS: SelectData<ChordTypeGroup> = [
@@ -154,7 +157,8 @@ export const DEFAULT_MODE_PRACTICE_SETTINGS: ModePracticeSettings = {
 	playingMode: 'ascending',
 	tempo: 80,
 	questionDuration: 30,
-	autoFeedback: true
+	autoFeedback: true,
+	settingsLocked: false
 };
 
 export const MODE_TYPE_GROUP_SELECT_OPTIONS: SelectData<ModeTypeGroup> = [
