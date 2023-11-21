@@ -4,18 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-	font-family: 'Euclid Circular A', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+html,
+body {
+	@apply scrollbar-none m-0 min-h-screen bg-slate-900 bg-gradient-to-tr from-[#0e0621] to-[#451ba1] bg-fixed p-0 font-euclid-circular-a text-white;
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
-}
-
-html,
-body {
-	@apply m-0 min-h-screen bg-slate-900 bg-gradient-to-tr from-[#0e0621] to-[#451ba1] bg-fixed p-0 text-white;
 }
 
 @font-face {

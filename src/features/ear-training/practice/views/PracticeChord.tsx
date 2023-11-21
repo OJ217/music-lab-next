@@ -3,10 +3,25 @@ import { useTranslation } from 'react-i18next';
 import { Chord, Note } from 'tonal';
 import * as Tone from 'tone';
 
-import { ActionIcon, Modal, Progress } from '@mantine/core';
+import { capitalize } from '@/utils/format.util';
+import {
+	Accordion,
+	ActionIcon,
+	Button,
+	Center,
+	Divider,
+	Drawer,
+	List,
+	Modal,
+	Paper,
+	Progress,
+	RingProgress,
+	ScrollArea,
+	ThemeIcon
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { IconSettings } from '@tabler/icons-react';
+import { IconCheck, IconSettings, IconX } from '@tabler/icons-react';
 
 import { ChordPracticeSettingsModal } from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
@@ -20,6 +35,14 @@ interface ChordQuestion {
 	chordNotes: string[];
 	answered: boolean;
 	correct?: boolean;
+}
+
+interface ChordPracticeDetail {
+	chordName: string;
+	correctAnswers: number;
+	incorrectAnswers: number;
+	correctPercentage: string;
+	numberOfQuestions: number;
 }
 
 const PracticeChord = () => {
@@ -55,8 +78,11 @@ const PracticeChord = () => {
 	const [sessionEnded, setSessionEnded] = useState<boolean>(false);
 
 	// Util States
-	const [resultsModalOpened, setResultsModalOpened] = useState<boolean>(false);
+	const [resultsModalOpened, { open: openResultsModal, close: closeResultsModal }] = useDisclosure(false);
 	const [settingsModalOpened, { open: openSettingsModal, close: closeSettingsModal }] = useDisclosure(false);
+	const [practiceDetailDrawerOpened, { open: openPracticeDetailDrawer, close: closePracticeDetailDrawer }] =
+		useDisclosure(false);
+	const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(false);
 
 	const initializeSampler = useCallback(() => {
 		const sampler = new Tone.Sampler({
@@ -158,19 +184,19 @@ const PracticeChord = () => {
 		if (sessionQuestions.length === TOTAL_QUESTIONS) {
 			stopActiveChord(5);
 			setSessionEnded(true);
-			setResultsModalOpened(true);
+			openResultsModal();
 			return;
 		}
 
 		playRandomChord();
 	};
 
-	const resetSession = () => {
+	const resetSession = (options: { startSession?: boolean } = { startSession: true }) => {
 		setSessionQuestions([]);
 		setTotalAnsweredQuestions(0);
 		setTotalCorrectAnswer(0);
 		setSessionEnded(false);
-		playRandomChord();
+		options?.startSession && playRandomChord();
 	};
 
 	const resolvePracticeResultLevel = (): PracticeResultLevel => {
@@ -187,65 +213,106 @@ const PracticeChord = () => {
 	};
 
 	const PracticeResultMessage: Record<PracticeResultLevel, string> = {
-		low: `Don't worry. Keep practicing. Practice leads to perfection 🙌🫂`,
-		medium: 'Good Job! Keep it Up 🍀',
-		high: 'You are on fire 🚀🔥'
+		low: `Don't worry. Keep moving forward. Practice leads to perfection 🙌🫂`,
+		medium: 'Good job fella! Keep the momentum up 🍀',
+		high: `Are you a maniac? Because you are on fire! 🚀🔥`
+	};
+
+	const refinePracticeDetail = (practiceSessionQuestions: Array<ChordQuestion>): Array<ChordPracticeDetail> => {
+		return Object.entries(
+			practiceSessionQuestions.reduce(
+				(questionGroup: Record<string, Array<ChordQuestion>>, question: ChordQuestion) => {
+					const mode = question.chordName;
+
+					if (!questionGroup[mode]) {
+						questionGroup[mode] = [];
+					}
+
+					questionGroup[mode].push(question);
+
+					return questionGroup;
+				},
+				{}
+			)
+		).map(([mode, questions]) => {
+			const correctAnswers = questions.filter(q => q.correct).length;
+			const incorrectAnswers = questions.length - correctAnswers;
+
+			return {
+				chordName: t(`chord.${mode}`),
+				correctAnswers,
+				incorrectAnswers,
+				correctPercentage: ((correctAnswers / questions.length) * 100).toFixed(1),
+				numberOfQuestions: questions.length
+			};
+		});
 	};
 
 	return (
 		<>
 			<EarTrainingLayout>
-				<div>
-					<div className='space-y-4'>
-						<div className='flex items-center justify-center gap-4'>
-							<h1 className='text-center text-xl font-semibold'>Chord Identification Practice</h1>
-							<ActionIcon
-								p={4}
-								radius='sm'
-								variant='light'
-								onClick={openSettingsModal}
-							>
-								<IconSettings />
-							</ActionIcon>
-						</div>
-						<div className='space-y-2'>
-							<Progress
-								color='#7E3AF2'
-								value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
-								classNames={{
-									root: 'bg-white max-w-[60%] mx-auto',
-									section: 'transition-all duration-300 ease-in-out'
-								}}
-							/>
-							<p className='text-center text-xs text-gray-500'>
-								{sessionQuestions.length}/{TOTAL_QUESTIONS}
-							</p>
-						</div>
+				<div className='space-y-4'>
+					<h1 className='text-center text-xl font-semibold'>Mode Identification</h1>
+					<div className='space-y-2'>
+						<Progress
+							value={sessionEnded ? 100 : (totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
+							classNames={{
+								root: 'max-w-[240px] mx-auto',
+								section: 'transition-all duration-300 ease-in-out'
+							}}
+						/>
+						<p className='text-center text-xs text-gray-300'>
+							{sessionEnded
+								? `${sessionQuestions.length}/${sessionQuestions.length}`
+								: `${sessionQuestions.length}/${TOTAL_QUESTIONS}`}
+						</p>
 					</div>
 
-					<div className='mt-24 flex flex-col items-center'>
-						<button
-							onClick={sessionEnded ? resetSession : replayChord}
-							className='rounded-3xl bg-violet-600 px-6 py-2 transition-all duration-500 ease-in-out hover:bg-violet-600/50 disabled:pointer-events-none disabled:opacity-50'
+					<div className='flex items-center justify-center gap-4'>
+						<ActionIcon
+							p={4}
+							radius='sm'
+							variant='light'
+							onClick={openSettingsModal}
+							disabled={sessionQuestions.length > 0 && !sessionEnded}
 						>
-							{sessionEnded
-								? 'Practice Again'
-								: !sessionQuestions.length
-								? 'Start Practice'
-								: 'Replay Chord'}
-						</button>
-						<div className='mt-12 flex max-w-md flex-wrap items-center justify-center gap-6'>
-							{CHORDS.map(chord => (
-								<button
-									key={chord.value}
-									disabled={sessionEnded || !sessionQuestions.length}
-									onClick={() => answerQuestion(chord.value)}
-									className='rounded-full border border-violet-600 bg-violet-600/25 px-4 py-1 text-sm transition-all duration-500 ease-in-out hover:bg-violet-600/50 hover:opacity-80 disabled:pointer-events-none disabled:opacity-50'
-								>
-									{chord.label}
-								</button>
-							))}
-						</div>
+							<IconSettings />
+						</ActionIcon>
+					</div>
+				</div>
+
+				<div className='mt-16 flex flex-col items-center'>
+					<Button
+						fw={500}
+						radius={'xl'}
+						disabled={buttonsDisabled}
+						onClick={() => {
+							sessionEnded ? resetSession() : replayChord();
+						}}
+						className='disabled:bg-violet-600/25 disabled:opacity-50'
+					>
+						{sessionEnded
+							? 'Practice Again'
+							: !sessionQuestions.length
+							  ? 'Start Practice'
+							  : 'Replay Interval'}
+					</Button>
+
+					<div className='mt-12 flex max-w-md flex-wrap items-center justify-center gap-6'>
+						{CHORDS.map(chord => (
+							<Button
+								py={4}
+								px={16}
+								fw={400}
+								variant='light'
+								key={chord.value}
+								onClick={() => answerQuestion(chord.value)}
+								disabled={sessionEnded || !sessionQuestions.length || buttonsDisabled}
+								className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
+							>
+								{chord.label}
+							</Button>
+						))}
 					</div>
 				</div>
 			</EarTrainingLayout>
@@ -254,36 +321,213 @@ const PracticeChord = () => {
 				centered
 				padding={24}
 				opened={resultsModalOpened}
-				onClose={() => setResultsModalOpened(false)}
+				onClose={closeResultsModal}
 				closeButtonProps={{ size: 'sm' }}
-				title={'Practice Session Result'}
+				title={'Practice Result'}
 				classNames={{
-					header: 'font-medium'
+					header: 'font-semibold text-sm'
 				}}
 			>
 				<div className='mt-4 flex flex-col items-center space-y-8 text-center'>
 					<div className='space-y-2'>
-						<p className='text-lg'>
-							Correct answer percentage -{' '}
-							<span className='font-semibold'>
-								{Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10}%
-							</span>
-						</p>
+						<h3 className='text-3xl font-semibold text-violet-500'>
+							{Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10}%
+						</h3>
 						<p className='mx-auto max-w-[240px] text-sm font-medium'>
-							{PracticeResultMessage[resolvePracticeResultLevel()]}
+							You had {totalCorrectAnswer} correct answers and {TOTAL_QUESTIONS - totalCorrectAnswer}{' '}
+							wrong answers. Keep going 🍀🚀.
 						</p>
 					</div>
-					<button
-						onClick={() => {
-							setResultsModalOpened(false);
-							resetSession();
-						}}
-						className='rounded-3xl bg-violet-600 px-6 py-2 transition-all duration-500 ease-in-out hover:bg-violet-600/50 disabled:pointer-events-none disabled:opacity-50'
-					>
-						Practice Again
-					</button>
+
+					<div className='w-full max-w-[200px] space-y-2'>
+						<Button
+							p={0}
+							h={'auto'}
+							w={'auto'}
+							color='violet.5'
+							size='compact-sm'
+							variant='transparent'
+							onClick={openPracticeDetailDrawer}
+						>
+							See practice details
+						</Button>
+
+						<div className='flex w-full items-center gap-4'>
+							<Button
+								fullWidth
+								variant='light'
+								onClick={() => {
+									closeResultsModal();
+									resetSession();
+								}}
+							>
+								Retry
+							</Button>
+							<Button
+								fullWidth
+								onClick={() => {
+									closeResultsModal();
+									resetSession({ startSession: false });
+									openSettingsModal();
+								}}
+							>
+								Done
+							</Button>
+						</div>
+					</div>
 				</div>
 			</Modal>
+
+			<Drawer
+				position='left'
+				title='Practice Overview'
+				opened={practiceDetailDrawerOpened}
+				onClose={closePracticeDetailDrawer}
+				scrollAreaComponent={ScrollArea.Autosize}
+				closeButtonProps={{ size: 'sm' }}
+				classNames={{ title: 'font-semibold text-sm' }}
+			>
+				<div className='mt-6 space-y-6'>
+					<Paper
+						p='sm'
+						radius='md'
+						withBorder
+						className='flex items-stretch gap-4'
+					>
+						<div className='flex items-center gap-4'>
+							<RingProgress
+								size={80}
+								roundCaps
+								thickness={4}
+								label={
+									<Center>
+										<ActionIcon
+											color='teal'
+											variant='light'
+											radius='xl'
+											size='xl'
+										>
+											<IconCheck />
+										</ActionIcon>
+									</Center>
+								}
+								sections={[
+									{
+										value: Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10,
+										color: 'green'
+									}
+								]}
+							/>
+							<div>
+								<h1 className='text-3xl font-medium'>
+									{Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10}%
+								</h1>
+								<p className='text-gray-400'>
+									{totalCorrectAnswer}/{TOTAL_QUESTIONS}
+								</p>
+							</div>
+						</div>
+						<Divider orientation='vertical' />
+						<div className='flex flex-col justify-center space-y-1'>
+							<p className='text-xs text-gray-400'>Message:</p>
+							<p className='text-sm'>{PracticeResultMessage[resolvePracticeResultLevel()]}</p>
+						</div>
+					</Paper>
+
+					<Accordion variant='separated'>
+						<Accordion.Item value={'interval_practice_settings'}>
+							<Accordion.Control
+								classNames={{ label: 'text-sm' }}
+								icon={
+									<ThemeIcon
+										p={4}
+										radius='sm'
+										variant='light'
+									>
+										<IconSettings />
+									</ThemeIcon>
+								}
+							>
+								Practice Settings
+							</Accordion.Control>
+							<Accordion.Panel>
+								<List
+									className='space-y-2 text-xs'
+									listStyleType='initial'
+								>
+									<List.Item>{chordPracticeSettings.numberOfQuestions} questions</List.Item>
+									<List.Item>{capitalize(chordPracticeSettings.playingMode)} playing mode</List.Item>
+									<List.Item>{capitalize(chordPracticeSettings.chordTypeGroup)} intervals</List.Item>
+									{chordPracticeSettings.fixedRoot.enabled && (
+										<List.Item>
+											{chordPracticeSettings.fixedRoot.rootNote} fixed root note
+										</List.Item>
+									)}
+								</List>
+							</Accordion.Panel>
+						</Accordion.Item>
+					</Accordion>
+
+					<div className='space-y-3'>
+						{sessionEnded &&
+							refinePracticeDetail(sessionQuestions).map(
+								(
+									{
+										chordName,
+										incorrectAnswers,
+										correctAnswers,
+										correctPercentage,
+										numberOfQuestions
+									},
+									index,
+									{ length: listLength }
+								) => {
+									return (
+										<>
+											<div
+												key={chordName}
+												className='space-y-1'
+											>
+												<div className='flex items-center justify-between gap-4 text-sm'>
+													<p className='font-medium'>{chordName}</p>
+													<div>
+														<div className='flex items-center gap-2 font-medium'>
+															<p>{correctPercentage}%</p>
+															<span className='h-[1.5px] w-1.5 bg-white'></span>
+															<p>
+																({correctAnswers}/{numberOfQuestions})
+															</p>
+														</div>
+													</div>
+												</div>
+												<div className='flex items-center justify-end gap-6 text-xs'>
+													<div className='flex items-center gap-3'>
+														<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
+															<IconCheck
+																size={12}
+																stroke={1.2}
+															/>
+														</div>
+														<p>{correctAnswers}</p>
+													</div>
+													<div className='flex items-center gap-3'>
+														<IconX
+															size={14}
+															stroke={1.2}
+															className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
+														/>
+														<p>{incorrectAnswers}</p>
+													</div>
+												</div>
+											</div>
+											{index + 1 < listLength && <Divider key={`divider-${index + 1}`} />}
+										</>
+									);
+								}
+							)}
+					</div>
+				</div>
+			</Drawer>
 
 			<ChordPracticeSettingsModal
 				opened={settingsModalOpened}

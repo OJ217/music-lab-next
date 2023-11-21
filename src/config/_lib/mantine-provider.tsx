@@ -60,6 +60,11 @@ const theme = createTheme({
 			defaultProps: {
 				color: 'violet.6'
 			}
+		},
+		ScrollArea: {
+			defaultProps: {
+				scrollbarSize: 4
+			}
 		}
 	}
 });

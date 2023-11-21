@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { notify } from '@/utils/notification.util';
-import { Box, Button, Collapse, Modal, MultiSelect, NumberInput, Select, Switch } from '@mantine/core';
+import { Box, Button, Collapse, Modal, MultiSelect, NumberInput, ScrollArea, Select, Switch } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 
 import {
@@ -14,6 +14,7 @@ import {
 	MODE_TYPE_GROUP_SELECT_OPTIONS,
 	ModePracticeSettings,
 	NON_HARMONIC_PLAYING_MODE_SELECT_OPTIONS,
+	NOTE_DURATION_SELECT_OPTIONS,
 	PLAYING_MODE_SELECT_OPTIONS
 } from '../../types/settings.type';
 
@@ -32,20 +33,20 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 	close,
 	practiceSettingsForm
 }) => {
-	const [advancedSettingsOpened, setAdvancedSettingsOpened] = useState<boolean>(false);
+	const [advancedSettingsOpened, setAdvancedSettingsOpened] = useState<boolean>(true);
 
 	const handleSettingsFormSubmit = (settings: IntervalPracticeSettings) => {
 		console.log({ intervalPracticeSettings: settings });
 
+		settings.playingMode !== 'harmonic' && practiceSettingsForm.setFieldValue('noteDuration', 'quarter');
+
 		notify({
 			type: 'success',
-			title: 'Practice Settings',
+			title: 'Interval identification settings',
 			message: `${settings.numberOfQuestions} questions will be played in ${settings.playingMode} mode${
 				settings.fixedRoot.enabled ? ' with a fixed ' + settings.fixedRoot.rootNote + ' root note' : ''
 			}.`
 		});
-
-		practiceSettingsForm.setFieldValue('settingsLocked', true);
 
 		close();
 	};
@@ -55,11 +56,18 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 			centered
 			opened={opened}
 			onClose={() => {
+				if (practiceSettingsForm.validate().hasErrors) {
+					setAdvancedSettingsOpened(true);
+					return;
+				}
 				close();
 				setAdvancedSettingsOpened(false);
 			}}
-			closeButtonProps={{ size: 'sm' }}
-			title={'Practice Settings'}
+			closeOnEscape={false}
+			closeOnClickOutside={false}
+			withCloseButton={false}
+			title={'Practice settings'}
+			scrollAreaComponent={ScrollArea.Autosize}
 		>
 			<form
 				onSubmit={practiceSettingsForm.onSubmit(handleSettingsFormSubmit)}
@@ -68,10 +76,9 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 			>
 				<section className='space-y-6'>
 					<NumberInput
-						min={1}
+						min={5}
 						max={100}
 						allowNegative={false}
-						clampBehavior='strict'
 						description='Number of questions'
 						placeholder='Between 5 - 100'
 						{...practiceSettingsForm.getInputProps('numberOfQuestions')}
@@ -122,7 +129,7 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 					<div>
 						<Collapse in={advancedSettingsOpened}>
 							<div className='space-y-4'>
-								<p>Advanced Settings</p>
+								<p className='text-sm'>Advanced Settings</p>
 								<div className='space-y-6'>
 									<Select
 										allowDeselect={false}
@@ -139,21 +146,21 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 									<div className='grid grid-cols-2 gap-4'>
 										<NumberInput
 											min={60}
-											max={160}
+											max={180}
 											allowNegative={false}
 											description='Tempo'
-											placeholder='BPM between 60 - 160'
+											placeholder='BPM between 60 - 180'
 											{...practiceSettingsForm.getInputProps('tempo')}
 											classNames={{
 												input: 'focus:bg-violet-600/25'
 											}}
 										/>
 										<NumberInput
-											min={5}
+											min={1}
 											max={30}
 											allowNegative={false}
 											description='Question duration'
-											placeholder='Between 5 - 30'
+											placeholder='Between 1 - 30'
 											{...practiceSettingsForm.getInputProps('questionDuration')}
 											classNames={{
 												input: 'focus:bg-violet-600/25'
@@ -183,12 +190,6 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 							size='compact-xs'
 							variant='transparent'
 							onClick={() => {
-								!advancedSettingsOpened &&
-									notify({
-										type: 'warning',
-										title: 'Feature Unimplemented',
-										message: `Currently, advanced settings don't have any effect. (But you can preview the UI)`
-									});
 								setAdvancedSettingsOpened(!advancedSettingsOpened);
 							}}
 						>
@@ -205,7 +206,7 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 					>
 						Reset
 					</Button>
-					<Button type='submit'>Done</Button>
+					<Button type='submit'>Save</Button>
 				</div>
 			</form>
 		</Modal>
@@ -221,20 +222,18 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 	close,
 	practiceSettingsForm
 }) => {
-	const [advancedSettingsOpened, setAdvancedSettingsOpened] = useState<boolean>(false);
+	const [advancedSettingsOpened, setAdvancedSettingsOpened] = useState<boolean>(true);
 
 	const handleSettingsFormSubmit = (settings: ChordPracticeSettings) => {
 		console.log({ intervalPracticeSettings: settings });
 
 		notify({
 			type: 'success',
-			title: 'Practice Settings',
+			title: 'Chord identification settings',
 			message: `${settings.numberOfQuestions} questions will be played in ${settings.playingMode} mode${
 				settings.fixedRoot.enabled ? ' with a fixed ' + settings.fixedRoot.rootNote + ' root note' : ''
 			}.`
 		});
-
-		practiceSettingsForm.setFieldValue('settingsLocked', true);
 
 		close();
 	};
@@ -244,11 +243,18 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 			centered
 			opened={opened}
 			onClose={() => {
+				if (practiceSettingsForm.validate().hasErrors) {
+					setAdvancedSettingsOpened(true);
+					return;
+				}
 				close();
 				setAdvancedSettingsOpened(false);
 			}}
-			closeButtonProps={{ size: 'sm' }}
-			title={'Practice Settings'}
+			closeOnEscape={false}
+			closeOnClickOutside={false}
+			withCloseButton={false}
+			title={'Practice settings'}
+			scrollAreaComponent={ScrollArea.Autosize}
 		>
 			<form
 				onSubmit={practiceSettingsForm.onSubmit(handleSettingsFormSubmit)}
@@ -318,7 +324,7 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 					<div>
 						<Collapse in={advancedSettingsOpened}>
 							<div className='space-y-4'>
-								<p>Advanced Settings</p>
+								<p className='text-sm'>Advanced Settings</p>
 								<div className='space-y-6'>
 									<Select
 										allowDeselect={false}
@@ -379,12 +385,6 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 							size='compact-xs'
 							variant='transparent'
 							onClick={() => {
-								!advancedSettingsOpened &&
-									notify({
-										type: 'warning',
-										title: 'Feature Unimplemented',
-										message: `Currently, advanced settings don't have any effect. (But you can preview the UI)`
-									});
 								setAdvancedSettingsOpened(!advancedSettingsOpened);
 							}}
 						>
@@ -401,7 +401,7 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 					>
 						Reset
 					</Button>
-					<Button type='submit'>Done</Button>
+					<Button type='submit'>Save</Button>
 				</div>
 			</form>
 		</Modal>
@@ -417,20 +417,18 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 	close,
 	practiceSettingsForm
 }) => {
-	const [advancedSettingsOpened, setAdvancedSettingsOpened] = useState<boolean>(false);
+	const [advancedSettingsOpened, setAdvancedSettingsOpened] = useState<boolean>(true);
 
 	const handleSettingsFormSubmit = (settings: ModePracticeSettings) => {
 		console.log({ intervalPracticeSettings: settings });
 
 		notify({
 			type: 'success',
-			title: 'Practice Settings',
+			title: 'Mode identification settings',
 			message: `${settings.numberOfQuestions} questions will be played in ${settings.playingMode} mode${
 				settings.fixedRoot.enabled ? ' with a fixed ' + settings.fixedRoot.rootNote + ' root note' : ''
 			}.`
 		});
-
-		practiceSettingsForm.setFieldValue('settingsLocked', true);
 
 		close();
 	};
@@ -440,11 +438,18 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 			centered
 			opened={opened}
 			onClose={() => {
+				if (practiceSettingsForm.validate().hasErrors) {
+					setAdvancedSettingsOpened(true);
+					return;
+				}
 				close();
 				setAdvancedSettingsOpened(false);
 			}}
-			closeButtonProps={{ size: 'sm' }}
-			title={'Practice Settings'}
+			closeOnEscape={false}
+			closeOnClickOutside={false}
+			withCloseButton={false}
+			title={'Practice settings'}
+			scrollAreaComponent={ScrollArea.Autosize}
 		>
 			<form
 				onSubmit={practiceSettingsForm.onSubmit(handleSettingsFormSubmit)}
@@ -453,10 +458,9 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 			>
 				<section className='space-y-6'>
 					<NumberInput
-						min={1}
+						min={5}
 						max={100}
 						allowNegative={false}
-						clampBehavior='strict'
 						description='Number of questions'
 						placeholder='Between 5 - 100'
 						{...practiceSettingsForm.getInputProps('numberOfQuestions')}
@@ -504,7 +508,7 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 					<div>
 						<Collapse in={advancedSettingsOpened}>
 							<div className='space-y-4'>
-								<p>Advanced Settings</p>
+								<p className='text-sm'>Advanced Settings</p>
 								<div className='space-y-6'>
 									<Select
 										allowDeselect={false}
@@ -521,21 +525,33 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 									<div className='grid grid-cols-2 gap-4'>
 										<NumberInput
 											min={60}
-											max={160}
+											max={180}
 											allowNegative={false}
 											description='Tempo'
-											placeholder='BPM between 60 - 160'
+											placeholder='BPM between 60 - 180'
 											{...practiceSettingsForm.getInputProps('tempo')}
 											classNames={{
 												input: 'focus:bg-violet-600/25'
 											}}
 										/>
+										<Select
+											allowDeselect={false}
+											maxDropdownHeight={120}
+											data={NOTE_DURATION_SELECT_OPTIONS}
+											description='Note'
+											placeholder='Select note'
+											{...practiceSettingsForm.getInputProps('noteDuration')}
+											classNames={{
+												input: 'focus-within:bg-violet-600/25',
+												section: 'hidden'
+											}}
+										/>
 										<NumberInput
-											min={5}
+											min={1}
 											max={30}
 											allowNegative={false}
 											description='Question duration'
-											placeholder='Between 5 - 30'
+											placeholder='Between 1 - 30'
 											{...practiceSettingsForm.getInputProps('questionDuration')}
 											classNames={{
 												input: 'focus:bg-violet-600/25'
@@ -565,12 +581,6 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 							size='compact-xs'
 							variant='transparent'
 							onClick={() => {
-								!advancedSettingsOpened &&
-									notify({
-										type: 'warning',
-										title: 'Feature Unimplemented',
-										message: `Currently, advanced settings don't have any effect. (But you can preview the UI)`
-									});
 								setAdvancedSettingsOpened(!advancedSettingsOpened);
 							}}
 						>
@@ -587,7 +597,7 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 					>
 						Reset
 					</Button>
-					<Button type='submit'>Done</Button>
+					<Button type='submit'>Save</Button>
 				</div>
 			</form>
 		</Modal>

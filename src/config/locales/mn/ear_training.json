@@ -33,6 +33,10 @@
 		"mixolydian": "Миксолидийн",
 		"dorian": "Дорийн",
 		"phrygian": "Фригийн",
-		"locrian": "Локрын"
+		"locrian": "Локрын",
+		"harmonic major": "Гармончилсон мажор",
+		"melodic major": "Аялгуучилсан мажор",
+		"harmonic minor": "Гармончилсон минор",
+		"melodic minor": "Аялгуучилсан минор"
 	}
 }

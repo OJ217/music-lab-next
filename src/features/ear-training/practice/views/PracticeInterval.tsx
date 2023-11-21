@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Note } from 'tonal';
+import { interval, Note } from 'tonal';
 import * as Tone from 'tone';
 
 import { capitalize } from '@/utils/format.util';
@@ -16,27 +16,30 @@ import {
 	Paper,
 	Progress,
 	RingProgress,
-	ScrollArea
+	ScrollArea,
+	ThemeIcon
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { useForm, zodResolver } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { IconCheck, IconDoorExit, IconSettings, IconX } from '@tabler/icons-react';
+import { IconCheck, IconSettings, IconX } from '@tabler/icons-react';
 
 import { IntervalPracticeSettingsModal } from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
 import {
 	DEFAULT_INTERVAL_PRACTICE_SETTINGS,
 	INTERVAL_TYPE_GROUPS,
-	IntervalPracticeSettings
+	IntervalPracticeSettings,
+	intervalPracticeSettingsSchema,
+	NOTE_DURATION
 } from '../types/settings.type';
 
 // Types and Interfaces
-type IntervalTuple = [string, string];
+type IntervalNotes = Array<string | string[]>;
 type PracticeResultLevel = 'high' | 'medium' | 'low';
 
 interface IntervalQuestion {
 	intervalName: string;
-	intervalNotes: IntervalTuple;
+	intervalNotes: IntervalNotes;
 	answered: boolean;
 	correct?: boolean;
 }
@@ -58,7 +61,8 @@ const PracticeInterval = () => {
 
 	// Practice Settings
 	const intervalPracticeSettingsForm = useForm<IntervalPracticeSettings>({
-		initialValues: DEFAULT_INTERVAL_PRACTICE_SETTINGS
+		initialValues: DEFAULT_INTERVAL_PRACTICE_SETTINGS,
+		validate: zodResolver(intervalPracticeSettingsSchema)
 	});
 
 	const { values: intervalPracticeSettings } = intervalPracticeSettingsForm;
@@ -85,6 +89,7 @@ const PracticeInterval = () => {
 	const [settingsModalOpened, { open: openSettingsModal, close: closeSettingsModal }] = useDisclosure(false);
 	const [practiceDetailDrawerOpened, { open: openPracticeDetailDrawer, close: closePracticeDetailDrawer }] =
 		useDisclosure(false);
+	const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(false);
 
 	const initializeSampler = useCallback(() => {
 		const sampler = new Tone.Sampler({
@@ -94,7 +99,7 @@ const PracticeInterval = () => {
 				'F#4': 'Fs4.mp3',
 				A4: 'A4.mp3'
 			},
-			release: 2,
+			release: 4,
 			baseUrl: 'https://tonejs.github.io/audio/salamander/',
 			onload: () => {
 				samplerInstance.current = sampler;
@@ -122,19 +127,51 @@ const PracticeInterval = () => {
 		}
 	};
 
+	const playInterval = (intervalNotes: IntervalNotes) => {
+		setButtonsDisabled(true);
+
+		const noteDuration =
+			60 / (intervalPracticeSettings.tempo * NOTE_DURATION[intervalPracticeSettings.noteDuration]);
+
+		console.log(intervalPracticeSettings.noteDuration);
+
+		intervalNotes.forEach((note, index) => {
+			console.log({ note });
+			const time = Tone.now() + index * noteDuration;
+			samplerInstance?.current?.triggerAttackRelease(note, noteDuration, time);
+		});
+
+		setTimeout(() => setButtonsDisabled(false), intervalNotes.length * noteDuration * 1000);
+	};
+
 	const playRandomInterval = () => {
 		const rootNote = ROOT_NOTE ?? Note.fromMidi(Math.floor(Math.random() * 25) + 48);
 		const intervalName = INTERVALS[Math.floor(Math.random() * INTERVALS.length)].value;
 		const upperNote = Note.transpose(rootNote, intervalName);
-		const intervalNotes: IntervalTuple = [rootNote, upperNote];
+		const intervalNotesBase = [rootNote, upperNote];
 
-		console.log({ intervalName, intervalNotes });
+		let intervalNotes: IntervalNotes;
 
 		stopActiveInterval();
 
-		if (samplerInstance.current) {
-			samplerInstance.current.triggerAttack(intervalNotes);
+		switch (intervalPracticeSettings.playingMode) {
+			case 'harmonic':
+				intervalNotes = [intervalNotesBase];
+				break;
+			case 'ascending':
+				intervalNotes = intervalNotesBase;
+				break;
+			case 'descending':
+				intervalNotes = intervalNotesBase.reverse();
+				break;
+			default:
+				intervalNotes = [intervalNotesBase];
+				break;
 		}
+
+		playInterval(intervalNotes);
+
+		console.log({ intervalName, intervalNotes });
 
 		setSessionQuestions(prevQuestions => [...prevQuestions, { intervalName, intervalNotes, answered: false }]);
 	};
@@ -151,9 +188,7 @@ const PracticeInterval = () => {
 		} else {
 			console.log('Previous interval');
 
-			if (samplerInstance.current) {
-				samplerInstance.current.triggerAttack(previousQuestion?.intervalNotes);
-			}
+			playInterval(previousQuestion.intervalNotes);
 		}
 	};
 
@@ -206,9 +241,9 @@ const PracticeInterval = () => {
 	};
 
 	const PracticeResultMessage: Record<PracticeResultLevel, string> = {
-		low: `Don't worry. Keep practicing. Practice leads to perfection 🙌🫂`,
-		medium: 'Good Job! Keep it Up 🍀',
-		high: 'You are on fire 🚀🔥'
+		low: `Don't worry. Keep moving forward. Practice leads to perfection 🙌🫂`,
+		medium: 'Good job fella! Keep the momentum up 🍀',
+		high: `Are you a maniac? Because you are on fire! 🚀🔥`
 	};
 
 	const refinePracticeDetail = (practiceSessionQuestions: Array<IntervalQuestion>): Array<IntervalPracticeDetail> => {
@@ -231,8 +266,6 @@ const PracticeInterval = () => {
 			const correctAnswers = questions.filter(q => q.correct).length;
 			const incorrectAnswers = questions.length - correctAnswers;
 
-			console.log({ interval, label: t(`interval.${interval}`) });
-
 			return {
 				intervalName: t(`interval.${interval}`),
 				correctAnswers,
@@ -251,14 +284,16 @@ const PracticeInterval = () => {
 						<h1 className='text-center text-xl font-semibold'>Interval Identification</h1>
 						<div className='space-y-2'>
 							<Progress
-								value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
+								value={sessionEnded ? 100 : (totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
 								classNames={{
 									root: 'max-w-[240px] mx-auto',
 									section: 'transition-all duration-300 ease-in-out'
 								}}
 							/>
 							<p className='text-center text-xs text-gray-300'>
-								{sessionQuestions.length}/{TOTAL_QUESTIONS}
+								{sessionEnded
+									? `${sessionQuestions.length}/${sessionQuestions.length}`
+									: `${sessionQuestions.length}/${TOTAL_QUESTIONS}`}
 							</p>
 						</div>
 
@@ -268,24 +303,18 @@ const PracticeInterval = () => {
 								radius='sm'
 								variant='light'
 								onClick={openSettingsModal}
-								disabled={intervalPracticeSettings.settingsLocked}
+								disabled={sessionQuestions.length > 0 && !sessionEnded}
 							>
 								<IconSettings />
-							</ActionIcon>
-							<ActionIcon
-								p={4}
-								radius='sm'
-								variant='light'
-							>
-								<IconDoorExit />
 							</ActionIcon>
 						</div>
 					</div>
 
-					<div className='mt-20 flex flex-col items-center'>
+					<div className='mt-16 flex flex-col items-center'>
 						<Button
 							fw={500}
 							radius={'xl'}
+							disabled={buttonsDisabled}
 							onClick={() => {
 								sessionEnded ? resetSession() : replayInterval();
 							}}
@@ -306,7 +335,7 @@ const PracticeInterval = () => {
 									variant='light'
 									key={interval.value}
 									onClick={() => answerQuestion(interval.value)}
-									disabled={sessionEnded || !sessionQuestions.length}
+									disabled={sessionEnded || !sessionQuestions.length || buttonsDisabled}
 									className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
 								>
 									{interval.label}
@@ -325,7 +354,7 @@ const PracticeInterval = () => {
 				closeButtonProps={{ size: 'sm' }}
 				title={'Practice Result'}
 				classNames={{
-					header: 'font-medium'
+					header: 'font-semibold text-sm'
 				}}
 			>
 				<div className='mt-4 flex flex-col items-center space-y-8 text-center'>
@@ -345,7 +374,7 @@ const PracticeInterval = () => {
 							h={'auto'}
 							w={'auto'}
 							color='violet.5'
-							size='compact-xs'
+							size='compact-sm'
 							variant='transparent'
 							onClick={openPracticeDetailDrawer}
 						>
@@ -368,7 +397,6 @@ const PracticeInterval = () => {
 								onClick={() => {
 									closeResultsModal();
 									resetSession({ startSession: false });
-									intervalPracticeSettingsForm.setFieldValue('settingsLocked', false);
 									openSettingsModal();
 								}}
 							>
@@ -381,48 +409,58 @@ const PracticeInterval = () => {
 
 			<Drawer
 				position='left'
-				title='Practice Detail'
+				title='Practice Overview'
 				opened={practiceDetailDrawerOpened}
 				onClose={closePracticeDetailDrawer}
 				scrollAreaComponent={ScrollArea.Autosize}
+				closeButtonProps={{ size: 'sm' }}
+				classNames={{ title: 'font-semibold text-sm' }}
 			>
 				<div className='mt-6 space-y-6'>
 					<Paper
 						p='sm'
 						radius='md'
 						withBorder
-						className='flex items-center gap-4'
+						className='flex items-stretch gap-4'
 					>
-						<RingProgress
-							size={80}
-							roundCaps
-							thickness={4}
-							label={
-								<Center>
-									<ActionIcon
-										color='teal'
-										variant='light'
-										radius='xl'
-										size='xl'
-									>
-										<IconCheck />
-									</ActionIcon>
-								</Center>
-							}
-							sections={[
-								{
-									value: Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10,
-									color: 'green'
+						<div className='flex items-center gap-4'>
+							<RingProgress
+								size={80}
+								roundCaps
+								thickness={4}
+								label={
+									<Center>
+										<ActionIcon
+											color='teal'
+											variant='light'
+											radius='xl'
+											size='xl'
+										>
+											<IconCheck />
+										</ActionIcon>
+									</Center>
 								}
-							]}
-						/>
-						<div className=''>
-							<span className='text-xs text-gray-400'>Correct answer</span>
-							<h1 className='text-3xl font-medium'>
-								{Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10}%
-							</h1>
-							<p>
-								{totalCorrectAnswer}/{TOTAL_QUESTIONS}
+								sections={[
+									{
+										value: Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10,
+										color: 'green'
+									}
+								]}
+							/>
+							<div>
+								<h1 className='text-3xl font-medium'>
+									{Math.round((totalCorrectAnswer / TOTAL_QUESTIONS) * 1000) / 10}%
+								</h1>
+								<p className='text-gray-400'>
+									{totalCorrectAnswer}/{TOTAL_QUESTIONS}
+								</p>
+							</div>
+						</div>
+						<Divider orientation='vertical' />
+						<div className='flex flex-col space-y-2'>
+							<p className='text-xs text-gray-400'>Message:</p>
+							<p className='flex flex-grow items-center justify-center text-sm'>
+								{PracticeResultMessage[resolvePracticeResultLevel()]}
 							</p>
 						</div>
 					</Paper>
@@ -432,13 +470,13 @@ const PracticeInterval = () => {
 							<Accordion.Control
 								classNames={{ label: 'text-sm' }}
 								icon={
-									<ActionIcon
+									<ThemeIcon
 										p={4}
 										radius='sm'
 										variant='light'
 									>
 										<IconSettings />
-									</ActionIcon>
+									</ThemeIcon>
 								}
 							>
 								Practice Settings
@@ -466,61 +504,62 @@ const PracticeInterval = () => {
 					</Accordion>
 
 					<div className='space-y-3'>
-						{refinePracticeDetail(sessionQuestions).map(
-							(
-								{
-									intervalName,
-									incorrectAnswers,
-									correctAnswers,
-									correctPercentage,
-									numberOfQuestions
-								},
-								index,
-								{ length: listLength }
-							) => {
-								return (
-									<>
-										<div
-											key={intervalName}
-											className='space-y-1'
-										>
-											<div className='flex items-center justify-between gap-4 text-sm'>
-												<p className='font-medium'>{intervalName}</p>
-												<div>
-													<div className='flex items-center gap-2 font-medium'>
-														<p>{correctPercentage}%</p>
-														<span className='h-[1.5px] w-1.5 bg-white'></span>
-														<p>
-															({correctAnswers}/{numberOfQuestions})
-														</p>
+						{sessionEnded &&
+							refinePracticeDetail(sessionQuestions).map(
+								(
+									{
+										intervalName,
+										incorrectAnswers,
+										correctAnswers,
+										correctPercentage,
+										numberOfQuestions
+									},
+									index,
+									{ length: listLength }
+								) => {
+									return (
+										<>
+											<div
+												key={intervalName}
+												className='space-y-1'
+											>
+												<div className='flex items-center justify-between gap-4 text-sm'>
+													<p className='font-medium'>{intervalName}</p>
+													<div>
+														<div className='flex items-center gap-2 font-medium'>
+															<p>{correctPercentage}%</p>
+															<span className='h-[1.5px] w-1.5 bg-white'></span>
+															<p>
+																({correctAnswers}/{numberOfQuestions})
+															</p>
+														</div>
 													</div>
 												</div>
-											</div>
-											<div className='flex items-center justify-end gap-6 text-xs'>
-												<div className='flex items-center gap-3'>
-													<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
-														<IconCheck
-															size={12}
+												<div className='flex items-center justify-end gap-6 text-xs'>
+													<div className='flex items-center gap-3'>
+														<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
+															<IconCheck
+																size={12}
+																stroke={1.2}
+															/>
+														</div>
+														<p>{correctAnswers}</p>
+													</div>
+													<div className='flex items-center gap-3'>
+														<IconX
+															size={14}
 															stroke={1.2}
+															className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
 														/>
+														<p>{incorrectAnswers}</p>
 													</div>
-													<p>{correctAnswers}</p>
-												</div>
-												<div className='flex items-center gap-3'>
-													<IconX
-														size={14}
-														stroke={1.2}
-														className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
-													/>
-													<p>{incorrectAnswers}</p>
 												</div>
 											</div>
-										</div>
-										{index + 1 < listLength && <Divider />}
-									</>
-								);
-							}
-						)}
+											{index + 1 < listLength && <Divider key={`divider-${index + 1}`} />}
+										</>
+									);
+								}
+							)}
 					</div>
 				</div>
 			</Drawer>

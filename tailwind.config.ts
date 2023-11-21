@@ -5,12 +5,20 @@ const config: Config = {
 	theme: {
 		extend: {
 			fontFamily: {
-				'euclid-circular-a': ['Euclid Circular A', 'sans-serif'],
+				'euclid-circular-a': [
+					'Euclid Circular A',
+					'Inter',
+					'system-ui',
+					'Avenir',
+					'Helvetica',
+					'Arial',
+					'sans-serif'
+				],
 				inherit: 'inherit'
 			}
 		}
 	},
 	darkMode: 'class',
-	plugins: []
+	plugins: [require('tailwind-scrollbar')]
 };
 export default config;

@@ -33,6 +33,10 @@
 		"mixolydian": "Mixolydian",
 		"dorian": "Dorian",
 		"phrygian": "Phrygian",
-		"locrian": "Locrian"
+		"locrian": "Locrian",
+		"harmonic major": "Harmonic major",
+		"melodic major": "Melodic major",
+		"harmonic minor": "Harmonic minor",
+		"melodic minor": "Melodic minor"
 	}
 }
