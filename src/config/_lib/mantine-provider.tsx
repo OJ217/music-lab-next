@@ -7,6 +7,20 @@ interface IMantineProviderProps {
 }
 
 const theme = createTheme({
+	colors: {
+		violet: [
+			'#F5F3FF',
+			'#EDE9FE',
+			'#DDD6FE',
+			'#C3B5FD',
+			'#A78BFA',
+			'#8A5CF6',
+			'#7C3AED',
+			'#6C28D9',
+			'#5B21B6',
+			'#4D1D95'
+		]
+	},
 	fontFamily: 'Euclid Circular A',
 	primaryColor: 'violet',
 	components: {
@@ -14,7 +28,8 @@ const theme = createTheme({
 			defaultProps: {
 				classNames: {
 					root: 'transition-all ease-in-out duration-500'
-				}
+				},
+				color: 'violet.6'
 			}
 		},
 		TextInput: {
@@ -39,6 +54,11 @@ const theme = createTheme({
 		Menu: {
 			defaultProps: {
 				transitionProps: { transition: 'pop', duration: 200, timingFunction: 'ease' }
+			}
+		},
+		Progress: {
+			defaultProps: {
+				color: 'violet.6'
 			}
 		}
 	}

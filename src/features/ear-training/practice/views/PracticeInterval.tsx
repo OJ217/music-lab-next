@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Note } from 'tonal';
 import * as Tone from 'tone';
 
-import { notify } from '@/utils/notification.util';
+import { capitalize } from '@/utils/format.util';
 import {
 	Accordion,
 	ActionIcon,
@@ -20,7 +20,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { IconCheck, IconSettings, IconX } from '@tabler/icons-react';
+import { IconCheck, IconDoorExit, IconSettings, IconX } from '@tabler/icons-react';
 
 import { IntervalPracticeSettingsModal } from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
@@ -104,11 +104,10 @@ const PracticeInterval = () => {
 
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
-			openSettingsModal();
+			sessionQuestions.length === 0 && openSettingsModal();
 			initializeSampler();
 
 			return () => {
-				notify({ type: 'warning', title: 'Sampler disconnected' });
 				samplerInstance.current?.disconnect();
 				samplerInstance.current = undefined;
 			};
@@ -244,17 +243,26 @@ const PracticeInterval = () => {
 		});
 	};
 
-	const capitalize = (str: string) => {
-		return str.charAt(0).toUpperCase() + str.slice(1);
-	};
-
 	return (
 		<>
 			<EarTrainingLayout>
 				<div>
 					<div className='space-y-4'>
+						<h1 className='text-center text-xl font-semibold'>Interval Identification</h1>
+						<div className='space-y-2'>
+							<Progress
+								value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
+								classNames={{
+									root: 'max-w-[240px] mx-auto',
+									section: 'transition-all duration-300 ease-in-out'
+								}}
+							/>
+							<p className='text-center text-xs text-gray-300'>
+								{sessionQuestions.length}/{TOTAL_QUESTIONS}
+							</p>
+						</div>
+
 						<div className='flex items-center justify-center gap-4'>
-							<h1 className='text-center text-xl font-semibold'>Interval Identification Practice</h1>
 							<ActionIcon
 								p={4}
 								radius='sm'
@@ -264,45 +272,45 @@ const PracticeInterval = () => {
 							>
 								<IconSettings />
 							</ActionIcon>
-						</div>
-						<div className='space-y-2'>
-							<Progress
-								color='#7E3AF2'
-								value={(totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
-								classNames={{
-									root: 'bg-white max-w-[60%] mx-auto',
-									section: 'transition-all duration-300 ease-in-out'
-								}}
-							/>
-							<p className='text-center text-xs text-gray-500'>
-								{sessionQuestions.length}/{TOTAL_QUESTIONS}
-							</p>
+							<ActionIcon
+								p={4}
+								radius='sm'
+								variant='light'
+							>
+								<IconDoorExit />
+							</ActionIcon>
 						</div>
 					</div>
 
-					<div className='mt-24 flex flex-col items-center'>
-						<button
+					<div className='mt-20 flex flex-col items-center'>
+						<Button
+							fw={500}
+							radius={'xl'}
 							onClick={() => {
 								sessionEnded ? resetSession() : replayInterval();
 							}}
-							className='rounded-3xl bg-violet-600 px-6 py-2 transition-all duration-500 ease-in-out hover:bg-violet-600/50 disabled:pointer-events-none disabled:opacity-50'
 						>
 							{sessionEnded
 								? 'Practice Again'
 								: !sessionQuestions.length
 								  ? 'Start Practice'
 								  : 'Replay Interval'}
-						</button>
+						</Button>
+
 						<div className='mt-12 flex max-w-md flex-wrap items-center justify-center gap-6'>
 							{INTERVALS.map(interval => (
-								<button
+								<Button
+									py={4}
+									px={16}
+									fw={400}
+									variant='light'
 									key={interval.value}
-									disabled={sessionEnded || !sessionQuestions.length}
 									onClick={() => answerQuestion(interval.value)}
-									className='rounded-full border border-violet-600 bg-violet-600/25 px-4 py-1 text-sm transition-all duration-500 ease-in-out hover:bg-violet-600/50 hover:opacity-80 disabled:pointer-events-none disabled:opacity-50'
+									disabled={sessionEnded || !sessionQuestions.length}
+									className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
 								>
 									{interval.label}
-								</button>
+								</Button>
 							))}
 						</div>
 					</div>
@@ -336,6 +344,7 @@ const PracticeInterval = () => {
 							p={0}
 							h={'auto'}
 							w={'auto'}
+							color='violet.5'
 							size='compact-xs'
 							variant='transparent'
 							onClick={openPracticeDetailDrawer}

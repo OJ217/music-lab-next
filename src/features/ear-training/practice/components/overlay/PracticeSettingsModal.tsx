@@ -179,6 +179,7 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 							p={0}
 							h={'auto'}
 							w={'auto'}
+							color='violet.5'
 							size='compact-xs'
 							variant='transparent'
 							onClick={() => {
@@ -374,6 +375,7 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 							p={0}
 							h={'auto'}
 							w={'auto'}
+							color='violet.5'
 							size='compact-xs'
 							variant='transparent'
 							onClick={() => {
@@ -559,6 +561,7 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 							p={0}
 							h={'auto'}
 							w={'auto'}
+							color='violet.5'
 							size='compact-xs'
 							variant='transparent'
 							onClick={() => {
