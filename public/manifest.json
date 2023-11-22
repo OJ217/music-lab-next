@@ -1,12 +1,11 @@
 {
 	"theme_color": "#0F172A",
 	"background_color": "#0F172A",
-	"orientation": "portrait",
 	"display": "standalone",
-	"name": "music-lab",
-	"short_name": "music-lab",
-	"start_url": "/",
 	"scope": "/",
+	"start_url": "/",
+	"name": "Music Lab",
+	"short_name": "Music Lab",
 	"description": "Platform for practicing and learning academic music knowledge and skills.",
 	"icons": [
 		{
