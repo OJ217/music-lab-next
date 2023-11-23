@@ -28,7 +28,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 
 	return (
 		<ProtectedRoute>
-			<main className='flex min-h-screen flex-col space-y-8 p-6 text-white md:space-y-16 md:p-12'>
+			<main className='flex min-h-screen flex-col space-y-16 p-6 text-white md:p-12'>
 				<nav className='flex items-center justify-between gap-8'>
 					<Link href={'/ear-training/practice'}>
 						<div className='inline-flex items-center gap-1 rounded-lg bg-gradient-to-tr from-cyan-600/20 to-violet-600/25 px-3 py-1'>

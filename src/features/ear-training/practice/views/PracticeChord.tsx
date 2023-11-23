@@ -46,6 +46,11 @@ interface ChordQuestion {
 	correct?: boolean;
 }
 
+interface SelectedChord {
+	name: string;
+	length: number;
+}
+
 interface ChordPracticeDetail {
 	chordName: string;
 	correctAnswers: number;
@@ -82,7 +87,7 @@ const PracticeChord = () => {
 
 	// Practice Session States
 	const [sessionQuestions, setSessionQuestions] = useState<Array<ChordQuestion>>([]);
-	const [answerChordName, setAnswerChordName] = useState<string | null>();
+	const [selectedChord, setSelectedChord] = useState<SelectedChord | null>();
 	const [totalAnsweredQuestions, setTotalAnsweredQuestions] = useState<number>(0);
 	const [totalCorrectAnswer, setTotalCorrectAnswer] = useState<number>(0);
 	const [sessionEnded, setSessionEnded] = useState<boolean>(false);
@@ -132,17 +137,17 @@ const PracticeChord = () => {
 		return !CHORD_WITHOUT_INVERSIONS.includes(chordName);
 	};
 
-	const playChord = (intervalNotes: ChordNotes) => {
+	const playChord = (chordNotes: ChordNotes) => {
 		setButtonsDisabled(true);
 
 		const noteDuration = 60 / (chordPracticeSettings.tempo * NOTE_DURATION[chordPracticeSettings.noteDuration]);
 
-		intervalNotes.forEach((note, index) => {
+		chordNotes.forEach((note, index) => {
 			const time = Tone.now() + index * noteDuration;
 			samplerInstance?.current?.triggerAttackRelease(note, noteDuration, time);
 		});
 
-		setTimeout(() => setButtonsDisabled(false), intervalNotes.length * noteDuration * 1000);
+		setTimeout(() => setButtonsDisabled(false), chordNotes.length * noteDuration * 1000);
 	};
 
 	const playRandomChord = () => {
@@ -177,6 +182,7 @@ const PracticeChord = () => {
 				break;
 			case 'ascending-descending':
 				chordNotes = [...chordNotesBase, ...chordNotesBase.slice().reverse()];
+				break;
 			default:
 				chordNotes = [chordNotesBase];
 				break;
@@ -191,7 +197,7 @@ const PracticeChord = () => {
 			...prevQuestions,
 			{
 				chordName,
-				chordNotes: chordNotesBase,
+				chordNotes,
 				answered: false,
 				...(chordInversion !== undefined && { chordInversion })
 			}
@@ -229,7 +235,7 @@ const PracticeChord = () => {
 			};
 
 			answerCorrect && setTotalCorrectAnswer(prevTotalCorrectAnswer => prevTotalCorrectAnswer + 1);
-			setAnswerChordName(null);
+			setSelectedChord(null);
 			return previousSessionQuestions;
 		});
 
@@ -352,7 +358,7 @@ const PracticeChord = () => {
 						mode='wait'
 						initial={false}
 					>
-						{!answerChordName ? (
+						{!selectedChord ? (
 							<motion.div
 								key={'chords'}
 								initial={{ opacity: 0 }}
@@ -371,17 +377,11 @@ const PracticeChord = () => {
 										variant='light'
 										key={chord.value}
 										onClick={() => {
-											console.log({
-												hasInversion:
-													sessionQuestions[sessionQuestions.length - 1].chordInversion !==
-													undefined,
-												inversion: sessionQuestions[sessionQuestions.length - 1].chordInversion
-											});
-											if (
-												sessionQuestions[sessionQuestions.length - 1].chordInversion !==
-												undefined
-											) {
-												setAnswerChordName(chord.value);
+											if (hasInversion(chord.value)) {
+												setSelectedChord({
+													name: chord.value,
+													length: Chord.getChord(chord.value).intervals.length
+												});
 											} else {
 												answerQuestion(chord.value);
 											}
@@ -407,19 +407,19 @@ const PracticeChord = () => {
 								<div className='space-y-6'>
 									<p className='text-center'>
 										Selected chord:{' '}
-										<span className='font-semibold'>{t(`chord.${answerChordName}`)}</span>
+										<span className='font-semibold'>{t(`chord.${selectedChord.name}`)}</span>
 									</p>
 									<div className='flex max-w-md flex-wrap items-center justify-center gap-6'>
-										{INVERSIONS.filter(
-											i => i < sessionQuestions[sessionQuestions.length - 1].chordNotes.length
-										).map(inversion => (
+										{INVERSIONS.filter(i => {
+											return i < selectedChord.length;
+										}).map(inversion => (
 											<Button
 												py={4}
 												px={16}
 												fw={400}
 												variant='light'
 												key={inversion}
-												onClick={() => answerQuestion(answerChordName, inversion)}
+												onClick={() => answerQuestion(selectedChord.name, inversion)}
 												disabled={sessionEnded || !sessionQuestions.length || buttonsDisabled}
 												className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
 											>
@@ -434,7 +434,7 @@ const PracticeChord = () => {
 									variant='subtle'
 									leftSection={<IconArrowLeft size={16} />}
 									onClick={() => {
-										setAnswerChordName(null);
+										setSelectedChord(null);
 									}}
 								>
 									Back
