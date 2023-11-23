@@ -4,7 +4,7 @@ import EarTrainingLayout from '../layouts/EarTrainingLayout';
 
 const PracticeHome = () => {
 	return (
-		<EarTrainingLayout>
+		<EarTrainingLayout centered={true}>
 			<div className='w-full max-w-lg space-y-8'>
 				<Link
 					href={'/ear-training/practice/interval'}

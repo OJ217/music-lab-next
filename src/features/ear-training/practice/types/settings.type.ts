@@ -12,9 +12,10 @@ export type PlayingMode = (typeof PLAYING_MODES)[number];
 export type NonHarmonicPlayingMode = (typeof NON_HARMONIC_PLAYING_MODES)[number];
 
 export const PLAYING_MODE_SELECT_OPTIONS: SelectData<PlayingMode> = [
+	{ label: 'Harmonic', value: 'harmonic' },
 	{ label: 'Ascending', value: 'ascending' },
 	{ label: 'Descending', value: 'descending' },
-	{ label: 'Harmonic', value: 'harmonic' }
+	{ label: 'Ascending and Descending', value: 'ascending-descending' }
 ];
 
 export const NON_HARMONIC_PLAYING_MODE_SELECT_OPTIONS: SelectData<NonHarmonicPlayingMode> = [
@@ -123,7 +124,7 @@ export const DEFAULT_INTERVAL_PRACTICE_SETTINGS: IntervalPracticeSettings = {
 export const intervalPracticeSettingsSchema = practiceSettingsBaseSchema.extend({
 	intervalTypeGroup: z.enum(INTERVAL_TYPES).default('all'),
 	playingMode: z.enum(PLAYING_MODES).default('harmonic'),
-	noteDuration: z.enum(NOTE_DURATIONS)
+	noteDuration: z.enum(NOTE_DURATIONS).default('whole')
 });
 
 // *****************************
@@ -163,10 +164,13 @@ export const CHORD_INVERSION_SELECT_OPTIONS: SelectData<string> = [
 	{ value: '3', label: '3rd Inversion' }
 ];
 
+export const CHORD_WITHOUT_INVERSIONS = ['aug', 'dim7'];
+
 export interface ChordPracticeSettings extends EarTrainingPracticeSettingsBase {
 	chordTypeGroup: ChordTypeGroup;
 	inversions: string[];
 	playingMode: PlayingMode;
+	noteDuration: NoteDuration;
 }
 
 export const DEFAULT_CHORD_PRACTICE_SETTINGS: ChordPracticeSettings = {
@@ -178,10 +182,11 @@ export const DEFAULT_CHORD_PRACTICE_SETTINGS: ChordPracticeSettings = {
 		rootNote: 'C4'
 	},
 	playingMode: 'harmonic',
-	tempo: 80,
+	tempo: 100,
 	questionDuration: 30,
 	autoFeedback: true,
-	settingsLocked: false
+	settingsLocked: false,
+	noteDuration: 'whole'
 };
 
 // ****************************

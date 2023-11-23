@@ -133,10 +133,7 @@ const PracticeInterval = () => {
 		const noteDuration =
 			60 / (intervalPracticeSettings.tempo * NOTE_DURATION[intervalPracticeSettings.noteDuration]);
 
-		console.log(intervalPracticeSettings.noteDuration);
-
 		intervalNotes.forEach((note, index) => {
-			console.log({ note });
 			const time = Tone.now() + index * noteDuration;
 			samplerInstance?.current?.triggerAttackRelease(note, noteDuration, time);
 		});

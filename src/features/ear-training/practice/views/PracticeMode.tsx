@@ -304,11 +304,7 @@ const PracticeMode = () => {
 						}}
 						className='disabled:bg-violet-600/25 disabled:opacity-50'
 					>
-						{sessionEnded
-							? 'Practice Again'
-							: !sessionQuestions.length
-							  ? 'Start Practice'
-							  : 'Replay Interval'}
+						{sessionEnded ? 'Practice Again' : !sessionQuestions.length ? 'Start Practice' : 'Replay Mode'}
 					</Button>
 
 					<div className='mt-12 flex max-w-md flex-wrap items-center justify-center gap-6'>
@@ -448,7 +444,7 @@ const PracticeMode = () => {
 					</Paper>
 
 					<Accordion variant='separated'>
-						<Accordion.Item value={'interval_practice_settings'}>
+						<Accordion.Item value={'mode_practice_settings'}>
 							<Accordion.Control
 								classNames={{ label: 'text-sm' }}
 								icon={
@@ -470,7 +466,7 @@ const PracticeMode = () => {
 								>
 									<List.Item>{modePracticeSettings.numberOfQuestions} questions</List.Item>
 									<List.Item>{capitalize(modePracticeSettings.playingMode)} playing mode</List.Item>
-									<List.Item>{capitalize(modePracticeSettings.modeTypeGroup)} intervals</List.Item>
+									<List.Item>{capitalize(modePracticeSettings.modeTypeGroup)} modes</List.Item>
 									{modePracticeSettings.fixedRoot.enabled && (
 										<List.Item>{modePracticeSettings.fixedRoot.rootNote} fixed root note</List.Item>
 									)}

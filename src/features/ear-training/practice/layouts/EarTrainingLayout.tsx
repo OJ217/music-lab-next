@@ -10,9 +10,10 @@ import NavigationAffix from '../components/overlay/NavigationAffix';
 
 interface IEarTrainingLayoutProps {
 	children: React.ReactNode;
+	centered?: boolean;
 }
 
-const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children }) => {
+const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, centered = false }) => {
 	const { userInfo, signOut } = useAuth();
 
 	const openSignOutConfirmationModal = () => {
@@ -116,7 +117,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children }) => {
 						</Menu>
 					)}
 				</nav>
-				<div className='grid flex-grow place-content-center'>{children}</div>
+				<div className={`flex-grow ${centered && 'grid place-content-center'}`}>{children}</div>
 			</main>
 			<NavigationAffix />
 		</ProtectedRoute>

@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Chord, Note } from 'tonal';
@@ -21,18 +22,26 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { IconCheck, IconSettings, IconX } from '@tabler/icons-react';
+import { IconArrowLeft, IconCheck, IconSettings, IconX } from '@tabler/icons-react';
 
 import { ChordPracticeSettingsModal } from '../components/overlay/PracticeSettingsModal';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
-import { CHORD_TYPE_GROUPS, ChordPracticeSettings, DEFAULT_CHORD_PRACTICE_SETTINGS } from '../types/settings.type';
+import {
+	CHORD_TYPE_GROUPS,
+	CHORD_WITHOUT_INVERSIONS,
+	ChordPracticeSettings,
+	DEFAULT_CHORD_PRACTICE_SETTINGS,
+	NOTE_DURATION
+} from '../types/settings.type';
 
 // Types and Interfaces
 type PracticeResultLevel = 'high' | 'medium' | 'low';
 
+type ChordNotes = Array<string | string[]>;
 interface ChordQuestion {
 	chordName: string;
-	chordNotes: string[];
+	chordInversion?: number;
+	chordNotes: ChordNotes;
 	answered: boolean;
 	correct?: boolean;
 }
@@ -69,10 +78,11 @@ const PracticeChord = () => {
 	);
 	const TOTAL_QUESTIONS = chordPracticeSettings.numberOfQuestions;
 	const ROOT_NOTE = chordPracticeSettings.fixedRoot.enabled ? chordPracticeSettings.fixedRoot.rootNote : null;
-	const INVERSIONS = chordPracticeSettings.inversions;
+	const INVERSIONS = chordPracticeSettings.inversions.map(i => parseInt(i));
 
 	// Practice Session States
 	const [sessionQuestions, setSessionQuestions] = useState<Array<ChordQuestion>>([]);
+	const [answerChordName, setAnswerChordName] = useState<string | null>();
 	const [totalAnsweredQuestions, setTotalAnsweredQuestions] = useState<number>(0);
 	const [totalCorrectAnswer, setTotalCorrectAnswer] = useState<number>(0);
 	const [sessionEnded, setSessionEnded] = useState<boolean>(false);
@@ -115,35 +125,77 @@ const PracticeChord = () => {
 
 	// Practice Session Handler Functions
 	const stopActiveChord = (releaseTime?: number | undefined) => {
-		if (samplerInstance.current) {
-			samplerInstance.current.releaseAll(releaseTime);
-		}
+		samplerInstance.current?.releaseAll(releaseTime);
+	};
+
+	const hasInversion = (chordName: string) => {
+		return !CHORD_WITHOUT_INVERSIONS.includes(chordName);
+	};
+
+	const playChord = (intervalNotes: ChordNotes) => {
+		setButtonsDisabled(true);
+
+		const noteDuration = 60 / (chordPracticeSettings.tempo * NOTE_DURATION[chordPracticeSettings.noteDuration]);
+
+		intervalNotes.forEach((note, index) => {
+			const time = Tone.now() + index * noteDuration;
+			samplerInstance?.current?.triggerAttackRelease(note, noteDuration, time);
+		});
+
+		setTimeout(() => setButtonsDisabled(false), intervalNotes.length * noteDuration * 1000);
 	};
 
 	const playRandomChord = () => {
 		const rootNote = ROOT_NOTE ?? Note.fromMidi(Math.floor(Math.random() * 25) + 48);
 		const chordName = CHORDS[Math.floor(Math.random() * CHORDS.length)].value;
-		const chordNotes = Chord.getChord(chordName, rootNote).notes;
+		let chordNotesBase = Chord.getChord(chordName, rootNote).notes;
+		let chordInversion: number;
 
-		const chordDegree = Chord.degrees([rootNote, chordName]);
-		const randomInversionStartIndex = parseInt(INVERSIONS[Math.floor(Math.random() * INVERSIONS.length)]) + 1;
-		const randomInversion = Array.from(
-			{ length: chordNotes.length },
-			(_, index) => randomInversionStartIndex + index
-		).map(i => {
-			console.log(i);
-			return chordDegree(i);
-		});
+		if (hasInversion(chordName)) {
+			const chord = Chord.degrees([rootNote, chordName]);
+			chordInversion =
+				INVERSIONS[Math.floor(Math.random() * INVERSIONS.filter(i => i < chordNotesBase.length).length)];
+			chordNotesBase = Array.from(
+				{ length: chordNotesBase.length },
+				(_, index) => chordInversion + index + 1
+			).map(chord);
+		}
 
-		console.log({ chordNotes, chordName, randomInversion });
+		let chordNotes: ChordNotes;
 
 		stopActiveChord();
 
-		if (samplerInstance.current) {
-			samplerInstance.current.triggerAttack(chordNotes);
+		switch (chordPracticeSettings.playingMode) {
+			case 'harmonic':
+				chordNotes = [chordNotesBase];
+				break;
+			case 'ascending':
+				chordNotes = chordNotesBase;
+				break;
+			case 'descending':
+				chordNotes = chordNotesBase.reverse();
+				break;
+			case 'ascending-descending':
+				chordNotes = [...chordNotesBase, ...chordNotesBase.slice().reverse()];
+			default:
+				chordNotes = [chordNotesBase];
+				break;
 		}
 
-		setSessionQuestions(prevQuestions => [...prevQuestions, { chordName, chordNotes, answered: false }]);
+		playChord(chordNotes);
+
+		// @ts-ignore
+		console.log({ rootNote, chordNotes, chordName, chordInversion });
+
+		setSessionQuestions(prevQuestions => [
+			...prevQuestions,
+			{
+				chordName,
+				chordNotes: chordNotesBase,
+				answered: false,
+				...(chordInversion !== undefined && { chordInversion })
+			}
+		]);
 	};
 
 	const replayChord = () => {
@@ -158,16 +210,17 @@ const PracticeChord = () => {
 		} else {
 			console.log('Previous chord');
 
-			if (samplerInstance.current) {
-				samplerInstance.current.triggerAttack(previousQuestion?.chordNotes);
-			}
+			playChord(previousQuestion.chordNotes);
 		}
 	};
 
-	const answerQuestion = (answerChordName: string) => {
+	const answerQuestion = (answerChordName: string, inversion?: number) => {
 		setSessionQuestions(previousSessionQuestions => {
 			let lastQuestion = previousSessionQuestions[previousSessionQuestions.length - 1];
-			const answerCorrect = answerChordName === lastQuestion.chordName;
+			const chordNameCorrect = answerChordName === lastQuestion.chordName;
+			const answerCorrect = !!lastQuestion.chordInversion
+				? chordNameCorrect && inversion === lastQuestion.chordInversion
+				: chordNameCorrect;
 
 			previousSessionQuestions[previousSessionQuestions.length - 1] = {
 				...lastQuestion,
@@ -176,6 +229,7 @@ const PracticeChord = () => {
 			};
 
 			answerCorrect && setTotalCorrectAnswer(prevTotalCorrectAnswer => prevTotalCorrectAnswer + 1);
+			setAnswerChordName(null);
 			return previousSessionQuestions;
 		});
 
@@ -222,24 +276,24 @@ const PracticeChord = () => {
 		return Object.entries(
 			practiceSessionQuestions.reduce(
 				(questionGroup: Record<string, Array<ChordQuestion>>, question: ChordQuestion) => {
-					const mode = question.chordName;
+					const chord = question.chordName;
 
-					if (!questionGroup[mode]) {
-						questionGroup[mode] = [];
+					if (!questionGroup[chord]) {
+						questionGroup[chord] = [];
 					}
 
-					questionGroup[mode].push(question);
+					questionGroup[chord].push(question);
 
 					return questionGroup;
 				},
 				{}
 			)
-		).map(([mode, questions]) => {
+		).map(([chord, questions]) => {
 			const correctAnswers = questions.filter(q => q.correct).length;
 			const incorrectAnswers = questions.length - correctAnswers;
 
 			return {
-				chordName: t(`chord.${mode}`),
+				chordName: t(`chord.${chord}`),
 				correctAnswers,
 				incorrectAnswers,
 				correctPercentage: ((correctAnswers / questions.length) * 100).toFixed(1),
@@ -252,7 +306,7 @@ const PracticeChord = () => {
 		<>
 			<EarTrainingLayout>
 				<div className='space-y-4'>
-					<h1 className='text-center text-xl font-semibold'>Mode Identification</h1>
+					<h1 className='text-center text-xl font-semibold'>Chord Identification</h1>
 					<div className='space-y-2'>
 						<Progress
 							value={sessionEnded ? 100 : (totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
@@ -281,7 +335,7 @@ const PracticeChord = () => {
 					</div>
 				</div>
 
-				<div className='mt-16 flex flex-col items-center'>
+				<div className='mt-16 flex flex-col items-center space-y-12'>
 					<Button
 						fw={500}
 						radius={'xl'}
@@ -291,29 +345,103 @@ const PracticeChord = () => {
 						}}
 						className='disabled:bg-violet-600/25 disabled:opacity-50'
 					>
-						{sessionEnded
-							? 'Practice Again'
-							: !sessionQuestions.length
-							  ? 'Start Practice'
-							  : 'Replay Interval'}
+						{sessionEnded ? 'Practice Again' : !sessionQuestions.length ? 'Start Practice' : 'Replay Chord'}
 					</Button>
 
-					<div className='mt-12 flex max-w-md flex-wrap items-center justify-center gap-6'>
-						{CHORDS.map(chord => (
-							<Button
-								py={4}
-								px={16}
-								fw={400}
-								variant='light'
-								key={chord.value}
-								onClick={() => answerQuestion(chord.value)}
-								disabled={sessionEnded || !sessionQuestions.length || buttonsDisabled}
-								className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
+					<AnimatePresence
+						mode='wait'
+						initial={false}
+					>
+						{!answerChordName ? (
+							<motion.div
+								key={'chords'}
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{
+									duration: 0.3
+								}}
+								exit={{ opacity: 0 }}
+								className='flex max-w-md flex-wrap items-center justify-center gap-6'
 							>
-								{chord.label}
-							</Button>
-						))}
-					</div>
+								{CHORDS.map(chord => (
+									<Button
+										py={4}
+										px={16}
+										fw={400}
+										variant='light'
+										key={chord.value}
+										onClick={() => {
+											console.log({
+												hasInversion:
+													sessionQuestions[sessionQuestions.length - 1].chordInversion !==
+													undefined,
+												inversion: sessionQuestions[sessionQuestions.length - 1].chordInversion
+											});
+											if (
+												sessionQuestions[sessionQuestions.length - 1].chordInversion !==
+												undefined
+											) {
+												setAnswerChordName(chord.value);
+											} else {
+												answerQuestion(chord.value);
+											}
+										}}
+										disabled={sessionEnded || !sessionQuestions.length || buttonsDisabled}
+										className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
+									>
+										{chord.label}
+									</Button>
+								))}
+							</motion.div>
+						) : (
+							<motion.div
+								key={'chord_inversions'}
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{
+									duration: 0.3
+								}}
+								exit={{ opacity: 0 }}
+								className='flex flex-col items-center justify-center gap-20'
+							>
+								<div className='space-y-6'>
+									<p className='text-center'>
+										Selected chord:{' '}
+										<span className='font-semibold'>{t(`chord.${answerChordName}`)}</span>
+									</p>
+									<div className='flex max-w-md flex-wrap items-center justify-center gap-6'>
+										{INVERSIONS.filter(
+											i => i < sessionQuestions[sessionQuestions.length - 1].chordNotes.length
+										).map(inversion => (
+											<Button
+												py={4}
+												px={16}
+												fw={400}
+												variant='light'
+												key={inversion}
+												onClick={() => answerQuestion(answerChordName, inversion)}
+												disabled={sessionEnded || !sessionQuestions.length || buttonsDisabled}
+												className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
+											>
+												{inversion !== 0 ? `Inversion ${inversion}` : 'Root inversion'}
+											</Button>
+										))}
+									</div>
+								</div>
+
+								<Button
+									color='violet.4'
+									variant='subtle'
+									leftSection={<IconArrowLeft size={16} />}
+									onClick={() => {
+										setAnswerChordName(null);
+									}}
+								>
+									Back
+								</Button>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</div>
 			</EarTrainingLayout>
 
@@ -435,7 +563,7 @@ const PracticeChord = () => {
 					</Paper>
 
 					<Accordion variant='separated'>
-						<Accordion.Item value={'interval_practice_settings'}>
+						<Accordion.Item value={'chord_practice_settings'}>
 							<Accordion.Control
 								classNames={{ label: 'text-sm' }}
 								icon={
@@ -457,7 +585,7 @@ const PracticeChord = () => {
 								>
 									<List.Item>{chordPracticeSettings.numberOfQuestions} questions</List.Item>
 									<List.Item>{capitalize(chordPracticeSettings.playingMode)} playing mode</List.Item>
-									<List.Item>{capitalize(chordPracticeSettings.chordTypeGroup)} intervals</List.Item>
+									<List.Item>{capitalize(chordPracticeSettings.chordTypeGroup)} chords</List.Item>
 									{chordPracticeSettings.fixedRoot.enabled && (
 										<List.Item>
 											{chordPracticeSettings.fixedRoot.rootNote} fixed root note

@@ -227,6 +227,8 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 	const handleSettingsFormSubmit = (settings: ChordPracticeSettings) => {
 		console.log({ intervalPracticeSettings: settings });
 
+		settings.playingMode !== 'harmonic' && practiceSettingsForm.setFieldValue('noteDuration', 'quarter');
+
 		notify({
 			type: 'success',
 			title: 'Chord identification settings',
