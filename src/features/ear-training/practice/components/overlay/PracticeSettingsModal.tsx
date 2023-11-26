@@ -16,7 +16,7 @@ import {
 	NON_HARMONIC_PLAYING_MODE_SELECT_OPTIONS,
 	NOTE_DURATION_SELECT_OPTIONS,
 	PLAYING_MODE_SELECT_OPTIONS
-} from '../../types/settings.type';
+} from '../../types/practice-session-settings.type';
 
 interface IPracticeSettingsModalProps<SettingForm = any> {
 	opened: boolean;

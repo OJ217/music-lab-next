@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 import { SelectData } from '@/types';
 
-// *********************
-// ** Playing Mode *****
-// *********************
+// ******************
+// ** Playing Mode **
+// ******************
 const PLAYING_MODES = ['ascending', 'descending', 'harmonic', 'ascending-descending'] as const;
 const NON_HARMONIC_PLAYING_MODES = ['ascending', 'descending', 'ascending-descending'] as const;
 
@@ -34,7 +34,7 @@ export const FIXED_ROOT_NOTE_SELECT_OPTIONS = FIXED_ROOT_NOTES.map(note => ({ la
 // ** Note Duration **
 // *******************
 export const NOTE_DURATIONS = ['whole', 'half', 'quarter', 'eighth'] as const;
-type NoteDuration = (typeof NOTE_DURATIONS)[number];
+export type NoteDuration = (typeof NOTE_DURATIONS)[number];
 
 export const NOTE_DURATION_SELECT_OPTIONS: SelectData<NoteDuration> = [
 	{ label: 'Whole', value: 'whole' },
@@ -63,6 +63,7 @@ export interface EarTrainingPracticeSettingsBase {
 	questionDuration: number;
 	autoFeedback: boolean;
 	settingsLocked: boolean;
+	noteDuration: NoteDuration;
 }
 
 const practiceSettingsBaseSchema = z.object({
@@ -103,7 +104,6 @@ export const INTERVAL_TYPE_GROUPS: Record<IntervalType, string[]> = {
 export interface IntervalPracticeSettings extends EarTrainingPracticeSettingsBase {
 	intervalTypeGroup: IntervalType;
 	playingMode: PlayingMode;
-	noteDuration: NoteDuration;
 }
 
 export const DEFAULT_INTERVAL_PRACTICE_SETTINGS: IntervalPracticeSettings = {
@@ -170,7 +170,6 @@ export interface ChordPracticeSettings extends EarTrainingPracticeSettingsBase {
 	chordTypeGroup: ChordTypeGroup;
 	inversions: string[];
 	playingMode: PlayingMode;
-	noteDuration: NoteDuration;
 }
 
 export const DEFAULT_CHORD_PRACTICE_SETTINGS: ChordPracticeSettings = {
@@ -225,7 +224,6 @@ export const MODE_TYPE_GROUP_SELECT_OPTIONS: SelectData<ModeType> = [
 export interface ModePracticeSettings extends EarTrainingPracticeSettingsBase {
 	modeTypeGroup: ModeType;
 	playingMode: NonHarmonicPlayingMode;
-	noteDuration: NoteDuration;
 }
 
 export const DEFAULT_MODE_PRACTICE_SETTINGS: ModePracticeSettings = {
