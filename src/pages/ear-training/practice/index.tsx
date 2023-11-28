@@ -1,7 +1,5 @@
 import { PracticeHomeView } from '@/features/ear-training/practice/views';
 
-const PracticeHomePage = () => {
-	return <PracticeHomeView />;
-};
+const PracticeHomePage = () => <PracticeHomeView />;
 
 export default PracticeHomePage;

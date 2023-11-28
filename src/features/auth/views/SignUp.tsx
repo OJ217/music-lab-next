@@ -9,7 +9,7 @@ import { Button, Divider, Paper, PasswordInput, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
-import { useGoogleOAuthMutation, useSignUpMutation } from '../services/auth.mutation';
+import { useGoogleOAuthMutation, useSignUpMutation } from '../services/auth.service';
 
 const SignUpPage = () => {
 	const router = useRouter();

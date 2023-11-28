@@ -1,7 +1,5 @@
 import { ForgotPasswordView } from '@/features/auth/views';
 
-const ForgotPassword = () => {
-	return <ForgotPasswordView />;
-};
+const ForgotPassword = () => <ForgotPasswordView />;
 
 export default ForgotPassword;

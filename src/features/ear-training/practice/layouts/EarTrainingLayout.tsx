@@ -11,9 +11,10 @@ import NavigationAffix from '../components/overlay/NavigationAffix';
 interface IEarTrainingLayoutProps {
 	children: React.ReactNode;
 	centered?: boolean;
+	showAffix?: boolean;
 }
 
-const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, centered = false }) => {
+const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, centered = true, showAffix = true }) => {
 	const { userInfo, signOut } = useAuth();
 
 	const openSignOutConfirmationModal = () => {
@@ -28,7 +29,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 
 	return (
 		<ProtectedRoute>
-			<main className='flex min-h-screen flex-col space-y-16 p-6 text-white md:p-12'>
+			<main className='flex min-h-screen flex-col space-y-4 p-6 text-white md:space-y-8 md:p-12'>
 				<nav className='flex items-center justify-between gap-8'>
 					<Link href={'/ear-training/practice'}>
 						<div className='inline-flex items-center gap-1 rounded-lg bg-gradient-to-tr from-cyan-600/20 to-violet-600/25 px-3 py-1'>
@@ -78,7 +79,11 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 										<Avatar
 											radius={'xl'}
 											size={rem(48)}
-											classNames={{ placeholder: 'bg-black text-white' }}
+											variant='gradient'
+											gradient={{ from: 'violet', to: 'violet.6' }}
+											classNames={{
+												placeholder: 'text-white'
+											}}
 											component={ActionIcon}
 										>
 											{userInfo.username[0].toUpperCase()}
@@ -89,7 +94,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 
 							<Menu.Dropdown>
 								<Link href={'/profile/dashboard'}>
-									<Menu.Item leftSection={<IconChartBar stroke={1.6} />}>Progress</Menu.Item>
+									<Menu.Item leftSection={<IconChartBar stroke={1.6} />}>Dashboard</Menu.Item>
 								</Link>
 
 								<Link href={'/profile'}>
@@ -117,9 +122,11 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 						</Menu>
 					)}
 				</nav>
-				<div className={`flex-grow ${centered && 'grid place-content-center'}`}>{children}</div>
+				<div className={`flex-grow ${centered && 'grid place-content-center pb-[3.5rem] md:pb-16'}`}>
+					{children}
+				</div>
 			</main>
-			<NavigationAffix />
+			{showAffix && <NavigationAffix />}
 		</ProtectedRoute>
 	);
 };

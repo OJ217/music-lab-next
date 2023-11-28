@@ -1,8 +1,10 @@
+import dayjs, { Dayjs } from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Note } from 'tonal';
 
-import { capitalize } from '@/utils/format.util';
+import { calculatePercentage, capitalize } from '@/utils/format.util';
+import { notify } from '@/utils/notification.util';
 import {
 	Accordion,
 	ActionIcon,
@@ -26,13 +28,18 @@ import { IntervalPracticeSettingsModal } from '../components/overlay/PracticeSet
 import { useSamplerMethods } from '../hooks/useSampler';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
 import {
+	EarTrainingPracticeType,
+	saveEarTrainingPracticeSessionSchema,
+	useSaveEarTrainingPracticeSessionMutation
+} from '../services/practice-session.service';
+import {
 	DEFAULT_INTERVAL_PRACTICE_SETTINGS,
 	INTERVAL_TYPE_GROUPS,
 	IntervalPracticeSettings,
 	intervalPracticeSettingsSchema,
 	NOTE_DURATION
 } from '../types/practice-session-settings.type';
-import { IntervalPracticeDetail, IntervalQuestion, Notes } from '../types/practice-session.type';
+import { EarTrainingPracticeDetail, IntervalQuestion, Notes } from '../types/practice-session.type';
 import { resolvePracticeResultMessage } from '../utils/practice-session.util';
 
 const PracticeInterval = () => {
@@ -64,17 +71,26 @@ const PracticeInterval = () => {
 	const ROOT_NOTE = intervalPracticeSettings.fixedRoot.enabled ? intervalPracticeSettings.fixedRoot.rootNote : null;
 
 	// ** Practice Session States
-	const [sessionQuestions, setSessionQuestions] = useState<Array<IntervalQuestion>>([]);
+	const [practiceSessionQuestions, setPracticeSessionQuestions] = useState<Array<IntervalQuestion>>([]);
+	const [practiceSessionMeta, setPracticeSessionMeta] = useState<{ startTime?: Dayjs; endTime?: Dayjs }>();
 
-	const { totalAnsweredQuestions, totalCorrectAnswers, sessionEnded, practiceResultMessage } = useMemo<{
+	const {
+		totalAnsweredQuestions,
+		totalCorrectAnswers,
+		practiceScorePercentage,
+		sessionEnded,
+		practiceResultMessage
+	} = useMemo<{
 		totalAnsweredQuestions: number;
 		totalCorrectAnswers: number;
 		sessionEnded: boolean;
+		practiceScorePercentage: number;
 		practiceResultMessage?: string;
 	}>(() => {
-		const totalAnsweredQuestions = sessionQuestions.filter(q => q.answered).length;
-		const totalCorrectAnswers = sessionQuestions.filter(q => q.correct).length;
+		const totalAnsweredQuestions = practiceSessionQuestions.filter(q => q.answered).length;
+		const totalCorrectAnswers = practiceSessionQuestions.filter(q => q.correct).length;
 		const sessionEnded = totalAnsweredQuestions === TOTAL_QUESTIONS;
+		const practiceScorePercentage = sessionEnded ? calculatePercentage(totalCorrectAnswers, TOTAL_QUESTIONS) : 0;
 		const practiceResultMessage = sessionEnded
 			? resolvePracticeResultMessage(totalCorrectAnswers, TOTAL_QUESTIONS)
 			: undefined;
@@ -83,37 +99,37 @@ const PracticeInterval = () => {
 			totalAnsweredQuestions,
 			totalCorrectAnswers,
 			sessionEnded,
+			practiceScorePercentage,
 			practiceResultMessage
 		};
-	}, [TOTAL_QUESTIONS, sessionQuestions]);
+	}, [TOTAL_QUESTIONS, practiceSessionQuestions]);
 
 	// ** Util States
+	const [practiceSessionMethodsDisabled, setPracticeSessionMethodsDisabled] = useState<boolean>(false);
 	const [resultsModalOpened, { open: openResultsModal, close: closeResultsModal }] = useDisclosure(false);
 	const [settingsModalOpened, { open: openSettingsModal, close: closeSettingsModal }] = useDisclosure(false);
 	const [practiceDetailDrawerOpened, { open: openPracticeDetailDrawer, close: closePracticeDetailDrawer }] =
 		useDisclosure(false);
-	const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(false);
 
 	// ** -------------------- EFFECTS -------------------- **
 
 	useEffect(() => {
-		if (sessionQuestions.length == 0) {
+		if (practiceSessionQuestions.length == 0 || !sessionEnded) {
 			openSettingsModal();
 		}
-
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// ** Practice Session Handler Functions
 	const playInterval = (intervalNotes: Notes) => {
-		setButtonsDisabled(true);
+		setPracticeSessionMethodsDisabled(true);
 
 		const noteDuration =
 			60 / (intervalPracticeSettings.tempo * NOTE_DURATION[intervalPracticeSettings.noteDuration]);
 
 		playNotes(intervalNotes, noteDuration);
 
-		setTimeout(() => setButtonsDisabled(false), intervalNotes.length * noteDuration * 1000);
+		setTimeout(() => setPracticeSessionMethodsDisabled(false), intervalNotes.length * noteDuration * 1000);
 	};
 
 	const playRandomInterval = () => {
@@ -142,29 +158,26 @@ const PracticeInterval = () => {
 		releaseNotes();
 		playInterval(intervalNotes);
 
-		console.log({ intervalName, intervalNotes });
-
-		setSessionQuestions(prevQuestions => [...prevQuestions, { intervalName, intervalNotes, answered: false }]);
+		setPracticeSessionQuestions(prevQuestions => [
+			...prevQuestions,
+			{ intervalName, intervalNotes, answered: false }
+		]);
 	};
 
 	const replayInterval = () => {
 		releaseNotes();
 
-		const previousQuestion = sessionQuestions[sessionQuestions?.length - 1];
+		const previousQuestion = practiceSessionQuestions[practiceSessionQuestions?.length - 1];
 
 		if (!previousQuestion || !!previousQuestion?.answered) {
-			console.log('New random interval');
-
 			playRandomInterval();
 		} else {
-			console.log('Previous interval');
-
 			playInterval(previousQuestion.intervalNotes);
 		}
 	};
 
 	const answerQuestion = (answerIntervalName: string) => {
-		setSessionQuestions(sq => {
+		setPracticeSessionQuestions(sq => {
 			const previousSessionQuestions = [...sq];
 			const lastQuestion = previousSessionQuestions[previousSessionQuestions.length - 1];
 			const answerCorrect = answerIntervalName === lastQuestion.intervalName;
@@ -178,9 +191,10 @@ const PracticeInterval = () => {
 			return previousSessionQuestions;
 		});
 
-		if (sessionQuestions.length === TOTAL_QUESTIONS) {
+		if (practiceSessionQuestions.length === TOTAL_QUESTIONS) {
 			releaseNotes(5);
 			openResultsModal();
+			setPracticeSessionMeta(sm => ({ ...sm, endTime: dayjs() }));
 			return;
 		}
 
@@ -188,11 +202,16 @@ const PracticeInterval = () => {
 	};
 
 	const resetSession = (options: { startSession?: boolean } = { startSession: true }) => {
-		setSessionQuestions([]);
-		options?.startSession && playRandomInterval();
+		setPracticeSessionQuestions([]);
+		if (options?.startSession) {
+			playRandomInterval();
+			setPracticeSessionMeta(sm => ({ ...sm, startTime: dayjs() }));
+		}
 	};
 
-	const refinePracticeDetail = (practiceSessionQuestions: Array<IntervalQuestion>): Array<IntervalPracticeDetail> => {
+	const refinePracticeResult = (
+		practiceSessionQuestions: Array<IntervalQuestion>
+	): Array<EarTrainingPracticeDetail> => {
 		return Object.entries(
 			practiceSessionQuestions.reduce(
 				(questionGroup: Record<string, Array<IntervalQuestion>>, question: IntervalQuestion) => {
@@ -209,17 +228,52 @@ const PracticeInterval = () => {
 				{}
 			)
 		).map(([interval, questions]) => {
-			const correctAnswers = questions.filter(q => q.correct).length;
-			const incorrectAnswers = questions.length - correctAnswers;
+			const correct = questions.filter(q => q.correct).length;
+			const incorrect = questions.length - correct;
 
 			return {
-				intervalName: t(`interval.${interval}`),
-				correctAnswers,
-				incorrectAnswers,
-				correctPercentage: ((correctAnswers / questions.length) * 100).toFixed(1),
-				numberOfQuestions: questions.length
+				score: calculatePercentage(correct, questions.length),
+				correct,
+				incorrect,
+				questionCount: questions.length,
+				questionType: interval
 			};
 		});
+	};
+
+	const { mutateSaveEarTrainingPracticeSession, savePracticeSessionPending } =
+		useSaveEarTrainingPracticeSessionMutation();
+
+	const handleSaveEarTrainingPracticeSession = async () => {
+		if (sessionEnded) {
+			try {
+				const practiceSessionData = {
+					result: {
+						score: practiceScorePercentage,
+						correct: totalCorrectAnswers,
+						incorrect: TOTAL_QUESTIONS - totalCorrectAnswers,
+						questionCount: TOTAL_QUESTIONS
+					},
+					type: EarTrainingPracticeType.IntervalIdentification,
+					duration: dayjs().diff(practiceSessionMeta?.startTime, 'seconds'),
+					statistics: refinePracticeResult(practiceSessionQuestions)
+				};
+
+				const practiceSessionDataParsed = saveEarTrainingPracticeSessionSchema.safeParse(practiceSessionData);
+
+				if (!practiceSessionDataParsed.success) {
+					throw practiceSessionDataParsed.error;
+				}
+
+				await mutateSaveEarTrainingPracticeSession(practiceSessionDataParsed.data);
+
+				notify({ type: 'success', title: 'Practice session saved' });
+			} catch (error) {
+				console.error(error);
+
+				notify({ type: 'fail', title: 'Could not save practice session' });
+			}
+		}
 	};
 
 	return (
@@ -238,8 +292,8 @@ const PracticeInterval = () => {
 							/>
 							<p className='text-center text-xs text-gray-300'>
 								{sessionEnded
-									? `${sessionQuestions.length}/${sessionQuestions.length}`
-									: `${sessionQuestions.length}/${TOTAL_QUESTIONS}`}
+									? `${practiceSessionQuestions.length}/${practiceSessionQuestions.length}`
+									: `${practiceSessionQuestions.length}/${TOTAL_QUESTIONS}`}
 							</p>
 						</div>
 
@@ -249,7 +303,7 @@ const PracticeInterval = () => {
 								radius='sm'
 								variant='light'
 								onClick={openSettingsModal}
-								disabled={sessionQuestions.length > 0 && !sessionEnded}
+								disabled={practiceSessionQuestions.length > 0 && !sessionEnded}
 							>
 								<IconSettings />
 							</ActionIcon>
@@ -260,14 +314,15 @@ const PracticeInterval = () => {
 						<Button
 							fw={500}
 							radius={'xl'}
-							disabled={buttonsDisabled}
+							disabled={practiceSessionMethodsDisabled || sessionEnded}
 							onClick={() => {
-								sessionEnded ? resetSession() : replayInterval();
+								sessionEnded || !practiceSessionQuestions.length ? resetSession() : replayInterval();
 							}}
+							className='disabled:bg-violet-600/25 disabled:opacity-50'
 						>
 							{sessionEnded
 								? 'Practice Again'
-								: !sessionQuestions.length
+								: !practiceSessionQuestions.length
 								  ? 'Start Practice'
 								  : 'Replay Interval'}
 						</Button>
@@ -281,7 +336,11 @@ const PracticeInterval = () => {
 									variant='light'
 									key={interval.value}
 									onClick={() => answerQuestion(interval.value)}
-									disabled={sessionEnded || !sessionQuestions.length || buttonsDisabled}
+									disabled={
+										sessionEnded ||
+										!practiceSessionQuestions.length ||
+										practiceSessionMethodsDisabled
+									}
 									className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
 								>
 									{interval.label}
@@ -294,10 +353,19 @@ const PracticeInterval = () => {
 
 			<Modal
 				centered
+				withinPortal
 				padding={24}
-				opened={resultsModalOpened}
-				onClose={closeResultsModal}
-				closeButtonProps={{ size: 'sm' }}
+				opened={resultsModalOpened && sessionEnded}
+				onClose={() => {
+					if (sessionEnded && savePracticeSessionPending) {
+						return;
+					}
+
+					closeResultsModal();
+				}}
+				closeOnEscape={false}
+				closeOnClickOutside={false}
+				withCloseButton={false}
 				title={'Practice Result'}
 				classNames={{
 					header: 'font-semibold text-sm'
@@ -305,9 +373,7 @@ const PracticeInterval = () => {
 			>
 				<div className='mt-4 flex flex-col items-center space-y-8 text-center'>
 					<div className='space-y-2'>
-						<h3 className='text-3xl font-semibold text-violet-500'>
-							{Math.round((totalCorrectAnswers / TOTAL_QUESTIONS) * 1000) / 10}%
-						</h3>
+						<h3 className='text-3xl font-semibold text-violet-500'>{practiceScorePercentage}%</h3>
 						<p className='mx-auto max-w-[240px] text-sm font-medium'>
 							You had {totalCorrectAnswers} correct answers and {TOTAL_QUESTIONS - totalCorrectAnswers}{' '}
 							wrong answers. Keep going 🍀🚀.
@@ -331,7 +397,9 @@ const PracticeInterval = () => {
 							<Button
 								fullWidth
 								variant='light'
-								onClick={() => {
+								disabled={savePracticeSessionPending}
+								onClick={async () => {
+									await handleSaveEarTrainingPracticeSession();
 									closeResultsModal();
 									resetSession();
 								}}
@@ -340,10 +408,11 @@ const PracticeInterval = () => {
 							</Button>
 							<Button
 								fullWidth
-								onClick={() => {
+								loading={savePracticeSessionPending}
+								onClick={async () => {
+									await handleSaveEarTrainingPracticeSession();
 									closeResultsModal();
 									resetSession({ startSession: false });
-									openSettingsModal();
 								}}
 							>
 								Done
@@ -356,161 +425,150 @@ const PracticeInterval = () => {
 			<Drawer
 				position='left'
 				title='Practice Overview'
-				opened={practiceDetailDrawerOpened}
+				opened={practiceDetailDrawerOpened && sessionEnded}
 				onClose={closePracticeDetailDrawer}
 				scrollAreaComponent={ScrollArea.Autosize}
 				closeButtonProps={{ size: 'sm' }}
 				classNames={{ title: 'font-semibold text-sm' }}
+				withinPortal
 			>
-				{sessionEnded ? (
-					<div className='mt-6 space-y-6'>
-						<Paper
-							p='sm'
-							radius='md'
-							withBorder
-							className='flex items-stretch gap-4'
-						>
-							<div className='flex items-center gap-4'>
-								<RingProgress
-									size={80}
-									roundCaps
-									thickness={4}
-									label={
-										<Center>
-											<ActionIcon
-												color='teal'
-												variant='light'
-												radius='xl'
-												size='xl'
-											>
-												<IconCheck />
-											</ActionIcon>
-										</Center>
+				<div className='mt-6 space-y-6'>
+					<Paper
+						p='sm'
+						radius='md'
+						withBorder
+						className='flex items-stretch gap-4'
+					>
+						<div className='flex items-center gap-4'>
+							<RingProgress
+								size={80}
+								roundCaps
+								thickness={4}
+								label={
+									<Center>
+										<ActionIcon
+											color='teal'
+											variant='light'
+											radius='xl'
+											size='xl'
+										>
+											<IconCheck />
+										</ActionIcon>
+									</Center>
+								}
+								sections={[
+									{
+										value: practiceScorePercentage,
+										color: 'green'
 									}
-									sections={[
-										{
-											value: Math.round((totalCorrectAnswers / TOTAL_QUESTIONS) * 1000) / 10,
-											color: 'green'
-										}
-									]}
-								/>
-								<div>
-									<h1 className='text-3xl font-medium'>
-										{Math.round((totalCorrectAnswers / TOTAL_QUESTIONS) * 1000) / 10}%
-									</h1>
-									<p className='text-gray-400'>
-										{totalCorrectAnswers}/{TOTAL_QUESTIONS}
-									</p>
-								</div>
-							</div>
-							<Divider orientation='vertical' />
-							<div className='flex flex-col space-y-2'>
-								<p className='text-xs text-gray-400'>Message:</p>
-								<p className='flex flex-grow items-center justify-center text-sm'>
-									{practiceResultMessage}
+								]}
+							/>
+							<div>
+								<h1 className='text-3xl font-medium'>{practiceScorePercentage}%</h1>
+								<p className='text-gray-400'>
+									{totalCorrectAnswers}/{TOTAL_QUESTIONS}
 								</p>
 							</div>
-						</Paper>
+						</div>
+						<Divider orientation='vertical' />
+						<div className='flex flex-col space-y-2'>
+							<p className='text-xs text-gray-400'>Message:</p>
+							<p className='flex flex-grow items-center justify-center text-sm'>
+								{practiceResultMessage}
+							</p>
+						</div>
+					</Paper>
 
-						<Accordion variant='separated'>
-							<Accordion.Item value={'interval_practice_settings'}>
-								<Accordion.Control
-									classNames={{ label: 'text-sm' }}
-									icon={
-										<ThemeIcon
-											p={4}
-											radius='sm'
-											variant='light'
-										>
-											<IconSettings />
-										</ThemeIcon>
-									}
-								>
-									Practice Settings
-								</Accordion.Control>
-								<Accordion.Panel>
-									<List
-										className='space-y-2 text-xs'
-										listStyleType='initial'
+					<Accordion variant='separated'>
+						<Accordion.Item value={'interval_practice_settings'}>
+							<Accordion.Control
+								classNames={{ label: 'text-sm' }}
+								icon={
+									<ThemeIcon
+										p={4}
+										radius='sm'
+										variant='light'
 									>
-										<List.Item>{intervalPracticeSettings.numberOfQuestions} questions</List.Item>
+										<IconSettings />
+									</ThemeIcon>
+								}
+							>
+								Practice Settings
+							</Accordion.Control>
+							<Accordion.Panel>
+								<List
+									className='space-y-2 text-xs'
+									listStyleType='initial'
+								>
+									<List.Item>{intervalPracticeSettings.numberOfQuestions} questions</List.Item>
+									<List.Item>
+										{capitalize(intervalPracticeSettings.playingMode)} playing mode
+									</List.Item>
+									<List.Item>
+										{capitalize(intervalPracticeSettings.intervalTypeGroup)} intervals
+									</List.Item>
+									{intervalPracticeSettings.fixedRoot.enabled && (
 										<List.Item>
-											{capitalize(intervalPracticeSettings.playingMode)} playing mode
+											{intervalPracticeSettings.fixedRoot.rootNote} fixed root note
 										</List.Item>
-										<List.Item>
-											{capitalize(intervalPracticeSettings.intervalTypeGroup)} intervals
-										</List.Item>
-										{intervalPracticeSettings.fixedRoot.enabled && (
-											<List.Item>
-												{intervalPracticeSettings.fixedRoot.rootNote} fixed root note
-											</List.Item>
-										)}
-									</List>
-								</Accordion.Panel>
-							</Accordion.Item>
-						</Accordion>
+									)}
+								</List>
+							</Accordion.Panel>
+						</Accordion.Item>
+					</Accordion>
 
-						<div className='space-y-3'>
-							{refinePracticeDetail(sessionQuestions).map(
-								(
-									{
-										intervalName,
-										incorrectAnswers,
-										correctAnswers,
-										correctPercentage,
-										numberOfQuestions
-									},
-									index,
-									{ length: listLength }
-								) => {
-									return (
-										<>
-											<div
-												key={intervalName}
-												className='space-y-1'
-											>
-												<div className='flex items-center justify-between gap-4 text-sm'>
-													<p className='font-medium'>{intervalName}</p>
-													<div>
-														<div className='flex items-center gap-2 font-medium'>
-															<p>{correctPercentage}%</p>
-															<span className='h-[1.5px] w-1.5 bg-white'></span>
-															<p>
-																({correctAnswers}/{numberOfQuestions})
-															</p>
-														</div>
-													</div>
-												</div>
-												<div className='flex items-center justify-end gap-6 text-xs'>
-													<div className='flex items-center gap-3'>
-														<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
-															<IconCheck
-																size={12}
-																stroke={1.2}
-															/>
-														</div>
-														<p>{correctAnswers}</p>
-													</div>
-													<div className='flex items-center gap-3'>
-														<IconX
-															size={14}
-															stroke={1.2}
-															className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
-														/>
-														<p>{incorrectAnswers}</p>
+					<div className='space-y-3'>
+						{refinePracticeResult(practiceSessionQuestions).map(
+							(
+								{ score, correct, incorrect, questionCount, questionType },
+								index,
+								{ length: listLength }
+							) => {
+								return (
+									<>
+										<div
+											key={questionType}
+											className='space-y-1'
+										>
+											<div className='flex items-center justify-between gap-4 text-sm'>
+												<p className='font-medium'>{t(`interval.${questionType}`)}</p>
+												<div>
+													<div className='flex items-center gap-2 font-medium'>
+														<p>{score}%</p>
+														<span className='h-[1.5px] w-1.5 bg-white'></span>
+														<p>
+															({correct}/{questionCount})
+														</p>
 													</div>
 												</div>
 											</div>
-											{index + 1 < listLength && <Divider key={`divider-${index + 1}`} />}
-										</>
-									);
-								}
-							)}
-						</div>
+											<div className='flex items-center justify-end gap-6 text-xs'>
+												<div className='flex items-center gap-3'>
+													<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
+														<IconCheck
+															size={12}
+															stroke={1.2}
+														/>
+													</div>
+													<p>{correct}</p>
+												</div>
+												<div className='flex items-center gap-3'>
+													<IconX
+														size={14}
+														stroke={1.2}
+														className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
+													/>
+													<p>{incorrect}</p>
+												</div>
+											</div>
+										</div>
+										{index + 1 < listLength && <Divider key={`divider-${index + 1}`} />}
+									</>
+								);
+							}
+						)}
 					</div>
-				) : (
-					<div>Practice session not ended</div>
-				)}
+				</div>
 			</Drawer>
 
 			<IntervalPracticeSettingsModal

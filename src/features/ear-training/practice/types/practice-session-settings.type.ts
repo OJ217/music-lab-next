@@ -114,11 +114,11 @@ export const DEFAULT_INTERVAL_PRACTICE_SETTINGS: IntervalPracticeSettings = {
 		rootNote: 'C4'
 	},
 	playingMode: 'harmonic',
-	tempo: 100,
+	tempo: 60,
 	questionDuration: 30,
 	autoFeedback: true,
 	settingsLocked: false,
-	noteDuration: 'whole'
+	noteDuration: 'half'
 };
 
 export const intervalPracticeSettingsSchema = practiceSettingsBaseSchema.extend({

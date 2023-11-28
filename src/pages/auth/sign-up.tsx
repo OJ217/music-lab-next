@@ -1,7 +1,5 @@
 import { SignUpView } from '@/features/auth/views';
 
-const SignUp = () => {
-	return <SignUpView />;
-};
+const SignUp = () => <SignUpView />;
 
 export default SignUp;

@@ -9,7 +9,7 @@ import { Button, Divider, Paper, PasswordInput, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
-import { useGoogleOAuthMutation, useSignInMutation } from '../services/auth.mutation';
+import { useGoogleOAuthMutation, useSignInMutation } from '../services/auth.service';
 
 const SignInPage = () => {
 	const router = useRouter();
@@ -106,7 +106,7 @@ const SignInPage = () => {
 				withBorder
 				shadow='md'
 				radius='md'
-				className='w-full max-w-sm p-5 transition-all duration-300 ease-in-out'
+				className='w-full max-w-sm p-5'
 			>
 				<form
 					className='w-full space-y-5'

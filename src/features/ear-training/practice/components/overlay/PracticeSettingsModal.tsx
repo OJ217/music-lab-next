@@ -54,6 +54,7 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 	return (
 		<Modal
 			centered
+			withinPortal
 			opened={opened}
 			onClose={() => {
 				if (practiceSettingsForm.validate().hasErrors) {
@@ -243,6 +244,7 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 	return (
 		<Modal
 			centered
+			withinPortal
 			opened={opened}
 			onClose={() => {
 				if (practiceSettingsForm.validate().hasErrors) {
@@ -438,6 +440,7 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 	return (
 		<Modal
 			centered
+			withinPortal
 			opened={opened}
 			onClose={() => {
 				if (practiceSettingsForm.validate().hasErrors) {

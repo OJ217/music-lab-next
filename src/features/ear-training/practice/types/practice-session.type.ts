@@ -5,11 +5,12 @@ export interface EarTrainingPracticeQuestionBase {
 	correct?: boolean;
 }
 
-export interface EarTrainingPracticeDetailBase {
-	correctAnswers: number;
-	incorrectAnswers: number;
-	correctPercentage: string;
-	numberOfQuestions: number;
+export interface EarTrainingPracticeDetail {
+	score: number;
+	correct: number;
+	incorrect: number;
+	questionCount: number;
+	questionType: string;
 }
 
 // ***********************
@@ -20,7 +21,7 @@ export interface IntervalQuestion extends EarTrainingPracticeQuestionBase {
 	intervalNotes: Notes;
 }
 
-export interface IntervalPracticeDetail extends EarTrainingPracticeDetailBase {
+export interface IntervalPracticeDetail extends EarTrainingPracticeDetail {
 	intervalName: string;
 }
 
@@ -38,7 +39,7 @@ export interface SelectedChord {
 	length: number;
 }
 
-export interface ChordPracticeDetail extends EarTrainingPracticeDetailBase {
+export interface ChordPracticeDetail extends EarTrainingPracticeDetail {
 	chordName: string;
 }
 
@@ -50,6 +51,6 @@ export interface ModeQuestion extends EarTrainingPracticeQuestionBase {
 	modeNotes: Notes;
 }
 
-export interface ModePracticeDetail extends EarTrainingPracticeDetailBase {
+export interface ModePracticeDetail extends EarTrainingPracticeDetail {
 	modeName: string;
 }
