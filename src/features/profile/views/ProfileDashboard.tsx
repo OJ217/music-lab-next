@@ -3,6 +3,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/EarTrainingLayout';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
+import { calculatePercentage } from '@/utils/format.util';
 import { ActionIcon, Badge, Card, LoadingOverlay, Skeleton } from '@mantine/core';
 import { IconChartBarOff, IconChevronRight, IconMusic } from '@tabler/icons-react';
 
@@ -195,13 +196,15 @@ const ProfileDashboard = () => {
 									radius={'md'}
 								/>
 						  ))
-						: practiceSessionScores?.map(s => {
+						: Object.values(EarTrainingPracticeType)?.map(practiceType => {
+								const practiceTypeScore = practiceSessionScores?.[practiceType];
+
 								const { icon, label, description, badgeClass, cardClass } =
-									EAR_TRAINING_EXERCISES_META[s.type];
+									EAR_TRAINING_EXERCISES_META[practiceType];
 
 								return (
 									<div
-										key={s.type}
+										key={practiceType}
 										className={`${cardClass} rounded-lg bg-transparent p-4 md:p-5`}
 									>
 										<div className='flex items-center justify-between gap-4'>
@@ -218,7 +221,13 @@ const ProfileDashboard = () => {
 													size='lg'
 													className={badgeClass}
 												>
-													{Math.round((s.correct / s.questionCount) * 1000) / 10}%
+													{practiceTypeScore
+														? calculatePercentage(
+																practiceTypeScore?.correct,
+																practiceTypeScore?.questionCount
+														  )
+														: 0}
+													%
 												</Badge>
 												<ActionIcon variant='transparent'>
 													<IconChevronRight />

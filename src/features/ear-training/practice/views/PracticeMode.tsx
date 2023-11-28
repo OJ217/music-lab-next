@@ -515,7 +515,7 @@ const PracticeMode = () => {
 											className='space-y-1'
 										>
 											<div className='flex items-center justify-between gap-4 text-sm'>
-												<p className='font-medium'>{questionType}</p>
+												<p className='font-medium'>{t(`mode.${questionType}`)}</p>
 												<div>
 													<div className='flex items-center gap-2 font-medium'>
 														<p>{score}%</p>

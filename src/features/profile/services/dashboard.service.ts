@@ -22,7 +22,8 @@ export const useEarTrainingPracticeSessionActivityQuery = ({ enabled = true }: I
 		queryFn: fetchEarTrainingPracticeSessionActivity,
 		queryKey: ['practice-session', 'activity'],
 		staleTime: Infinity,
-		enabled
+		enabled,
+		refetchOnMount: 'always'
 	});
 
 	return {
@@ -31,19 +32,30 @@ export const useEarTrainingPracticeSessionActivityQuery = ({ enabled = true }: I
 	};
 };
 
-type PracticeSessionScoresResponse = {
+interface PracticeSessionScore {
 	correct: number;
 	questionCount: number;
 	type: EarTrainingPracticeType;
-}[];
+}
+
+type PracticeSessionScoresResponse = PracticeSessionScore[];
 
 export const useEarTrainingPracticeSessionScoresQuery = ({ enabled = true }: IUseQueryBase) => {
 	const fetchEarTrainingPracticeSessionScores = async () => {
-		return (
+		const practiceSessionScores = (
 			await axios.get<IResponse<PracticeSessionScoresResponse>>('/ear-training/practice-session/scores', {
 				isPrivate: true
 			})
-		).data;
+		).data.data;
+
+		return practiceSessionScores.reduce(
+			(accumulator: Record<string, Omit<PracticeSessionScore, 'type'>>, currentValue: PracticeSessionScore) => {
+				const { type, ...rest } = currentValue;
+				accumulator[type] = rest;
+				return accumulator;
+			},
+			{}
+		);
 	};
 
 	const { data, isPending } = useQuery({
@@ -54,7 +66,7 @@ export const useEarTrainingPracticeSessionScoresQuery = ({ enabled = true }: IUs
 	});
 
 	return {
-		practiceSessionScores: data?.data,
+		practiceSessionScores: data,
 		scoresQueryPending: isPending
 	};
 };
