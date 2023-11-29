@@ -1,3 +1,8 @@
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+
+dayjs.extend(duration);
+
 export const capitalize = (str: string) => {
 	return str.charAt(0).toUpperCase() + str.slice(1);
 };

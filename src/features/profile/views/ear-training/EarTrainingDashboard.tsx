@@ -1,21 +1,16 @@
 import dayjs from 'dayjs';
+import Link from 'next/link';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/EarTrainingLayout';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { calculatePercentage } from '@/utils/format.util';
-import { ActionIcon, Badge, Card, LoadingOverlay, Skeleton } from '@mantine/core';
+import { Badge, Card, LoadingOverlay, Skeleton } from '@mantine/core';
 import { IconChartBarOff, IconChevronRight, IconMusic } from '@tabler/icons-react';
 
-import {
-	useEarTrainingPracticeSessionActivityQuery,
-	useEarTrainingPracticeSessionScoresQuery
-} from '../services/dashboard.service';
+import { useEarTrainingPracticeSessionActivityQuery, useEarTrainingPracticeSessionScoresQuery } from '../../services/ear-training-dashboard.service';
 
-const EAR_TRAINING_EXERCISES_META: Record<
-	EarTrainingPracticeType,
-	{ icon: JSX.Element | React.ReactNode; label: string; description: string; badgeClass: string; cardClass: string }
-> = {
+const EAR_TRAINING_EXERCISES_META: Record<EarTrainingPracticeType, { icon: JSX.Element | React.ReactNode; label: string; description: string; badgeClass: string; cardClass: string }> = {
 	'interval-identification': {
 		label: 'Interval',
 		description: 'Distance between two notes',
@@ -60,7 +55,7 @@ const EAR_TRAINING_EXERCISES_META: Record<
 	}
 };
 
-const ProfileDashboard = () => {
+const EarTrainingDashboard = () => {
 	const { practiceSessionActivity, activityQueryPending } = useEarTrainingPracticeSessionActivityQuery({});
 	const { practiceSessionScores, scoresQueryPending } = useEarTrainingPracticeSessionScoresQuery({});
 
@@ -87,8 +82,7 @@ const ProfileDashboard = () => {
 									visible={activityQueryPending}
 									loaderProps={{ type: 'dots' }}
 									classNames={{
-										overlay:
-											'border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25'
+										overlay: 'border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25'
 									}}
 								/>
 							) : practiceSessionActivity && practiceSessionActivity?.length > 0 ? (
@@ -173,7 +167,7 @@ const ProfileDashboard = () => {
 								<div className='grid h-full place-items-center'>
 									<div className='flex flex-col items-center gap-4'>
 										<p className='font-medium'>Data not available</p>
-										<div className=' aspect-square rounded-full border border-violet-600 bg-violet-600/25 p-2'>
+										<div className='aspect-square rounded-full border border-violet-600 bg-violet-600/25 p-2'>
 											<IconChartBarOff
 												stroke={1.6}
 												className='stroke-violet-600'
@@ -199,8 +193,7 @@ const ProfileDashboard = () => {
 						: Object.values(EarTrainingPracticeType)?.map(practiceType => {
 								const practiceTypeScore = practiceSessionScores?.[practiceType];
 
-								const { icon, label, description, badgeClass, cardClass } =
-									EAR_TRAINING_EXERCISES_META[practiceType];
+								const { icon, label, description, badgeClass, cardClass } = EAR_TRAINING_EXERCISES_META[practiceType];
 
 								return (
 									<div
@@ -221,17 +214,12 @@ const ProfileDashboard = () => {
 													size='lg'
 													className={badgeClass}
 												>
-													{practiceTypeScore
-														? calculatePercentage(
-																practiceTypeScore?.correct,
-																practiceTypeScore?.questionCount
-														  )
-														: 0}
-													%
+													{practiceTypeScore ? calculatePercentage(practiceTypeScore?.correct, practiceTypeScore?.questionCount) : 0}%
 												</Badge>
-												<ActionIcon variant='transparent'>
+
+												<Link href={`/profile/ear-training/${practiceType}`}>
 													<IconChevronRight />
-												</ActionIcon>
+												</Link>
 											</div>
 										</div>
 									</div>
@@ -243,4 +231,4 @@ const ProfileDashboard = () => {
 	);
 };
 
-export default ProfileDashboard;
+export default EarTrainingDashboard;

@@ -2,7 +2,7 @@ import EarTrainingLayout from '@/features/ear-training/practice/layouts/EarTrain
 
 import InDevelopmentBanner from '../components/misc/InDevelopmentBanner';
 
-const Profile = () => {
+const Settings = () => {
 	return (
 		<EarTrainingLayout centered>
 			<InDevelopmentBanner />
@@ -10,4 +10,4 @@ const Profile = () => {
 	);
 };
 
-export default Profile;
+export default Settings;

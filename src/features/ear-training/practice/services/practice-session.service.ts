@@ -2,7 +2,7 @@ import axios from 'axios';
 import { z } from 'zod';
 
 import { IResponse } from '@/types';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export enum EarTrainingPracticeType {
 	IntervalIdentification = 'interval-identification',
@@ -49,8 +49,16 @@ export const useSaveEarTrainingPracticeSessionMutation = () => {
 		).data;
 	};
 
+	const queryClient = useQueryClient();
+
 	const { isPending: savePracticeSessionPending, mutateAsync: mutateSaveEarTrainingPracticeSession } = useMutation({
-		mutationFn: saveEarTrainingPracticeSession
+		mutationFn: saveEarTrainingPracticeSession,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['practice-session', 'activity'],
+				exact: true
+			});
+		}
 	});
 
 	return {

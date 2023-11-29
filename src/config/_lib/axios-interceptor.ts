@@ -48,6 +48,8 @@ axios.interceptors.response.use(
 		return res;
 	},
 	(error: AxiosError<any>) => {
+		console.error(error);
+
 		let errorNotification: { title?: string; message?: string } = {};
 		const errorObj = error?.response?.data?.error;
 

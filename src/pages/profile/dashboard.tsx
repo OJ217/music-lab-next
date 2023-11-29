@@ -1,5 +1,5 @@
-import { ProfileDashboardView } from '@/features/profile/views';
+import { EarTrainingDashboardView } from '@/features/profile/views/_index';
 
-const ProfileDashboard = () => <ProfileDashboardView />;
+const EarTrainingDashboard = () => <EarTrainingDashboardView />;
 
-export default ProfileDashboard;
+export default EarTrainingDashboard;

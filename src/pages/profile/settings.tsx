@@ -1,5 +1,5 @@
-import { ProfileSettingsView } from '@/features/profile/views';
+import { SettingsView } from '@/features/profile/views/_index';
 
-const ProfileSettings = () => <ProfileSettingsView />;
+const Settings = () => <SettingsView />;
 
-export default ProfileSettings;
+export default Settings;
