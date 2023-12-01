@@ -220,12 +220,11 @@ const EarTrainingExerciseDashboard = () => {
 										<p>Duration: {dayjs.duration(s.duration, 'seconds').format(s.duration < 3600 ? 'MM:ss' : 'HH:MM:ss')}</p>
 										<div className='flex items-center gap-4'>
 											<div className='flex items-center gap-2'>
-												<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
-													<IconCheck
-														size={12}
-														stroke={1.2}
-													/>
-												</div>
+												<IconCheck
+													size={14}
+													stroke={1.2}
+													className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'
+												/>
 												<p>{s.result.correct}</p>
 											</div>
 											<div className='flex items-center gap-2'>
@@ -256,104 +255,120 @@ const EarTrainingExerciseDashboard = () => {
 				classNames={{ title: 'font-semibold text-sm' }}
 				withinPortal
 			>
-				{practiceSessionDetailPending ? (
-					<div>Loading</div>
-				) : (
-					practiceSessionDetail && (
-						<div className='mt-6 space-y-6'>
-							<Paper
-								p='sm'
-								radius='md'
-								withBorder
-								className='flex items-stretch gap-4'
-							>
-								<div className='flex items-center gap-4'>
-									<RingProgress
-										size={80}
-										roundCaps
-										thickness={4}
-										label={
-											<Center>
-												<ActionIcon
-													color='teal'
-													variant='light'
-													radius='xl'
-													size='xl'
-												>
-													<IconCheck />
-												</ActionIcon>
-											</Center>
-										}
-										sections={[
-											{
-												value: practiceSessionDetail?.result.score,
-												color: 'green'
-											}
-										]}
+				<div className='mt-6 space-y-6'>
+					{practiceSessionDetailPending ? (
+						<>
+							<Skeleton
+								radius={'md'}
+								className='h-[6.75rem]'
+							/>
+							<div className='space-y-6'>
+								{Array.from({ length: 8 }).map((_, index) => (
+									<Skeleton
+										key={index}
+										radius={'md'}
+										className='h-10'
 									/>
-									<div>
-										<h1 className='text-3xl font-medium'>{practiceSessionDetail?.result.score}%</h1>
-										<p className='text-gray-400'>
-											{practiceSessionDetail?.result.correct}/{practiceSessionDetail?.result.questionCount}
+								))}
+							</div>
+						</>
+					) : (
+						practiceSessionDetail && (
+							<>
+								<Paper
+									p='sm'
+									radius='md'
+									withBorder
+									className='flex items-stretch gap-4'
+								>
+									<div className='flex items-center gap-4'>
+										<RingProgress
+											size={80}
+											roundCaps
+											thickness={4}
+											label={
+												<Center>
+													<ActionIcon
+														color='teal'
+														variant='light'
+														radius='xl'
+														size='xl'
+													>
+														<IconCheck />
+													</ActionIcon>
+												</Center>
+											}
+											sections={[
+												{
+													value: practiceSessionDetail.result.score,
+													color: 'green'
+												}
+											]}
+										/>
+										<div>
+											<h1 className='text-3xl font-medium'>{practiceSessionDetail?.result.score}%</h1>
+											<p className='text-gray-400'>
+												{practiceSessionDetail?.result.correct}/{practiceSessionDetail?.result.questionCount}
+											</p>
+										</div>
+									</div>
+									<Divider orientation='vertical' />
+									<div className='flex flex-col space-y-2'>
+										<p className='text-xs text-gray-400'>Message:</p>
+										<p className='flex flex-grow items-center justify-center text-sm'>
+											{resolvePracticeResultMessage(practiceSessionDetail?.result.correct, practiceSessionDetail?.result.questionCount)}
 										</p>
 									</div>
-								</div>
-								<Divider orientation='vertical' />
-								<div className='flex flex-col space-y-2'>
-									<p className='text-xs text-gray-400'>Message:</p>
-									<p className='flex flex-grow items-center justify-center text-sm'>
-										{resolvePracticeResultMessage(practiceSessionDetail?.result.correct, practiceSessionDetail?.result.questionCount)}
-									</p>
-								</div>
-							</Paper>
-							<div className='space-y-3'>
-								{practiceSessionDetail?.statistics.map(({ score, correct, incorrect, questionCount, questionType }, index, { length: listLength }) => {
-									return (
-										<>
-											<div
-												key={questionType}
-												className='space-y-1'
-											>
-												<div className='flex items-center justify-between gap-4 text-sm'>
-													<p className='font-medium'>{t(`${EAR_TRAINING_PRACTICE_TYPE_NAMESPACES[exercise]}.${questionType}`)}</p>
-													<div>
-														<div className='flex items-center gap-2 font-medium'>
-															<p>{score}%</p>
-															<span className='h-[1.5px] w-1.5 bg-white'></span>
-															<p>
-																({correct}/{questionCount})
-															</p>
+								</Paper>
+								<div className='space-y-3'>
+									{practiceSessionDetail?.statistics.map(({ score, correct, incorrect, questionCount, questionType }, index, { length: listLength }) => {
+										return (
+											<>
+												<div
+													key={questionType}
+													className='space-y-1'
+												>
+													<div className='flex items-center justify-between gap-4 text-sm'>
+														<p className='font-medium'>{t(`${EAR_TRAINING_PRACTICE_TYPE_NAMESPACES[exercise]}.${questionType}`)}</p>
+														<div>
+															<div className='flex items-center gap-2 font-medium'>
+																<p>{score}%</p>
+																<span className='h-[1.5px] w-1.5 bg-white'></span>
+																<p>
+																	({correct}/{questionCount})
+																</p>
+															</div>
 														</div>
 													</div>
-												</div>
-												<div className='flex items-center justify-end gap-6 text-xs'>
-													<div className='flex items-center gap-3'>
-														<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
-															<IconCheck
-																size={12}
+													<div className='flex items-center justify-end gap-6 text-xs'>
+														<div className='flex items-center gap-3'>
+															<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
+																<IconCheck
+																	size={12}
+																	stroke={1.2}
+																/>
+															</div>
+															<p>{correct}</p>
+														</div>
+														<div className='flex items-center gap-3'>
+															<IconX
+																size={14}
 																stroke={1.2}
+																className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
 															/>
+															<p>{incorrect}</p>
 														</div>
-														<p>{correct}</p>
-													</div>
-													<div className='flex items-center gap-3'>
-														<IconX
-															size={14}
-															stroke={1.2}
-															className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
-														/>
-														<p>{incorrect}</p>
 													</div>
 												</div>
-											</div>
-											{index + 1 < listLength && <Divider key={`divider-${index + 1}`} />}
-										</>
-									);
-								})}
-							</div>
-						</div>
-					)
-				)}
+												{index + 1 < listLength && <Divider key={`divider-${index + 1}`} />}
+											</>
+										);
+									})}
+								</div>
+							</>
+						)
+					)}
+				</div>
 			</Drawer>
 		</EarTrainingLayout>
 	);

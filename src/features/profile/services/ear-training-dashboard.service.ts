@@ -1,7 +1,9 @@
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { IPaginatedDocuments, IResponse, IUseQueryBase } from '@/types';
+import { calculatePercentage } from '@/utils/format.util';
 import { useQuery } from '@tanstack/react-query';
 
 interface IUsePracticeSessionActivityParams extends IUseQueryBase {
@@ -10,10 +12,12 @@ interface IUsePracticeSessionActivityParams extends IUseQueryBase {
 	};
 }
 
-type IPracticeSessionActivityResponse = {
+interface IPracticeSessionActivity {
 	activity: number;
 	date: string;
-}[];
+}
+
+type IPracticeSessionActivityResponse = IPracticeSessionActivity[];
 
 export const useEarTrainingPracticeSessionActivityQuery = ({ enabled = true, queryParams = {} }: IUsePracticeSessionActivityParams) => {
 	const fetchEarTrainingPracticeSessionActivity = async () => {
@@ -34,6 +38,44 @@ export const useEarTrainingPracticeSessionActivityQuery = ({ enabled = true, que
 	return {
 		practiceSessionActivity: data?.data,
 		activityQueryPending: isPending
+	};
+};
+
+interface IUsePracticeSessionProgressParams extends IUseQueryBase {
+	queryParams?: {
+		type?: EarTrainingPracticeType;
+	};
+}
+
+interface IPracticeSessionProgress {
+	date: string;
+	correct: number;
+	questionCount: number;
+}
+
+type IPracticeSessionProgressResponse = IPracticeSessionProgress[];
+
+export const useEarTrainingPracticeSessionProgressQuery = ({ enabled, queryParams }: IUsePracticeSessionProgressParams) => {
+	const fetchEarTrainingPracticeSessionProgress = async () => {
+		const practiceSessionProgress = (
+			await axios.get<IResponse<IPracticeSessionProgressResponse>>('/ear-training/practice-session/progress', {
+				isPrivate: true,
+				params: queryParams
+			})
+		).data.data;
+
+		return practiceSessionProgress.sort((a, b) => dayjs(a.date).diff(dayjs(b.date))).map(p => ({ ...p, score: calculatePercentage(p.correct, p.questionCount) }));
+	};
+
+	const { data, isPending } = useQuery({
+		queryFn: fetchEarTrainingPracticeSessionProgress,
+		queryKey: ['practice-session', 'progress', queryParams],
+		enabled
+	});
+
+	return {
+		practiceSessionProgress: data,
+		progressQueryPending: isPending
 	};
 };
 
@@ -63,7 +105,6 @@ export const useEarTrainingPracticeSessionScoresQuery = ({ enabled = true }: IUs
 	const { data, isPending } = useQuery({
 		queryFn: fetchEarTrainingPracticeSessionScores,
 		queryKey: ['practice-session', 'scores'],
-		staleTime: Infinity,
 		enabled
 	});
 
