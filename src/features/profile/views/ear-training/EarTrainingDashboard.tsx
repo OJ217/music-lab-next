@@ -286,7 +286,7 @@ const EarTrainingDashboard = () => {
 												if (active && payload) {
 													const data = payload[0]?.payload;
 													const correct = data?.correct;
-													const questionCount = data?.correct;
+													const questionCount = data?.questionCount;
 
 													return (
 														<div className='space-y-1 rounded-lg bg-violet-600 px-2 py-1.5 text-center text-xs font-medium text-white'>
