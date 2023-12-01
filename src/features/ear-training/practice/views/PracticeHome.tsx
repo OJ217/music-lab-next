@@ -11,7 +11,7 @@ const PracticeHome = () => {
 						href={'/ear-training/practice/interval'}
 						className='from block w-full rounded-xl border border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
 					>
-						<h3 className='text-xl font-semibold text-violet-300'>Interval</h3>
+						<h3 className='text-xl font-semibold text-violet-400'>Interval</h3>
 						<p className='text-sm text-violet-100'>Practice your Interval Identification skill</p>
 					</Link>
 

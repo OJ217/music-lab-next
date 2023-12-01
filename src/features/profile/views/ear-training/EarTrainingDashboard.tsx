@@ -76,10 +76,10 @@ const EarTrainingDashboard = () => {
 			centered={false}
 			showAffix={false}
 		>
-			<div className='grid max-w-lg grid-cols-1 gap-8'>
+			<div className='mx-auto w-full max-w-lg space-y-8'>
 				<div className='space-y-4'>
 					<SegmentedControl
-						size='sm'
+						size='xs'
 						radius='xl'
 						fullWidth
 						value={dashboardType}
@@ -214,7 +214,7 @@ const EarTrainingDashboard = () => {
 									<BarChart
 										data={practiceSessionProgress}
 										className={'text-xs'}
-										barGap={24}
+										barCategoryGap={4}
 									>
 										<defs>
 											<linearGradient
@@ -242,7 +242,7 @@ const EarTrainingDashboard = () => {
 											fill={'url(#color)'}
 											stroke={'#7C3AED'}
 											strokeWidth={1.6}
-											maxBarSize={36}
+											maxBarSize={30}
 											radius={6}
 										>
 											<LabelList

@@ -3,16 +3,22 @@ import duration from 'dayjs/plugin/duration';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/EarTrainingLayout';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { resolvePracticeResultMessage } from '@/features/ear-training/practice/utils/practice-session.util';
-import { ActionIcon, Badge, Card, Center, Divider, Drawer, LoadingOverlay, Paper, Progress, RingProgress, ScrollArea, Skeleton } from '@mantine/core';
+import { SelectData } from '@/types';
+import { ActionIcon, Badge, Card, Center, Drawer, LoadingOverlay, Progress, RingProgress, ScrollArea, SegmentedControl, Select, Skeleton, ThemeIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconChartBarOff, IconCheck, IconDotsVertical, IconX } from '@tabler/icons-react';
 
-import { useEarTrainingPracticeSessionActivityQuery, useEarTrainingPracticeSessionListQuery, useEarTrainingPracticeSessionQuery } from '../../services/ear-training-dashboard.service';
+import {
+	useEarTrainingPracticeSessionActivityQuery,
+	useEarTrainingPracticeSessionListQuery,
+	useEarTrainingPracticeSessionProgressQuery,
+	useEarTrainingPracticeSessionQuery
+} from '../../services/ear-training-dashboard.service';
 
 dayjs.extend(duration);
 
@@ -36,6 +42,11 @@ const EarTrainingExerciseDashboard = () => {
 		queryParams: { type: exercise }
 	});
 
+	const { practiceSessionProgress, progressQueryPending } = useEarTrainingPracticeSessionProgressQuery({
+		enabled: !!exercise,
+		queryParams: { type: exercise }
+	});
+
 	const { practiceSessionList, practiceSessionListPending } = useEarTrainingPracticeSessionListQuery({
 		enabled: !!exercise,
 		queryParams: { type: exercise, page: 1 }
@@ -48,6 +59,13 @@ const EarTrainingExerciseDashboard = () => {
 
 	practiceSessionActivity?.sort((a, b) => dayjs(a.date).diff(dayjs(b.date)));
 
+	type EarTrainingDashboardType = 'activity' | 'progress';
+	const [dashboardType, setDashboardType] = useState<EarTrainingDashboardType>('activity');
+	const dashboardSegmentedControlData: SelectData<EarTrainingDashboardType> = [
+		{ label: 'Activity', value: 'activity' },
+		{ label: 'Progress', value: 'progress' }
+	];
+
 	return (
 		<EarTrainingLayout
 			centered={false}
@@ -55,119 +73,270 @@ const EarTrainingExerciseDashboard = () => {
 		>
 			<div className='mx-auto w-full max-w-lg space-y-8'>
 				<div className='space-y-4'>
-					<h3 className='text-sm font-semibold md:text-base'>My activity</h3>
+					<SegmentedControl
+						size='xs'
+						radius='xl'
+						fullWidth
+						value={dashboardType}
+						color='violet.6'
+						className='bg-violet-600/10'
+						onChange={t => setDashboardType(t as EarTrainingDashboardType)}
+						data={dashboardSegmentedControlData}
+					/>
 					<Card
 						className='border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 pl-2'
 						radius={'md'}
 					>
-						<ResponsiveContainer
-							height={200}
-							width={'100%'}
-						>
-							{activityQueryPending ? (
-								<LoadingOverlay
-									visible={activityQueryPending}
-									loaderProps={{ type: 'dots' }}
-									classNames={{
-										overlay: 'border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25'
-									}}
-								/>
-							) : practiceSessionActivity && practiceSessionActivity?.length > 0 ? (
-								<AreaChart
-									data={practiceSessionActivity}
-									className={'text-xs'}
-								>
-									<defs>
-										<linearGradient
-											id='color'
-											x1='0'
-											y1='0'
-											x2='0'
-											y2='1'
-										>
-											<stop
-												offset='0%'
-												stopColor='#7C3AED'
-												stopOpacity={0.6}
-											/>
-											<stop
-												offset='80%'
-												stopColor='#7C3AED'
-												stopOpacity={0.2}
-											/>
-										</linearGradient>
-									</defs>
-									<Area
-										type={'monotone'}
-										dataKey={'activity'}
-										fill={'url(#color)'}
-										stroke={'#7C3AED'}
-										strokeWidth={2.4}
-									/>
-									<XAxis
-										padding={{ left: 8, right: 4 }}
-										dataKey={'date'}
-										axisLine={false}
-										tickLine={false}
-										tickMargin={16}
-										tickSize={0}
-										minTickGap={32}
-										tickFormatter={date => dayjs(date).format('MM/DD')}
-										tick={{
-											fill: '#E5E7EB'
+						{dashboardType === 'activity' ? (
+							<ResponsiveContainer
+								height={200}
+								width={'100%'}
+							>
+								{activityQueryPending ? (
+									<LoadingOverlay
+										visible={activityQueryPending}
+										loaderProps={{ type: 'dots' }}
+										classNames={{
+											overlay: 'border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25'
 										}}
 									/>
-									<YAxis
-										dataKey={'activity'}
-										orientation={'left'}
-										axisLine={false}
-										tickLine={false}
-										tickMargin={8}
-										tickSize={0}
-										width={32}
-										tick={{
-											fill: '#E5E7EB'
-										}}
-									/>
-									<Tooltip
-										cursor={false}
-										content={({ active, payload, label }) => {
-											if (active && payload) {
-												return (
-													<div className='space-y-1 rounded-lg bg-violet-600 px-2 py-1.5 text-center text-xs font-medium text-white'>
-														<p>{payload[0]?.value} exercises</p>
-														<h4>{label}</h4>
-													</div>
-												);
-											}
-											return null;
-										}}
-									/>
-									<CartesianGrid
-										vertical={false}
-										stroke='#344054'
-										strokeOpacity={0.2}
-										strokeWidth={1.6}
-									/>
-								</AreaChart>
-							) : (
-								<div className='grid h-full place-items-center'>
-									<div className='flex flex-col items-center gap-4'>
-										<p className='font-medium'>Data not available</p>
-										<div className='aspect-square rounded-full border border-violet-600 bg-violet-600/25 p-2'>
-											<IconChartBarOff
-												stroke={1.6}
-												className='stroke-violet-600'
-											/>
+								) : practiceSessionActivity && practiceSessionActivity?.length > 0 ? (
+									<AreaChart
+										data={practiceSessionActivity}
+										className={'text-xs'}
+									>
+										<defs>
+											<linearGradient
+												id='color'
+												x1='0'
+												y1='0'
+												x2='0'
+												y2='1'
+											>
+												<stop
+													offset='0%'
+													stopColor='#7C3AED'
+													stopOpacity={0.6}
+												/>
+												<stop
+													offset='80%'
+													stopColor='#7C3AED'
+													stopOpacity={0.2}
+												/>
+											</linearGradient>
+										</defs>
+										<Area
+											type={'monotone'}
+											dataKey={'activity'}
+											fill={'url(#color)'}
+											stroke={'#7C3AED'}
+											strokeWidth={2.4}
+										/>
+										<XAxis
+											padding={{ left: 8, right: 4 }}
+											dataKey={'date'}
+											axisLine={false}
+											tickLine={false}
+											tickMargin={16}
+											tickSize={0}
+											minTickGap={32}
+											tickFormatter={date => dayjs(date).format('MM/DD')}
+											tick={{
+												fill: '#E5E7EB'
+											}}
+										/>
+										<YAxis
+											dataKey={'activity'}
+											orientation={'left'}
+											axisLine={false}
+											tickLine={false}
+											tickMargin={8}
+											tickSize={0}
+											width={32}
+											tick={{
+												fill: '#E5E7EB'
+											}}
+										/>
+										<Tooltip
+											cursor={false}
+											content={({ active, payload, label }) => {
+												if (active && payload) {
+													return (
+														<div className='space-y-1 rounded-lg bg-violet-600 px-2 py-1.5 text-center text-xs font-medium text-white'>
+															<p>{payload[0]?.value} exercises</p>
+															<h4>{label}</h4>
+														</div>
+													);
+												}
+												return null;
+											}}
+										/>
+										<CartesianGrid
+											vertical={false}
+											stroke='#7C3AED'
+											strokeOpacity={0.075}
+											strokeWidth={1.6}
+										/>
+									</AreaChart>
+								) : (
+									<div className='grid h-full place-items-center'>
+										<div className='flex flex-col items-center gap-4'>
+											<p className='font-medium'>Data not available</p>
+											<div className='aspect-square rounded-full border border-violet-600 bg-violet-600/25 p-2'>
+												<IconChartBarOff
+													stroke={1.6}
+													className='stroke-violet-600'
+												/>
+											</div>
 										</div>
 									</div>
-								</div>
-							)}
-						</ResponsiveContainer>
+								)}
+							</ResponsiveContainer>
+						) : (
+							<ResponsiveContainer
+								height={200}
+								width={'100%'}
+							>
+								{progressQueryPending ? (
+									<LoadingOverlay
+										visible={activityQueryPending}
+										loaderProps={{ type: 'dots' }}
+										classNames={{
+											overlay: 'border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25'
+										}}
+									/>
+								) : practiceSessionProgress && practiceSessionProgress?.length > 0 ? (
+									<BarChart
+										data={practiceSessionProgress}
+										className={'text-xs'}
+										barCategoryGap={4}
+									>
+										<defs>
+											<linearGradient
+												id='color'
+												x1='0'
+												y1='0'
+												x2='0'
+												y2='1'
+											>
+												<stop
+													offset='0%'
+													stopColor='#7C3AED'
+													stopOpacity={0.6}
+												/>
+												<stop
+													offset='90%'
+													stopColor='#7C3AED'
+													stopOpacity={0.2}
+												/>
+											</linearGradient>
+										</defs>
+										<Bar
+											type='monotone'
+											dataKey={'score'}
+											fill={'url(#color)'}
+											stroke={'#7C3AED'}
+											strokeWidth={1.6}
+											maxBarSize={30}
+											radius={6}
+										>
+											<LabelList
+												angle={270}
+												fill='#E5E7EB'
+												dataKey={'score'}
+												position='center'
+												className='animate-fade-in text-xs font-medium'
+												formatter={(data: number) => {
+													return data > 0 ? data : null;
+												}}
+											/>
+										</Bar>
+										<XAxis
+											padding={{ left: 8, right: 4 }}
+											dataKey={'date'}
+											axisLine={false}
+											tickLine={false}
+											tickMargin={16}
+											tickSize={0}
+											minTickGap={32}
+											tickFormatter={date => dayjs(date).format('MM/DD')}
+											tick={{
+												fill: '#E5E7EB'
+											}}
+										/>
+										<YAxis
+											dataKey={'score'}
+											orientation={'left'}
+											axisLine={false}
+											tickLine={false}
+											tickMargin={8}
+											tickSize={0}
+											width={32}
+											tick={{
+												fill: '#E5E7EB'
+											}}
+										/>
+										<Tooltip
+											cursor={false}
+											content={({ active, payload, label }) => {
+												if (active && payload) {
+													const data = payload[0]?.payload;
+													const correct = data?.correct;
+													const questionCount = data?.questionCount;
+
+													return (
+														<div className='space-y-1 rounded-lg bg-violet-600 px-2 py-1.5 text-center text-xs font-medium text-white'>
+															<div className='flex items-center gap-2'>
+																<div className='flex items-center gap-1'>
+																	<IconCheck
+																		size={14}
+																		stroke={1.2}
+																		className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'
+																	/>
+																	<p>{correct}</p>
+																</div>
+																<div className='flex items-center gap-1'>
+																	<IconX
+																		size={14}
+																		stroke={1.2}
+																		className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
+																	/>
+																	<p>{questionCount - correct}</p>
+																</div>
+															</div>
+															<h4>{label}</h4>
+														</div>
+													);
+												}
+												return null;
+											}}
+										/>
+										<CartesianGrid
+											vertical={false}
+											stroke='#7C3AED'
+											strokeOpacity={0.075}
+											strokeWidth={1.6}
+										/>
+									</BarChart>
+								) : (
+									<div className='grid h-full place-items-center'>
+										<div className='flex flex-col items-center gap-4'>
+											<p className='font-medium'>Data not available</p>
+											<div className='aspect-square rounded-full border border-violet-600 bg-violet-600/25 p-2'>
+												<IconChartBarOff
+													stroke={1.6}
+													className='stroke-violet-600'
+												/>
+											</div>
+										</div>
+									</div>
+								)}
+							</ResponsiveContainer>
+						)}
 					</Card>
 				</div>
 				<div className='space-y-4'>
-					<h3 className='text-sm font-semibold md:text-base'>My activity</h3>
+					<h3 className='text-sm font-semibold md:text-base'>Practice session history</h3>
 					{practiceSessionListPending ? (
 						Array.from({ length: 10 }).map((_, index) => (
 							<Skeleton
@@ -247,7 +416,7 @@ const EarTrainingExerciseDashboard = () => {
 			</div>
 			<Drawer
 				position='left'
-				title='Practice Session Detail'
+				title={'Practice session detail'}
 				opened={practiceSessionDetailDrawerOpened}
 				onClose={closePracticeSessionDetailDrawer}
 				scrollAreaComponent={ScrollArea.Autosize}
@@ -255,19 +424,19 @@ const EarTrainingExerciseDashboard = () => {
 				classNames={{ title: 'font-semibold text-sm' }}
 				withinPortal
 			>
-				<div className='mt-6 space-y-6'>
+				<div className='space-y-6'>
 					{practiceSessionDetailPending ? (
 						<>
 							<Skeleton
 								radius={'md'}
 								className='h-[6.75rem]'
 							/>
-							<div className='space-y-6'>
+							<div className='space-y-3'>
 								{Array.from({ length: 8 }).map((_, index) => (
 									<Skeleton
 										key={index}
 										radius={'md'}
-										className='h-10'
+										className='h-20'
 									/>
 								))}
 							</div>
@@ -275,93 +444,105 @@ const EarTrainingExerciseDashboard = () => {
 					) : (
 						practiceSessionDetail && (
 							<>
-								<Paper
-									p='sm'
-									radius='md'
-									withBorder
-									className='flex items-stretch gap-4'
-								>
-									<div className='flex items-center gap-4'>
-										<RingProgress
-											size={80}
-											roundCaps
-											thickness={4}
-											label={
-												<Center>
-													<ActionIcon
-														color='teal'
-														variant='light'
-														radius='xl'
-														size='xl'
-													>
-														<IconCheck />
-													</ActionIcon>
-												</Center>
-											}
-											sections={[
-												{
-													value: practiceSessionDetail.result.score,
-													color: 'green'
+								<div className='grid grid-cols-[11fr_9fr] gap-3'>
+									<Card radius='md'>
+										<div className='flex h-full items-center gap-4 align-baseline'>
+											<RingProgress
+												size={80}
+												roundCaps
+												thickness={4}
+												label={
+													<Center>
+														<ThemeIcon
+															color='green'
+															variant='light'
+															radius='xl'
+															size='xl'
+														>
+															<IconCheck />
+														</ThemeIcon>
+													</Center>
 												}
-											]}
-										/>
-										<div>
-											<h1 className='text-3xl font-medium'>{practiceSessionDetail?.result.score}%</h1>
-											<p className='text-gray-400'>
-												{practiceSessionDetail?.result.correct}/{practiceSessionDetail?.result.questionCount}
+												sections={[
+													{
+														value: practiceSessionDetail.result.score,
+														color: 'green'
+													}
+												]}
+											/>
+											<div>
+												<h1 className='text-3xl font-medium text-white'>{practiceSessionDetail?.result.score}%</h1>
+												<p className='text-gray-400'>
+													{practiceSessionDetail?.result.correct}/{practiceSessionDetail?.result.questionCount}
+												</p>
+											</div>
+										</div>
+									</Card>
+									<Card radius='md'>
+										<div className='flex h-full flex-col space-y-1 align-baseline'>
+											<p className='text-xs text-gray-400'>Message:</p>
+											<p className='flex flex-grow items-center justify-center text-sm text-white'>
+												{resolvePracticeResultMessage(practiceSessionDetail?.result.correct, practiceSessionDetail?.result.questionCount)}
 											</p>
 										</div>
+									</Card>
+								</div>
+
+								<div className='space-y-4'>
+									<div className='flex items-center justify-between gap-4'>
+										<h3 className='text-sm font-medium text-white'>Exercises</h3>
+										<Select
+											size='xs'
+											radius='xl'
+											variant='filled'
+											defaultValue={'all'}
+											allowDeselect={false}
+											data={[{ label: 'All', value: 'all' }]}
+											classNames={{ input: 'focus-within:bg-violet-600/25 max-w-[120px] pl-4' }}
+										/>
 									</div>
-									<Divider orientation='vertical' />
-									<div className='flex flex-col space-y-2'>
-										<p className='text-xs text-gray-400'>Message:</p>
-										<p className='flex flex-grow items-center justify-center text-sm'>
-											{resolvePracticeResultMessage(practiceSessionDetail?.result.correct, practiceSessionDetail?.result.questionCount)}
-										</p>
-									</div>
-								</Paper>
-								<div className='space-y-3'>
 									{practiceSessionDetail?.statistics.map(({ score, correct, incorrect, questionCount, questionType }, index, { length: listLength }) => {
 										return (
-											<>
-												<div
-													key={questionType}
-													className='space-y-1'
-												>
-													<div className='flex items-center justify-between gap-4 text-sm'>
-														<p className='font-medium'>{t(`${EAR_TRAINING_PRACTICE_TYPE_NAMESPACES[exercise]}.${questionType}`)}</p>
-														<div>
-															<div className='flex items-center gap-2 font-medium'>
-																<p>{score}%</p>
-																<span className='h-[1.5px] w-1.5 bg-white'></span>
-																<p>
-																	({correct}/{questionCount})
-																</p>
-															</div>
-														</div>
-													</div>
-													<div className='flex items-center justify-end gap-6 text-xs'>
-														<div className='flex items-center gap-3'>
-															<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
-																<IconCheck
-																	size={12}
-																	stroke={1.2}
-																/>
-															</div>
-															<p>{correct}</p>
-														</div>
-														<div className='flex items-center gap-3'>
-															<IconX
+											<Card
+												radius={'md'}
+												key={questionType}
+												className='space-y-2 p-3'
+											>
+												<div className='flex items-center justify-between gap-4 text-sm text-white'>
+													<p className='font-medium'>{t(`${EAR_TRAINING_PRACTICE_TYPE_NAMESPACES[exercise]}.${questionType}`)}</p>
+													<Badge
+														variant='light'
+														color='green'
+													>
+														{score}%
+													</Badge>
+												</div>
+												<Progress
+													value={score}
+													color='green'
+													className='w-full'
+													size={'sm'}
+												/>
+												<div className='flex items-center justify-end gap-4 text-xs'>
+													<div className='flex items-center gap-2'>
+														<div className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'>
+															<IconCheck
 																size={14}
 																stroke={1.2}
-																className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
 															/>
-															<p>{incorrect}</p>
 														</div>
+														<p>{correct}</p>
+													</div>
+													<div className='flex items-center gap-2'>
+														<IconX
+															size={14}
+															stroke={1.2}
+															className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
+														/>
+														<p>{incorrect}</p>
 													</div>
 												</div>
-												{index + 1 < listLength && <Divider key={`divider-${index + 1}`} />}
-											</>
+											</Card>
 										);
 									})}
 								</div>

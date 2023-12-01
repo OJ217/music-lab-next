@@ -7,6 +7,7 @@ const NavigationAffix = () => {
 	return (
 		<Affix
 			position={{ bottom: rem(20), left: rem(20) }}
+			className='fixed'
 			withinPortal={false}
 		>
 			<Menu position={'top-start'}>

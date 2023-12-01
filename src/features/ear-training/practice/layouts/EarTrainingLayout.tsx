@@ -134,7 +134,9 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 				</nav>
 
 				{/* Content */}
-				<div className={`mx-auto flex w-full max-w-5xl flex-grow justify-center p-4 md:p-6 ${centered && 'items-center'}`}>{children}</div>
+				<div className={`w-full flex-grow ${centered && 'grid place-content-center'}`}>
+					<div className='mx-auto max-w-5xl p-4 md:p-6'>{children}</div>
+				</div>
 				{showAffix && <NavigationAffix />}
 			</main>
 		</ProtectedRoute>
