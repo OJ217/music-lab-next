@@ -8,18 +8,7 @@ interface IMantineProviderProps {
 
 const theme = createTheme({
 	colors: {
-		violet: [
-			'#F5F3FF',
-			'#EDE9FE',
-			'#DDD6FE',
-			'#C3B5FD',
-			'#A78BFA',
-			'#8A5CF6',
-			'#7C3AED',
-			'#6C28D9',
-			'#5B21B6',
-			'#4D1D95'
-		]
+		violet: ['#F5F3FF', '#EDE9FE', '#DDD6FE', '#C3B5FD', '#A78BFA', '#8A5CF6', '#7C3AED', '#6C28D9', '#5B21B6', '#4D1D95']
 	},
 	fontFamily: 'Euclid Circular A',
 	primaryColor: 'violet',

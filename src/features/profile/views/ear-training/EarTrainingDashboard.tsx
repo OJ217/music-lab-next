@@ -76,17 +76,18 @@ const EarTrainingDashboard = () => {
 			centered={false}
 			showAffix={false}
 		>
-			<div className='mx-auto w-full max-w-lg space-y-8'>
-				<SegmentedControl
-					size='sm'
-					radius='xl'
-					fullWidth
-					value={dashboardType}
-					onChange={t => setDashboardType(t as EarTrainingDashboardType)}
-					data={dashboardSegmentedControlData}
-				/>
+			<div className='grid max-w-lg grid-cols-1 gap-8'>
 				<div className='space-y-4'>
-					<h3 className='text-sm font-semibold md:text-base'>My {dashboardType}</h3>
+					<SegmentedControl
+						size='sm'
+						radius='xl'
+						fullWidth
+						value={dashboardType}
+						color='violet.6'
+						className='bg-violet-600/10'
+						onChange={t => setDashboardType(t as EarTrainingDashboardType)}
+						data={dashboardSegmentedControlData}
+					/>
 					<Card
 						className='border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 pl-2'
 						radius={'md'}

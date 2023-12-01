@@ -5,7 +5,10 @@ import { IconMusic } from '@tabler/icons-react';
 
 const NavigationAffix = () => {
 	return (
-		<Affix position={{ bottom: rem(20), left: rem(20) }}>
+		<Affix
+			position={{ bottom: rem(20), left: rem(20) }}
+			withinPortal={false}
+		>
 			<Menu position={'top-start'}>
 				<Menu.Target>
 					<ActionIcon
