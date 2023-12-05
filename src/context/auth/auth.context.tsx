@@ -17,7 +17,6 @@ interface AuthContextPayload {
 	authenticated: boolean | undefined;
 	authContextLoading: boolean;
 	userInfo: User | undefined;
-
 	setAuthStore: (val: AuthStore | ((prevState: AuthStore | null) => AuthStore | null) | null) => void;
 	signOut: () => void;
 }

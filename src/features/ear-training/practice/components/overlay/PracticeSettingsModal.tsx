@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { notify } from '@/utils/notification.util';
 import { Box, Button, Collapse, Modal, MultiSelect, NumberInput, ScrollArea, Select, Switch } from '@mantine/core';
@@ -28,11 +29,10 @@ interface IPracticeSettingsModalProps<SettingForm = any> {
 // ** Interval Practice Modal **
 // *****************************
 
-export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<IntervalPracticeSettings>> = ({
-	opened,
-	close,
-	practiceSettingsForm
-}) => {
+export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<IntervalPracticeSettings>> = ({ opened, close, practiceSettingsForm }) => {
+	const { t: settingsT } = useTranslation('ear_training', { keyPrefix: 'settings' });
+	const { t: commonT } = useTranslation();
+
 	const [advancedSettingsOpened, setAdvancedSettingsOpened] = useState<boolean>(true);
 
 	const handleSettingsFormSubmit = (settings: IntervalPracticeSettings) => {
@@ -67,7 +67,7 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 			closeOnEscape={false}
 			closeOnClickOutside={false}
 			withCloseButton={false}
-			title={'Practice settings'}
+			title={settingsT('practiceSettings')}
 			scrollAreaComponent={ScrollArea.Autosize}
 		>
 			<form
@@ -77,11 +77,11 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 			>
 				<section className='space-y-6'>
 					<NumberInput
-						min={5}
+						min={10}
 						max={100}
 						allowNegative={false}
-						description='Number of questions'
-						placeholder='Between 5 - 100'
+						description={settingsT('numberOfQuestionsDescription')}
+						placeholder={settingsT('numberOfQuestionsPlaceholder')}
 						{...practiceSettingsForm.getInputProps('numberOfQuestions')}
 						classNames={{
 							input: 'focus:bg-violet-600/25'
@@ -92,9 +92,9 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 						allowDeselect={false}
 						maxDropdownHeight={120}
 						data={INTERVAL_TYPE_GROUP_SELECT_OPTIONS}
-						description='Intervals'
-						placeholder='Select type of intervals to hear'
-						{...practiceSettingsForm.getInputProps('intervalTypeGroup')}
+						description={settingsT('intervalTypeGroup')}
+						placeholder={settingsT('intervalTypeGroupDescription')}
+						{...practiceSettingsForm.getInputProps('typeGroup')}
 						classNames={{
 							input: 'focus-within:bg-violet-600/25',
 							section: 'hidden'
@@ -103,7 +103,7 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 
 					<div>
 						<Switch
-							label='Root note'
+							label={settingsT('rootNote')}
 							checked={practiceSettingsForm.values.fixedRoot.enabled}
 							onChange={e => practiceSettingsForm.setFieldValue('fixedRoot.enabled', e.target.checked)}
 						/>
@@ -116,8 +116,8 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 							<Select
 								allowDeselect={false}
 								data={FIXED_ROOT_NOTE_SELECT_OPTIONS}
-								description='Root note'
-								placeholder='Select toor note'
+								description={settingsT('rootNote')}
+								placeholder={settingsT('rootNotePlaceholder')}
 								{...practiceSettingsForm.getInputProps('fixedRoot.rootNote')}
 								classNames={{
 									input: 'focus:bg-violet-600/25',
@@ -130,14 +130,14 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 					<div>
 						<Collapse in={advancedSettingsOpened}>
 							<div className='space-y-4'>
-								<p className='text-sm'>Advanced Settings</p>
+								<p className='text-sm'>{settingsT('advancedSettings')}</p>
 								<div className='space-y-6'>
 									<Select
 										allowDeselect={false}
 										maxDropdownHeight={120}
 										data={PLAYING_MODE_SELECT_OPTIONS}
-										description='Playing mode'
-										placeholder='Select playing mode'
+										description={settingsT('playingMode')}
+										placeholder={settingsT('playingModePlaceholder')}
 										{...practiceSettingsForm.getInputProps('playingMode')}
 										classNames={{
 											input: 'focus-within:bg-violet-600/25',
@@ -149,8 +149,8 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 											min={60}
 											max={180}
 											allowNegative={false}
-											description='Tempo'
-											placeholder='BPM between 60 - 180'
+											description={settingsT('tempo')}
+											placeholder={settingsT('tempoPlaceholder')}
 											{...practiceSettingsForm.getInputProps('tempo')}
 											classNames={{
 												input: 'focus:bg-violet-600/25'
@@ -160,8 +160,8 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 											min={1}
 											max={30}
 											allowNegative={false}
-											description='Question duration'
-											placeholder='Between 1 - 30'
+											description={settingsT('questionDuration')}
+											placeholder={settingsT('questionDurationPlaceholder')}
 											{...practiceSettingsForm.getInputProps('questionDuration')}
 											classNames={{
 												input: 'focus:bg-violet-600/25'
@@ -169,11 +169,9 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 										/>
 									</div>
 									<Switch
-										label='Auto feedback'
+										label={settingsT('autoFeedback')}
 										checked={practiceSettingsForm.values.autoFeedback}
-										onChange={e =>
-											practiceSettingsForm.setFieldValue('autoFeedback', e.target.checked)
-										}
+										onChange={e => practiceSettingsForm.setFieldValue('autoFeedback', e.target.checked)}
 									/>
 								</div>
 							</div>
@@ -184,7 +182,7 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 						</Collapse>
 
 						<Button
-							p={0}
+							px={0}
 							h={'auto'}
 							w={'auto'}
 							color='violet.5'
@@ -194,7 +192,7 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 								setAdvancedSettingsOpened(!advancedSettingsOpened);
 							}}
 						>
-							{advancedSettingsOpened ? 'Hide' : 'Advanced settings'}
+							{advancedSettingsOpened ? commonT('close') : settingsT('advancedSettings')}
 						</Button>
 					</div>
 				</section>
@@ -205,9 +203,9 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 						variant='light'
 						disabled={!practiceSettingsForm.isDirty()}
 					>
-						Reset
+						{commonT('reset')}
 					</Button>
-					<Button type='submit'>Save</Button>
+					<Button type='submit'>{commonT('save')}</Button>
 				</div>
 			</form>
 		</Modal>
@@ -218,11 +216,10 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 // ** Chord Practice Modal **
 // **************************
 
-export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<ChordPracticeSettings>> = ({
-	opened,
-	close,
-	practiceSettingsForm
-}) => {
+export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<ChordPracticeSettings>> = ({ opened, close, practiceSettingsForm }) => {
+	const { t: settingsT } = useTranslation('ear_training', { keyPrefix: 'settings' });
+	const { t: commonT } = useTranslation();
+
 	const [advancedSettingsOpened, setAdvancedSettingsOpened] = useState<boolean>(true);
 
 	const handleSettingsFormSubmit = (settings: ChordPracticeSettings) => {
@@ -257,7 +254,7 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 			closeOnEscape={false}
 			closeOnClickOutside={false}
 			withCloseButton={false}
-			title={'Practice settings'}
+			title={settingsT('practiceSettings')}
 			scrollAreaComponent={ScrollArea.Autosize}
 		>
 			<form
@@ -267,12 +264,12 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 			>
 				<section className='space-y-6'>
 					<NumberInput
-						min={1}
+						min={10}
 						max={100}
 						allowNegative={false}
 						clampBehavior='strict'
-						description='Number of questions'
-						placeholder='Between 5 - 100'
+						description={settingsT('numberOfQuestionsDescription')}
+						placeholder={settingsT('numberOfQuestionsPlaceholder')}
 						{...practiceSettingsForm.getInputProps('numberOfQuestions')}
 						classNames={{
 							input: 'focus:bg-violet-600/25'
@@ -282,17 +279,17 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 						allowDeselect={false}
 						maxDropdownHeight={160}
 						data={CHORD_TYPE_GROUP_SELECT_OPTIONS}
-						description='Chord'
-						placeholder='Select type of chords'
-						{...practiceSettingsForm.getInputProps('chordTypeGroup')}
+						description={settingsT('chordTypeGroup')}
+						placeholder={settingsT('chordTypeGroupDescription')}
+						{...practiceSettingsForm.getInputProps('typeGroup')}
 						classNames={{
 							input: 'focus-within:bg-violet-600/25',
 							section: 'hidden'
 						}}
 					/>
 					<MultiSelect
-						description='Chord inversions'
-						placeholder='Select chord inversions'
+						description={settingsT('chordInversions')}
+						placeholder={settingsT('chordInversionsPlaceholder')}
 						data={CHORD_INVERSION_SELECT_OPTIONS}
 						{...practiceSettingsForm.getInputProps('inversions')}
 						classNames={{
@@ -302,7 +299,7 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 					/>
 					<div>
 						<Switch
-							label='Root note'
+							label={settingsT('rootNote')}
 							checked={practiceSettingsForm.values.fixedRoot.enabled}
 							onChange={e => practiceSettingsForm.setFieldValue('fixedRoot.enabled', e.target.checked)}
 						/>
@@ -315,8 +312,8 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 							<Select
 								allowDeselect={false}
 								data={FIXED_ROOT_NOTE_SELECT_OPTIONS}
-								description='Root note'
-								placeholder='Select toor note'
+								description={settingsT('rootNote')}
+								placeholder={settingsT('rootNotePlaceholder')}
 								{...practiceSettingsForm.getInputProps('fixedRoot.rootNote')}
 								classNames={{
 									input: 'focus:bg-violet-600/25',
@@ -328,14 +325,14 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 					<div>
 						<Collapse in={advancedSettingsOpened}>
 							<div className='space-y-4'>
-								<p className='text-sm'>Advanced Settings</p>
+								<p className='text-sm'>{settingsT('advancedSettings')}</p>
 								<div className='space-y-6'>
 									<Select
 										allowDeselect={false}
 										maxDropdownHeight={120}
 										data={PLAYING_MODE_SELECT_OPTIONS}
-										description='Playing mode'
-										placeholder='Select playing mode'
+										description={settingsT('playingMode')}
+										placeholder={settingsT('playingModePlaceholder')}
 										{...practiceSettingsForm.getInputProps('playingMode')}
 										classNames={{
 											input: 'focus-within:bg-violet-600/25',
@@ -345,10 +342,10 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 									<div className='grid grid-cols-2 gap-4'>
 										<NumberInput
 											min={60}
-											max={160}
+											max={180}
 											allowNegative={false}
-											description='Tempo'
-											placeholder='BPM between 60 - 160'
+											description={settingsT('tempo')}
+											placeholder={settingsT('tempoPlaceholder')}
 											{...practiceSettingsForm.getInputProps('tempo')}
 											classNames={{
 												input: 'focus:bg-violet-600/25'
@@ -358,8 +355,8 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 											min={5}
 											max={30}
 											allowNegative={false}
-											description='Question duration'
-											placeholder='Between 5 - 30'
+											description={settingsT('questionDuration')}
+											placeholder={settingsT('questionDurationPlaceholder')}
 											{...practiceSettingsForm.getInputProps('questionDuration')}
 											classNames={{
 												input: 'focus:bg-violet-600/25'
@@ -367,11 +364,9 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 										/>
 									</div>
 									<Switch
-										label='Auto feedback'
+										label={settingsT('autoFeedback')}
 										checked={practiceSettingsForm.values.autoFeedback}
-										onChange={e =>
-											practiceSettingsForm.setFieldValue('autoFeedback', e.target.checked)
-										}
+										onChange={e => practiceSettingsForm.setFieldValue('autoFeedback', e.target.checked)}
 									/>
 								</div>
 							</div>
@@ -392,7 +387,7 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 								setAdvancedSettingsOpened(!advancedSettingsOpened);
 							}}
 						>
-							{advancedSettingsOpened ? 'Hide' : 'Advanced settings'}
+							{advancedSettingsOpened ? commonT('close') : settingsT('advancedSettings')}
 						</Button>
 					</div>
 				</section>
@@ -403,9 +398,9 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 						variant='light'
 						disabled={!practiceSettingsForm.isDirty()}
 					>
-						Reset
+						{commonT('reset')}
 					</Button>
-					<Button type='submit'>Save</Button>
+					<Button type='submit'>{commonT('save')}</Button>
 				</div>
 			</form>
 		</Modal>
@@ -416,11 +411,10 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 // ** Mode Practice Modal **
 // *************************
 
-export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<ModePracticeSettings>> = ({
-	opened,
-	close,
-	practiceSettingsForm
-}) => {
+export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<ModePracticeSettings>> = ({ opened, close, practiceSettingsForm }) => {
+	const { t: settingsT } = useTranslation('ear_training', { keyPrefix: 'settings' });
+	const { t: commonT } = useTranslation();
+
 	const [advancedSettingsOpened, setAdvancedSettingsOpened] = useState<boolean>(true);
 
 	const handleSettingsFormSubmit = (settings: ModePracticeSettings) => {
@@ -453,7 +447,7 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 			closeOnEscape={false}
 			closeOnClickOutside={false}
 			withCloseButton={false}
-			title={'Practice settings'}
+			title={settingsT('practiceSettings')}
 			scrollAreaComponent={ScrollArea.Autosize}
 		>
 			<form
@@ -466,8 +460,8 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 						min={5}
 						max={100}
 						allowNegative={false}
-						description='Number of questions'
-						placeholder='Between 5 - 100'
+						description={settingsT('numberOfQuestionsDescription')}
+						placeholder={settingsT('numberOfQuestionsPlaceholder')}
 						{...practiceSettingsForm.getInputProps('numberOfQuestions')}
 						classNames={{
 							input: 'focus:bg-violet-600/25'
@@ -477,9 +471,9 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 						allowDeselect={false}
 						maxDropdownHeight={160}
 						data={MODE_TYPE_GROUP_SELECT_OPTIONS}
-						description='Mode'
-						placeholder='Select type of modes'
-						{...practiceSettingsForm.getInputProps('modeTypeGroup')}
+						description={settingsT('modeTypeGroup')}
+						placeholder={settingsT('modeTypeGroupDescription')}
+						{...practiceSettingsForm.getInputProps('typeGroup')}
 						classNames={{
 							input: 'focus-within:bg-violet-600/25',
 							section: 'hidden'
@@ -487,7 +481,7 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 					/>
 					<div>
 						<Switch
-							label='Root note'
+							label={settingsT('rootNote')}
 							checked={practiceSettingsForm.values.fixedRoot.enabled}
 							onChange={e => practiceSettingsForm.setFieldValue('fixedRoot.enabled', e.target.checked)}
 						/>
@@ -500,8 +494,8 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 							<Select
 								allowDeselect={false}
 								data={FIXED_ROOT_NOTE_SELECT_OPTIONS}
-								description='Root note'
-								placeholder='Select toor note'
+								description={settingsT('rootNote')}
+								placeholder={settingsT('rootNotePlaceholder')}
 								{...practiceSettingsForm.getInputProps('fixedRoot.rootNote')}
 								classNames={{
 									input: 'focus:bg-violet-600/25',
@@ -513,14 +507,14 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 					<div>
 						<Collapse in={advancedSettingsOpened}>
 							<div className='space-y-4'>
-								<p className='text-sm'>Advanced Settings</p>
+								<p className='text-sm'>{settingsT('advancedSettings')}</p>
 								<div className='space-y-6'>
 									<Select
 										allowDeselect={false}
 										maxDropdownHeight={120}
 										data={NON_HARMONIC_PLAYING_MODE_SELECT_OPTIONS}
-										description='Playing mode'
-										placeholder='Select playing mode'
+										description={settingsT('playingMode')}
+										placeholder={settingsT('playingModePlaceholder')}
 										{...practiceSettingsForm.getInputProps('playingMode')}
 										classNames={{
 											input: 'focus-within:bg-violet-600/25',
@@ -532,8 +526,8 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 											min={60}
 											max={180}
 											allowNegative={false}
-											description='Tempo'
-											placeholder='BPM between 60 - 180'
+											description={settingsT('tempo')}
+											placeholder={settingsT('tempoPlaceholder')}
 											{...practiceSettingsForm.getInputProps('tempo')}
 											classNames={{
 												input: 'focus:bg-violet-600/25'
@@ -543,8 +537,8 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 											allowDeselect={false}
 											maxDropdownHeight={120}
 											data={NOTE_DURATION_SELECT_OPTIONS}
-											description='Note'
-											placeholder='Select note'
+											description={settingsT('noteType')}
+											placeholder={settingsT('noteTypePlaceholder')}
 											{...practiceSettingsForm.getInputProps('noteDuration')}
 											classNames={{
 												input: 'focus-within:bg-violet-600/25',
@@ -555,8 +549,8 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 											min={1}
 											max={30}
 											allowNegative={false}
-											description='Question duration'
-											placeholder='Between 1 - 30'
+											description={settingsT('questionDuration')}
+											placeholder={settingsT('questionDurationPlaceholder')}
 											{...practiceSettingsForm.getInputProps('questionDuration')}
 											classNames={{
 												input: 'focus:bg-violet-600/25'
@@ -564,11 +558,9 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 										/>
 									</div>
 									<Switch
-										label='Auto feedback'
+										label={settingsT('autoFeedback')}
 										checked={practiceSettingsForm.values.autoFeedback}
-										onChange={e =>
-											practiceSettingsForm.setFieldValue('autoFeedback', e.target.checked)
-										}
+										onChange={e => practiceSettingsForm.setFieldValue('autoFeedback', e.target.checked)}
 									/>
 								</div>
 							</div>
@@ -589,7 +581,7 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 								setAdvancedSettingsOpened(!advancedSettingsOpened);
 							}}
 						>
-							{advancedSettingsOpened ? 'Hide' : 'Advanced settings'}
+							{advancedSettingsOpened ? commonT('close') : settingsT('advancedSettings')}
 						</Button>
 					</div>
 				</section>
@@ -600,9 +592,9 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 						variant='light'
 						disabled={!practiceSettingsForm.isDirty()}
 					>
-						Reset
+						{commonT('reset')}
 					</Button>
-					<Button type='submit'>Save</Button>
+					<Button type='submit'>{commonT('save')}</Button>
 				</div>
 			</form>
 		</Modal>

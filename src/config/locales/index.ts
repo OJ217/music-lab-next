@@ -5,7 +5,7 @@ import en from './en';
 import mn from './mn';
 
 type Locale = 'mn' | 'en';
-export const DEFAULT_LOCALE: Locale = 'en';
+export const DEFAULT_LOCALE: Locale = 'mn';
 export const RESOURCES = { mn, en } as const;
 export const NAMESPACES = ['ear_training'] as const;
 export const DEFAULT_NS = 'ear_training';

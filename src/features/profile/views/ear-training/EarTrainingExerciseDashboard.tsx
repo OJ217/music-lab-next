@@ -350,11 +350,11 @@ const EarTrainingExerciseDashboard = () => {
 							<Card
 								key={index}
 								radius={'md'}
-								className='border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20'
+								className='border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/30'
 							>
 								<div className='space-y-3'>
 									<div className='flex items-center justify-between gap-4'>
-										<p className='text-sm font-medium text-white md:text-base'>Date: {dayjs(s.createdAt).format('MMM DD, HH:MM')}</p>
+										<p className='text-sm font-medium text-white md:text-base'>Date: {dayjs(s.createdAt).format('MMM DD, HH:mm')}</p>
 										<div className='flex items-center gap-1'>
 											<Badge
 												size={'lg'}
@@ -386,7 +386,7 @@ const EarTrainingExerciseDashboard = () => {
 										className='w-full'
 									/>
 									<div className='flex items-center justify-between text-sm text-white'>
-										<p>Duration: {dayjs.duration(s.duration, 'seconds').format(s.duration < 3600 ? 'MM:ss' : 'HH:MM:ss')}</p>
+										<p>Duration: {dayjs.duration(s.duration, 'seconds').format(s.duration < 3600 ? 'mm:ss' : 'HH:mm:ss')}</p>
 										<div className='flex items-center gap-4'>
 											<div className='flex items-center gap-2'>
 												<IconCheck
@@ -414,6 +414,7 @@ const EarTrainingExerciseDashboard = () => {
 					)}
 				</div>
 			</div>
+
 			<Drawer
 				position='left'
 				title={'Practice session detail'}
@@ -444,20 +445,20 @@ const EarTrainingExerciseDashboard = () => {
 					) : (
 						practiceSessionDetail && (
 							<>
-								<div className='grid grid-cols-[11fr_9fr] gap-3'>
+								<div className='grid gap-3 min-[350px]:grid-cols-[3fr_2fr]'>
 									<Card radius='md'>
-										<div className='flex h-full items-center gap-4 align-baseline'>
+										<div className='flex h-full items-center justify-center gap-3'>
 											<RingProgress
-												size={80}
+												size={60}
 												roundCaps
-												thickness={4}
+												thickness={3}
 												label={
 													<Center>
 														<ThemeIcon
 															color='green'
 															variant='light'
 															radius='xl'
-															size='xl'
+															size='lg'
 														>
 															<IconCheck />
 														</ThemeIcon>
@@ -479,7 +480,7 @@ const EarTrainingExerciseDashboard = () => {
 										</div>
 									</Card>
 									<Card radius='md'>
-										<div className='flex h-full flex-col space-y-1 align-baseline'>
+										<div className='flex h-full flex-col space-y-1 text-center'>
 											<p className='text-xs text-gray-400'>Message:</p>
 											<p className='flex flex-grow items-center justify-center text-sm text-white'>
 												{resolvePracticeResultMessage(practiceSessionDetail?.result.correct, practiceSessionDetail?.result.questionCount)}
