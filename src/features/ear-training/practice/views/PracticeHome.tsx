@@ -1,24 +1,12 @@
-import Image from 'next/image';
 import Link from 'next/link';
-
-import { useAuth } from '@/context/auth/auth.context';
 
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
 
 const PracticeHome = () => {
-	const { userInfo } = useAuth();
 	return (
 		<EarTrainingLayout>
 			<div className='space-y-4'>
 				<div className='w-full max-w-lg space-y-8'>
-					<h3 className='from flex w-full flex-col items-center gap-1 rounded-xl border border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25 px-8 py-2 text-center transition-all duration-500 ease-in-out hover:opacity-80'>
-						<h2>Өөлөө хөөрхөн :)</h2>
-						<Image
-							src={userInfo?.picture ?? ''}
-							className='h-16 w-16 rounded-full'
-							alt={'profile'}
-						/>
-					</h3>
 					<Link
 						href={'/ear-training/practice/interval'}
 						className='from block w-full rounded-xl border border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25 px-8 py-6 transition-all duration-500 ease-in-out hover:opacity-80'
