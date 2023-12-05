@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { useAuth } from '@/context/auth/auth.context';
@@ -12,9 +13,10 @@ const PracticeHome = () => {
 				<div className='w-full max-w-lg space-y-8'>
 					<h3 className='from flex w-full flex-col items-center gap-1 rounded-xl border border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25 px-8 py-2 text-center transition-all duration-500 ease-in-out hover:opacity-80'>
 						<h2>Өөлөө хөөрхөн :)</h2>
-						<img
-							src={userInfo?.picture}
+						<Image
+							src={userInfo?.picture ?? ''}
 							className='h-16 w-16 rounded-full'
+							alt={'profile'}
 						/>
 					</h3>
 					<Link

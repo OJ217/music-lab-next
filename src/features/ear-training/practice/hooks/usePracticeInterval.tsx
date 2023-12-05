@@ -17,7 +17,7 @@ export const usePracticeInterval = ({ practiceSessionSettings }: UsePracticeInte
 	const { t } = useTranslation();
 
 	const intervalPracticeSettingsMeta = useMemo(() => {
-		const INTERVALS = INTERVAL_TYPE_GROUPS[practiceSessionSettings.intervalTypeGroup].map(intervalName => ({
+		const INTERVALS = INTERVAL_TYPE_GROUPS[practiceSessionSettings.typeGroup].map(intervalName => ({
 			label: t(`interval.${intervalName}`),
 			value: intervalName
 		}));
@@ -32,10 +32,7 @@ export const usePracticeInterval = ({ practiceSessionSettings }: UsePracticeInte
 
 	const playRandomInterval = () => {
 		const rootNote = intervalPracticeSettingsMeta.ROOT_NOTE ?? Note.fromMidi(Math.floor(Math.random() * 25) + 48);
-		const intervalName =
-			intervalPracticeSettingsMeta.INTERVALS[
-				Math.floor(Math.random() * intervalPracticeSettingsMeta.INTERVALS.length)
-			].value;
+		const intervalName = intervalPracticeSettingsMeta.INTERVALS[Math.floor(Math.random() * intervalPracticeSettingsMeta.INTERVALS.length)].value;
 		const upperNote = Note.transpose(rootNote, intervalName);
 		const intervalNotesBase = [rootNote, upperNote];
 
@@ -61,10 +58,7 @@ export const usePracticeInterval = ({ practiceSessionSettings }: UsePracticeInte
 
 		console.log({ intervalName, intervalNotes });
 
-		intervalPracticeSession.setPracticeSessionQuestions(prevQuestions => [
-			...prevQuestions,
-			{ intervalName, notes: intervalNotes, answered: false }
-		]);
+		intervalPracticeSession.setPracticeSessionQuestions(prevQuestions => [...prevQuestions, { intervalName, notes: intervalNotes, answered: false }]);
 	};
 
 	const intervalPracticeSession = useEarTrainingPracticeSession<IntervalQuestion>({
