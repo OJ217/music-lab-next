@@ -5,6 +5,7 @@ const config: Config = {
 	theme: {
 		extend: {
 			fontFamily: {
+				gip: ['GIP', 'Inter', 'system-ui', 'Avenir', 'Helvetica', 'Arial', 'sans-serif'],
 				'euclid-circular-a': ['Euclid Circular A', 'Inter', 'system-ui', 'Avenir', 'Helvetica', 'Arial', 'sans-serif'],
 				inherit: 'inherit'
 			},

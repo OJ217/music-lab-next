@@ -344,7 +344,7 @@ const EarTrainingDashboard = () => {
 				<div className='space-y-4'>
 					<h3 className='text-sm font-semibold md:text-base'>Ear training exercises</h3>
 					{scoresQueryPending
-						? Array.from({ length: 3 }).map((_, index) => (
+						? Array.from({ length: 5 }).map((_, index) => (
 								<Skeleton
 									key={index}
 									className='h-20 md:h-[5.5rem]'
