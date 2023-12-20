@@ -3,11 +3,12 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
+import { useAuth } from '@/context/auth/auth.context';
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/EarTrainingLayout';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { SelectData } from '@/types';
 import { calculatePercentage } from '@/utils/format.util';
-import { Badge, Card, LoadingOverlay, SegmentedControl, Skeleton } from '@mantine/core';
+import { Avatar, Badge, Card, LoadingOverlay, rem, SegmentedControl, Skeleton } from '@mantine/core';
 import { IconChartBarOff, IconCheck, IconChevronRight, IconMusic, IconX } from '@tabler/icons-react';
 
 import { useEarTrainingPracticeSessionActivityQuery, useEarTrainingPracticeSessionProgressQuery, useEarTrainingPracticeSessionScoresQuery } from '../../services/ear-training-dashboard.service';
@@ -71,12 +72,62 @@ const EarTrainingDashboard = () => {
 		{ label: 'Progress', value: 'progress' }
 	];
 
+	const { userInfo } = useAuth();
+
 	return (
 		<EarTrainingLayout
 			centered={false}
 			showAffix={false}
 		>
 			<div className='mx-auto w-full max-w-lg space-y-8'>
+				<div className='flex flex-wrap items-center justify-center gap-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 p-4 md:gap-6 md:p-6'>
+					{userInfo?.picture ? (
+						<Avatar
+							radius={'50%'}
+							size={rem(96)}
+							src={userInfo.picture}
+						/>
+					) : (
+						<Avatar
+							radius={'50%'}
+							size={rem(96)}
+							variant='gradient'
+							gradient={{ from: 'violet', to: 'violet.6' }}
+							classNames={{
+								placeholder: 'text-white'
+							}}
+						>
+							{userInfo?.username[0].toUpperCase()}
+						</Avatar>
+					)}
+					<div className='space-y-4'>
+						<div className='text-center'>
+							<h3 className='font-bold md:text-xl'>{userInfo?.username}</h3>
+							<p className='text-sm'>{userInfo?.email}</p>
+						</div>
+						<div className='flex flex-wrap items-center justify-center gap-2'>
+							<Badge
+								variant='light'
+								color='violet'
+							>
+								1200 XP
+							</Badge>
+							<Badge
+								variant='light'
+								color='orange'
+							>
+								2-DAY STREAK
+							</Badge>
+							<Badge
+								variant='light'
+								color='blue'
+							>
+								RISING STAR
+							</Badge>
+						</div>
+					</div>
+				</div>
+
 				<div className='space-y-4'>
 					<SegmentedControl
 						size='xs'
@@ -350,7 +401,7 @@ const EarTrainingDashboard = () => {
 									className='h-20 md:h-[5.5rem]'
 									radius={'md'}
 								/>
-						  ))
+							))
 						: Object.values(EarTrainingPracticeType)?.map(practiceType => {
 								const practiceTypeScore = practiceSessionScores?.[practiceType];
 
@@ -385,7 +436,7 @@ const EarTrainingDashboard = () => {
 										</div>
 									</div>
 								);
-						  })}
+							})}
 				</div>
 			</div>
 		</EarTrainingLayout>

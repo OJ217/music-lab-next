@@ -11,6 +11,7 @@ export interface User {
 	email: string;
 	username: string;
 	picture?: string;
+	createdAt: Date;
 }
 
 interface AuthContextPayload {
@@ -46,7 +47,8 @@ const authStoreSchema = z.object({
 		_id: z.string().min(1),
 		email: z.string().email(),
 		username: z.string().min(1),
-		picture: z.string().optional().nullable()
+		picture: z.string().optional().nullable(),
+		createdAt: z.string().datetime()
 	})
 });
 

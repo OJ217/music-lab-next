@@ -4,7 +4,7 @@ import InDevelopmentBanner from '../components/misc/InDevelopmentBanner';
 
 const Settings = () => {
 	return (
-		<EarTrainingLayout centered>
+		<EarTrainingLayout>
 			<InDevelopmentBanner />
 		</EarTrainingLayout>
 	);

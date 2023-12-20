@@ -17,6 +17,9 @@ const config: Config = {
 					'0%': { opacity: '0' },
 					'100%': { opacity: '1' }
 				}
+			},
+			screens: {
+				xs: '400px'
 			}
 		}
 	},

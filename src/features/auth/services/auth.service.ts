@@ -6,6 +6,7 @@ export interface AuthResponse {
 		email: string;
 		username: string;
 		picture?: string;
+		createdAt: Date;
 	};
 }
 
@@ -43,12 +44,7 @@ export const useSignInMutation = () => {
 };
 
 export const useSignUpMutation = () => {
-	const signUp = async (signUpCredentials: {
-		username: string;
-		email: string;
-		password: string;
-		passwordConfirmation: string;
-	}) => {
+	const signUp = async (signUpCredentials: { username: string; email: string; password: string; passwordConfirmation: string }) => {
 		return (await axios.post<IResponse<AuthResponse>>('/auth/sign-up', signUpCredentials)).data;
 	};
 
@@ -75,11 +71,8 @@ export const useSignUpMutation = () => {
 };
 
 export const useGoogleOAuthMutation = () => {
-	const handleGoogleOAuth = async (
-		googleOAuthCredentials: Omit<CodeResponse, 'error' | 'error_description' | 'error_uri'>
-	) => {
-		const googleOAuthResponse = (await axios.post<IResponse<AuthResponse>>('/auth/google', googleOAuthCredentials))
-			.data;
+	const handleGoogleOAuth = async (googleOAuthCredentials: Omit<CodeResponse, 'error' | 'error_description' | 'error_uri'>) => {
+		const googleOAuthResponse = (await axios.post<IResponse<AuthResponse>>('/auth/google', googleOAuthCredentials)).data;
 		return googleOAuthResponse?.data;
 	};
 
