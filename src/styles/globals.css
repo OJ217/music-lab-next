@@ -59,7 +59,7 @@ body {
 	font-weight: 400;
 	src:
 		local('GIP-Medium'),
-		url(/fonts/GIP-Medium) format('opentype');
+		url(/fonts/GIP-Medium.otf) format('opentype');
 }
 
 @font-face {
@@ -67,7 +67,7 @@ body {
 	font-weight: 500;
 	src:
 		local('GIP-SemiBold'),
-		url(/fonts/GIP-SemiBold) format('opentype');
+		url(/fonts/GIP-SemiBold.otf) format('opentype');
 }
 
 @font-face {
@@ -75,7 +75,7 @@ body {
 	font-weight: 600;
 	src:
 		local('GIP-Bold'),
-		url(/fonts/GIP-Bold) format('opentype');
+		url(/fonts/GIP-Bold.otf) format('opentype');
 }
 
 @font-face {
@@ -83,5 +83,5 @@ body {
 	font-weight: 700;
 	src:
 		local('GIP-ExtraBold'),
-		url(/fonts/GIP-ExtraBold) format('opentype');
+		url(/fonts/GIP-ExtraBold.otf) format('opentype');
 }
