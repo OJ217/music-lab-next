@@ -54,6 +54,11 @@ const theme = createTheme({
 			defaultProps: {
 				scrollbarSize: 4
 			}
+		},
+		Drawer: {
+			classNames: {
+				content: 'pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)]'
+			}
 		}
 	}
 });
@@ -67,8 +72,11 @@ const MantineProvider: React.FC<IMantineProviderProps> = ({ children }) => {
 			<Notifications
 				position='top-center'
 				containerWidth={400}
-				autoClose={8000}
+				autoClose={100000}
 				zIndex={10000}
+				classNames={{
+					root: 'top-[calc(1rem_+_env(safe-area-inset-top))]'
+				}}
 			/>
 			<ModalsProvider>{children}</ModalsProvider>
 		</DefaultMantineProvider>

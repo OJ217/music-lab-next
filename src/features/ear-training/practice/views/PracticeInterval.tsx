@@ -213,7 +213,7 @@ const PracticeInterval = () => {
 
 	return (
 		<>
-			<EarTrainingLayout>
+			<EarTrainingLayout centered={true}>
 				<div>
 					<div className='space-y-4'>
 						<h1 className='text-center text-xl font-semibold'>{t('intervalIdentification')}</h1>
@@ -256,7 +256,7 @@ const PracticeInterval = () => {
 							{sessionEnded ? t('restart') : !practiceSessionQuestions.length ? t('start') : t('replay')}
 						</Button>
 
-						<div className='mt-12 flex max-w-md flex-wrap items-center justify-center gap-6'>
+						<div className='mt-12 grid max-w-xl grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4'>
 							{INTERVALS.map(interval => (
 								<Button
 									py={4}

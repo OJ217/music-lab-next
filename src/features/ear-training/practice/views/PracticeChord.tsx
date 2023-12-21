@@ -298,7 +298,7 @@ const PracticeChord = () => {
 									duration: 0.3
 								}}
 								exit={{ opacity: 0 }}
-								className='flex max-w-md flex-wrap items-center justify-center gap-6'
+								className='flex max-w-lg flex-wrap items-center justify-center gap-6'
 							>
 								{CHORDS.map(chord => (
 									<Button
