@@ -37,7 +37,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 			<main className='flex min-h-screen flex-col text-white'>
 				{/* Navigation */}
 				<nav className='sticky top-0 z-50 w-full flex-none border-b-2 border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/5 to-violet-600/20 px-4 pb-3 pt-[calc(0.75rem_+_env(safe-area-inset-top))] backdrop-blur-md md:px-6 md:py-4'>
-					<div className='mx-auto max-w-5xl'>
+					<div className='mx-auto max-w-4xl'>
 						<div className='flex items-center justify-between gap-8'>
 							<Link href={'/ear-training/practice'}>
 								<div className='inline-flex items-center gap-1 rounded-lg bg-gradient-to-tr from-cyan-600/20 to-violet-600/25 px-2 py-1'>

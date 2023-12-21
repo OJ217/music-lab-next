@@ -6,7 +6,7 @@ import { IconMusic } from '@tabler/icons-react';
 const NavigationAffix = () => {
 	return (
 		<Affix
-			position={{ bottom: rem(20), left: rem(20) }}
+			position={{ bottom: rem(20), right: rem(20) }}
 			className='fixed'
 			withinPortal={false}
 		>
