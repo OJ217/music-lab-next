@@ -10,7 +10,7 @@ const NavigationAffix = () => {
 			className='fixed'
 			withinPortal={false}
 		>
-			<Menu position={'top-start'}>
+			<Menu position={'top-end'}>
 				<Menu.Target>
 					<ActionIcon
 						variant='light'
