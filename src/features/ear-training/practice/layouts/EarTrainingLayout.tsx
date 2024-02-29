@@ -103,7 +103,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 										</Menu.Target>
 									</div>
 
-									<Menu.Dropdown className='border border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/5 to-violet-600/20 backdrop-blur-2xl'>
+									<Menu.Dropdown className='border border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/5 to-violet-600/20 backdrop-blur-3xl'>
 										<Link href={'/profile/dashboard'}>
 											<Menu.Item
 												className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'
