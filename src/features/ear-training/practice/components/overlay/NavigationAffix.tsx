@@ -14,6 +14,7 @@ const NavigationAffix = () => {
 				<Menu.Target>
 					<ActionIcon
 						variant='light'
+						className=' bg-violet-800/50'
 						radius={'md'}
 						size={'xl'}
 					>
