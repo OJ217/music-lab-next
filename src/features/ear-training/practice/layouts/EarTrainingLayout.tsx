@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '@/context/auth/auth.context';
 import ProtectedRoute from '@/context/auth/hoc/ProtectedRoute';
@@ -18,13 +19,15 @@ interface IEarTrainingLayoutProps {
 const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, centered = true, showAffix = true }) => {
 	const { userInfo, signOut } = useAuth();
 	const queryClient = useQueryClient();
+	const { t: authT } = useTranslation('auth');
+	const { t: systemT } = useTranslation('system');
 
 	const openSignOutConfirmationModal = () => {
 		modals.openConfirmModal({
 			centered: true,
-			title: 'Sign out',
-			children: 'Are you sure to sign out?',
-			labels: { confirm: 'Yes', cancel: 'No' },
+			title: authT('signOut'),
+			children: authT('signOutConfirmation'),
+			labels: { confirm: systemT('yes'), cancel: systemT('no') },
 			onConfirm: () => {
 				signOut();
 				queryClient.invalidateQueries();
@@ -88,7 +91,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 													radius={'xl'}
 													size={rem(44)}
 													variant='gradient'
-													gradient={{ from: 'violet', to: 'violet.6' }}
+													gradient={{ from: 'violet', to: 'violet.7' }}
 													classNames={{
 														placeholder: 'text-white'
 													}}
@@ -100,23 +103,39 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 										</Menu.Target>
 									</div>
 
-									<Menu.Dropdown>
+									<Menu.Dropdown className='border border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/5 to-violet-600/20 backdrop-blur-2xl'>
 										<Link href={'/profile/dashboard'}>
-											<Menu.Item leftSection={<IconChartBar stroke={1.6} />}>Dashboard</Menu.Item>
+											<Menu.Item
+												className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'
+												leftSection={<IconChartBar stroke={1.6} />}
+											>
+												{systemT('dashboard')}
+											</Menu.Item>
 										</Link>
 
 										<Link href={'/profile'}>
-											<Menu.Item leftSection={<IconUser stroke={1.6} />}>Profile</Menu.Item>
+											<Menu.Item
+												className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'
+												leftSection={<IconUser stroke={1.6} />}
+											>
+												{systemT('profile')}
+											</Menu.Item>
 										</Link>
 
 										<Link href={'/profile/settings'}>
-											<Menu.Item leftSection={<IconSettings stroke={1.6} />}>Settings</Menu.Item>
+											<Menu.Item
+												className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'
+												leftSection={<IconSettings stroke={1.6} />}
+											>
+												{systemT('settings')}
+											</Menu.Item>
 										</Link>
 
-										<Menu.Divider />
+										<Menu.Divider className='border-violet-600/25' />
 
 										<Menu.Item
 											onClick={openSignOutConfirmationModal}
+											className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'
 											leftSection={
 												<IconLogout
 													stroke={1.6}
@@ -124,7 +143,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 												/>
 											}
 										>
-											Sign out
+											{authT('signOut')}
 										</Menu.Item>
 									</Menu.Dropdown>
 								</Menu>

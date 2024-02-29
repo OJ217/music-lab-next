@@ -21,26 +21,26 @@ const NavigationAffix = () => {
 					</ActionIcon>
 				</Menu.Target>
 
-				<Menu.Dropdown>
+				<Menu.Dropdown className='border border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/5 to-violet-600/20 backdrop-blur-2xl'>
 					<Link
 						href={'/ear-training/practice/interval'}
 						className='block'
 					>
-						<Menu.Item>Interval</Menu.Item>
+						<Menu.Item className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'>Interval</Menu.Item>
 					</Link>
 
 					<Link
 						href={'/ear-training/practice/chord'}
 						className='block'
 					>
-						<Menu.Item>Chord</Menu.Item>
+						<Menu.Item className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'>Chord</Menu.Item>
 					</Link>
 
 					<Link
 						href={'/ear-training/practice/mode'}
 						className='block'
 					>
-						<Menu.Item>Mode</Menu.Item>
+						<Menu.Item className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'>Mode</Menu.Item>
 					</Link>
 				</Menu.Dropdown>
 			</Menu>

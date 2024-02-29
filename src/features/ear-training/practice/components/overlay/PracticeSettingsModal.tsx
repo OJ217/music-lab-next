@@ -83,9 +83,6 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 						description={settingsT('numberOfQuestionsDescription')}
 						placeholder={settingsT('numberOfQuestionsPlaceholder')}
 						{...practiceSettingsForm.getInputProps('numberOfQuestions')}
-						classNames={{
-							input: 'focus:bg-violet-600/25'
-						}}
 					/>
 
 					<Select
@@ -95,10 +92,6 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 						description={settingsT('intervalTypeGroup')}
 						placeholder={settingsT('intervalTypeGroupDescription')}
 						{...practiceSettingsForm.getInputProps('typeGroup')}
-						classNames={{
-							input: 'focus-within:bg-violet-600/25',
-							section: 'hidden'
-						}}
 					/>
 
 					<div>
@@ -119,10 +112,6 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 								description={settingsT('rootNote')}
 								placeholder={settingsT('rootNotePlaceholder')}
 								{...practiceSettingsForm.getInputProps('fixedRoot.rootNote')}
-								classNames={{
-									input: 'focus:bg-violet-600/25',
-									section: 'hidden'
-								}}
 							/>
 						</Collapse>
 					</div>
@@ -139,10 +128,6 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 										description={settingsT('playingMode')}
 										placeholder={settingsT('playingModePlaceholder')}
 										{...practiceSettingsForm.getInputProps('playingMode')}
-										classNames={{
-											input: 'focus-within:bg-violet-600/25',
-											section: 'hidden'
-										}}
 									/>
 									<div className='grid grid-cols-2 gap-4'>
 										<NumberInput
@@ -152,9 +137,6 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 											description={settingsT('tempo')}
 											placeholder={settingsT('tempoPlaceholder')}
 											{...practiceSettingsForm.getInputProps('tempo')}
-											classNames={{
-												input: 'focus:bg-violet-600/25'
-											}}
 										/>
 										<NumberInput
 											min={1}
@@ -163,9 +145,6 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 											description={settingsT('questionDuration')}
 											placeholder={settingsT('questionDurationPlaceholder')}
 											{...practiceSettingsForm.getInputProps('questionDuration')}
-											classNames={{
-												input: 'focus:bg-violet-600/25'
-											}}
 										/>
 									</div>
 									<Switch
@@ -271,9 +250,6 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 						description={settingsT('numberOfQuestionsDescription')}
 						placeholder={settingsT('numberOfQuestionsPlaceholder')}
 						{...practiceSettingsForm.getInputProps('numberOfQuestions')}
-						classNames={{
-							input: 'focus:bg-violet-600/25'
-						}}
 					/>
 					<Select
 						allowDeselect={false}
@@ -282,20 +258,12 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 						description={settingsT('chordTypeGroup')}
 						placeholder={settingsT('chordTypeGroupDescription')}
 						{...practiceSettingsForm.getInputProps('typeGroup')}
-						classNames={{
-							input: 'focus-within:bg-violet-600/25',
-							section: 'hidden'
-						}}
 					/>
 					<MultiSelect
 						description={settingsT('chordInversions')}
 						placeholder={settingsT('chordInversionsPlaceholder')}
 						data={CHORD_INVERSION_SELECT_OPTIONS}
 						{...practiceSettingsForm.getInputProps('inversions')}
-						classNames={{
-							input: 'focus-within:bg-violet-600/25',
-							section: 'hidden'
-						}}
 					/>
 					<div>
 						<Switch
@@ -315,10 +283,6 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 								description={settingsT('rootNote')}
 								placeholder={settingsT('rootNotePlaceholder')}
 								{...practiceSettingsForm.getInputProps('fixedRoot.rootNote')}
-								classNames={{
-									input: 'focus:bg-violet-600/25',
-									section: 'hidden'
-								}}
 							/>
 						</Collapse>
 					</div>
@@ -334,10 +298,6 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 										description={settingsT('playingMode')}
 										placeholder={settingsT('playingModePlaceholder')}
 										{...practiceSettingsForm.getInputProps('playingMode')}
-										classNames={{
-											input: 'focus-within:bg-violet-600/25',
-											section: 'hidden'
-										}}
 									/>
 									<div className='grid grid-cols-2 gap-4'>
 										<NumberInput
@@ -347,9 +307,6 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 											description={settingsT('tempo')}
 											placeholder={settingsT('tempoPlaceholder')}
 											{...practiceSettingsForm.getInputProps('tempo')}
-											classNames={{
-												input: 'focus:bg-violet-600/25'
-											}}
 										/>
 										<NumberInput
 											min={5}
@@ -358,9 +315,6 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 											description={settingsT('questionDuration')}
 											placeholder={settingsT('questionDurationPlaceholder')}
 											{...practiceSettingsForm.getInputProps('questionDuration')}
-											classNames={{
-												input: 'focus:bg-violet-600/25'
-											}}
 										/>
 									</div>
 									<Switch
@@ -457,15 +411,12 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 			>
 				<section className='space-y-6'>
 					<NumberInput
-						min={5}
+						min={10}
 						max={100}
 						allowNegative={false}
 						description={settingsT('numberOfQuestionsDescription')}
 						placeholder={settingsT('numberOfQuestionsPlaceholder')}
 						{...practiceSettingsForm.getInputProps('numberOfQuestions')}
-						classNames={{
-							input: 'focus:bg-violet-600/25'
-						}}
 					/>
 					<Select
 						allowDeselect={false}
@@ -474,10 +425,6 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 						description={settingsT('modeTypeGroup')}
 						placeholder={settingsT('modeTypeGroupDescription')}
 						{...practiceSettingsForm.getInputProps('typeGroup')}
-						classNames={{
-							input: 'focus-within:bg-violet-600/25',
-							section: 'hidden'
-						}}
 					/>
 					<div>
 						<Switch
@@ -497,10 +444,6 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 								description={settingsT('rootNote')}
 								placeholder={settingsT('rootNotePlaceholder')}
 								{...practiceSettingsForm.getInputProps('fixedRoot.rootNote')}
-								classNames={{
-									input: 'focus:bg-violet-600/25',
-									section: 'hidden'
-								}}
 							/>
 						</Collapse>
 					</div>
@@ -516,10 +459,6 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 										description={settingsT('playingMode')}
 										placeholder={settingsT('playingModePlaceholder')}
 										{...practiceSettingsForm.getInputProps('playingMode')}
-										classNames={{
-											input: 'focus-within:bg-violet-600/25',
-											section: 'hidden'
-										}}
 									/>
 									<div className='grid grid-cols-2 gap-4'>
 										<NumberInput
@@ -529,9 +468,6 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 											description={settingsT('tempo')}
 											placeholder={settingsT('tempoPlaceholder')}
 											{...practiceSettingsForm.getInputProps('tempo')}
-											classNames={{
-												input: 'focus:bg-violet-600/25'
-											}}
 										/>
 										<Select
 											allowDeselect={false}
@@ -540,10 +476,6 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 											description={settingsT('noteType')}
 											placeholder={settingsT('noteTypePlaceholder')}
 											{...practiceSettingsForm.getInputProps('noteDuration')}
-											classNames={{
-												input: 'focus-within:bg-violet-600/25',
-												section: 'hidden'
-											}}
 										/>
 										<NumberInput
 											min={1}
@@ -552,9 +484,6 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 											description={settingsT('questionDuration')}
 											placeholder={settingsT('questionDurationPlaceholder')}
 											{...practiceSettingsForm.getInputProps('questionDuration')}
-											classNames={{
-												input: 'focus:bg-violet-600/25'
-											}}
 										/>
 									</div>
 									<Switch

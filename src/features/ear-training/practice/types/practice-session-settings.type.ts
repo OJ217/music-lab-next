@@ -161,6 +161,12 @@ export const DEFAULT_CHORD_PRACTICE_SETTINGS: ChordPracticeSettings = {
 	noteDuration: 'whole'
 };
 
+export const chordPracticeSettingsSchema = practiceSettingsBaseSchema.extend({
+	modeTypeGroup: z.enum(CHORD_TYPES).default('all'),
+	playingMode: z.enum(PLAYING_MODES).default('harmonic'),
+	noteDuration: z.enum(NOTE_DURATIONS).default('whole')
+});
+
 // ****************************
 // ** Mode Practice Settings **
 // ****************************

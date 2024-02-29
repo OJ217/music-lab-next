@@ -28,10 +28,25 @@ const theme = createTheme({
 				}
 			}
 		},
+		NumberInput: {
+			defaultProps: {
+				classNames: {
+					input: 'focus:bg-violet-600/25 transition-all ease-in-out duration-500'
+				}
+			}
+		},
 		PasswordInput: {
 			defaultProps: {
 				classNames: {
 					innerInput: 'focus:bg-violet-600/25 transition-all ease-in-out duration-500'
+				}
+			}
+		},
+		Select: {
+			defaultProps: {
+				classNames: {
+					input: 'focus-within:bg-violet-600/25',
+					section: 'hidden'
 				}
 			}
 		},

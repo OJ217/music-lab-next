@@ -7,7 +7,7 @@ import { Chord, Note } from 'tonal';
 import { calculatePercentage } from '@/utils/format.util';
 import { notify } from '@/utils/notification.util';
 import { ActionIcon, Button, Progress } from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { useForm, zodResolver } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { IconArrowLeft, IconSettings } from '@tabler/icons-react';
 
@@ -17,7 +17,14 @@ import { ChordPracticeSettingsModal } from '../components/overlay/PracticeSettin
 import { useSamplerMethods } from '../hooks/useSampler';
 import EarTrainingLayout from '../layouts/EarTrainingLayout';
 import { EarTrainingPracticeType, saveEarTrainingPracticeSessionSchema, useSaveEarTrainingPracticeSessionMutation } from '../services/practice-session.service';
-import { CHORD_TYPE_GROUPS, CHORD_WITHOUT_INVERSIONS, ChordPracticeSettings, DEFAULT_CHORD_PRACTICE_SETTINGS, NOTE_DURATION } from '../types/practice-session-settings.type';
+import {
+	CHORD_TYPE_GROUPS,
+	CHORD_WITHOUT_INVERSIONS,
+	ChordPracticeSettings,
+	chordPracticeSettingsSchema,
+	DEFAULT_CHORD_PRACTICE_SETTINGS,
+	NOTE_DURATION
+} from '../types/practice-session-settings.type';
 import { ChordQuestion, Notes, SelectedChord } from '../types/practice-session.type';
 import { refineChordPracticeResult } from '../utils/practice-session-result.util';
 
@@ -30,7 +37,8 @@ const PracticeChord = () => {
 
 	// ** Practice Settings
 	const chordPracticeSettingsForm = useForm<ChordPracticeSettings>({
-		initialValues: DEFAULT_CHORD_PRACTICE_SETTINGS
+		initialValues: DEFAULT_CHORD_PRACTICE_SETTINGS,
+		validate: zodResolver(chordPracticeSettingsSchema)
 	});
 
 	const { values: chordPracticeSettings } = chordPracticeSettingsForm;
