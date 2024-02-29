@@ -417,7 +417,7 @@ const EarTrainingDashboard = () => {
 												{icon}
 												<div className='text-white'>
 													<h3 className='text-lg font-semibold'>{label}</h3>
-													<p className='text-sm'>{description}</p>
+													<p className='text-[13px]'>{description}</p>
 												</div>
 											</div>
 

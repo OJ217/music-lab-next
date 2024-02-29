@@ -53,7 +53,8 @@ const PracticeResultModal: FC<IPracticeResultModalProps> = ({
 			withCloseButton={false}
 			title={t('result.practiceResult')}
 			classNames={{
-				header: 'font-semibold text-sm'
+				header: 'font-semibold text-sm bg-[#13072f]',
+				content: 'bg-[#13072f]'
 			}}
 		>
 			<div className='mt-4 flex flex-col items-center space-y-8 text-center'>
