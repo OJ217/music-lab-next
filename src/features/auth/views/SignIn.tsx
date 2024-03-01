@@ -91,11 +91,11 @@ const SignInPage = () => {
 		<main className='flex min-h-screen flex-col items-center justify-center space-y-12 p-6'>
 			<section className='space-y-2 text-center'>
 				<h1 className='text-3xl font-semibold'>Sign In to Music Lab</h1>
-				<p className='text-sm text-slate-400'>
+				<p className='text-sm text-violet-100'>
 					Do not have an account yet?{' '}
 					<Link
 						href={'/auth/sign-up'}
-						className='text-violet-400 underline'
+						className='text-violet-500'
 					>
 						Sign Up
 					</Link>
@@ -106,7 +106,7 @@ const SignInPage = () => {
 				withBorder
 				shadow='md'
 				radius='md'
-				className='w-full max-w-sm p-5'
+				className='w-full max-w-sm rounded-lg border border-violet-700/10 bg-transparent bg-gradient-to-tr from-violet-700/5 to-violet-700/20 p-5'
 			>
 				<form
 					className='w-full space-y-5'
@@ -139,11 +139,15 @@ const SignInPage = () => {
 							</svg>
 						}
 						fullWidth
-						variant='light'
+						variant='gradient'
+						gradient={{
+							from: 'violet.9',
+							to: 'violet.6'
+						}}
 						className='font-normal'
 						onClick={() => {
-							handleGoogleOAuth();
 							signInForm.clearErrors();
+							handleGoogleOAuth();
 						}}
 						loading={googleOAuthPending}
 					>
@@ -154,6 +158,7 @@ const SignInPage = () => {
 						label='Or sign in with email'
 						labelPosition='center'
 						className='my-5'
+						color='violet.1'
 					/>
 
 					<TextInput
@@ -161,6 +166,10 @@ const SignInPage = () => {
 						placeholder='Enter your email'
 						disabled={signInPending}
 						{...signInForm.getInputProps('email')}
+						classNames={{
+							description: 'text-white',
+							input: 'placeholder:text-white/75 border border-violet-800 focus:border-violet-600 bg-violet-800/50 transition-all duration-300 ease-in-out'
+						}}
 					/>
 
 					<PasswordInput
@@ -168,12 +177,17 @@ const SignInPage = () => {
 						placeholder='Enter your password'
 						disabled={signInPending}
 						{...signInForm.getInputProps('password')}
+						classNames={{
+							description: 'text-white',
+							input: 'border-violet-800 bg-violet-800/50 transition-all duration-300 ease-in-out focus-within:border-violet-600',
+							innerInput: 'placeholder:text-white/75'
+						}}
 					/>
 
 					<div className='text-center'>
 						<Link
 							href={'/auth/forgot-password'}
-							className='inline-block text-xs text-violet-400'
+							className='inline-block text-xs text-violet-100'
 						>
 							Forgot Password?
 						</Link>

@@ -102,11 +102,11 @@ const SignUpPage = () => {
 		<main className='flex min-h-screen flex-col items-center justify-center space-y-12 p-6'>
 			<section className='space-y-2 text-center'>
 				<h1 className='text-3xl font-semibold'>Sign Up to Music Lab</h1>
-				<p className='text-sm text-slate-400'>
+				<p className='text-sm text-violet-100'>
 					Already have an account?{' '}
 					<Link
 						href={'/auth/sign-in'}
-						className='text-violet-400 underline'
+						className='text-violet-500'
 					>
 						Sign In
 					</Link>
@@ -117,7 +117,7 @@ const SignUpPage = () => {
 				withBorder
 				shadow='md'
 				radius='md'
-				className='w-full max-w-sm p-5 transition-all duration-300 ease-in-out'
+				className='w-full max-w-sm rounded-lg border border-violet-700/10 bg-transparent bg-gradient-to-tr from-violet-700/5 to-violet-700/20 p-5'
 			>
 				<form
 					className='w-full space-y-10'
@@ -151,7 +151,11 @@ const SignUpPage = () => {
 								</svg>
 							}
 							fullWidth
-							variant='light'
+							variant='gradient'
+							gradient={{
+								from: 'violet.9',
+								to: 'violet.6'
+							}}
 							className='font-normal'
 							onClick={handleGoogleOAuth}
 							loading={googleOAuthPending}
@@ -163,6 +167,7 @@ const SignUpPage = () => {
 							label='Or sign up with email'
 							labelPosition='center'
 							className='my-5'
+							color='violet.1'
 						/>
 
 						<TextInput
@@ -170,6 +175,10 @@ const SignUpPage = () => {
 							placeholder='Enter your email'
 							disabled={signUpPending}
 							{...signUpForm.getInputProps('email')}
+							classNames={{
+								description: 'text-white',
+								input: 'placeholder:text-white/75 border border-violet-800 focus:border-violet-600 bg-violet-800/50 transition-all duration-300 ease-in-out'
+							}}
 						/>
 
 						<TextInput
@@ -177,6 +186,10 @@ const SignUpPage = () => {
 							placeholder='Enter your username'
 							disabled={signUpPending}
 							{...signUpForm.getInputProps('username')}
+							classNames={{
+								description: 'text-white',
+								input: 'placeholder:text-white/75 border border-violet-800 focus:border-violet-600 bg-violet-800/50 transition-all duration-300 ease-in-out'
+							}}
 						/>
 
 						<PasswordInput
@@ -184,6 +197,11 @@ const SignUpPage = () => {
 							placeholder='Enter your password'
 							disabled={signUpPending}
 							{...signUpForm.getInputProps('password')}
+							classNames={{
+								description: 'text-white',
+								input: 'border-violet-800 bg-violet-800/50 transition-all duration-300 ease-in-out focus-within:border-violet-600',
+								innerInput: 'placeholder:text-white/75'
+							}}
 						/>
 
 						<PasswordInput
@@ -191,6 +209,11 @@ const SignUpPage = () => {
 							placeholder='Re-enter your password'
 							disabled={signUpPending}
 							{...signUpForm.getInputProps('passwordConfirmation')}
+							classNames={{
+								description: 'text-white',
+								input: 'border-violet-800 bg-violet-800/50 transition-all duration-300 ease-in-out focus-within:border-violet-600',
+								innerInput: 'placeholder:text-white/75'
+							}}
 						/>
 					</div>
 
@@ -198,7 +221,7 @@ const SignUpPage = () => {
 						fullWidth
 						type='submit'
 						loading={signUpPending}
-						className='font-normal hover:shadow-lg hover:shadow-violet-600/30'
+						className='font-normal hover:shadow-lg hover:shadow-violet-600/30 disabled:pointer-events-none'
 					>
 						Sign Up
 					</Button>

@@ -1,4 +1,4 @@
-import { createTheme, MantineProvider as DefaultMantineProvider } from '@mantine/core';
+import { createTheme, MantineProvider as DefaultMantineProvider, TextInput } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
 
@@ -21,13 +21,13 @@ const theme = createTheme({
 				color: 'violet.6'
 			}
 		},
-		TextInput: {
+		TextInput: TextInput.extend({
 			defaultProps: {
 				classNames: {
-					input: 'focus:bg-violet-600/25 transition-all ease-in-out duration-500'
+					input: 'focus:bg-violet-600/25 focus:border-violet-600 transition-all ease-in-out duration-500'
 				}
 			}
-		},
+		}),
 		NumberInput: {
 			defaultProps: {
 				classNames: {
