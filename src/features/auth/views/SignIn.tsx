@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { GOOGLE_OAUTH } from '@/config/constants/api.constant';
 import { useAuth } from '@/context/auth/auth.context';
 import { notify } from '@/utils/notification.util';
-import { Button, Divider, Paper, PasswordInput, TextInput } from '@mantine/core';
+import { Button, Divider, PasswordInput, TextInput } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
@@ -102,12 +102,7 @@ const SignInPage = () => {
 				</p>
 			</section>
 
-			<Paper
-				withBorder
-				shadow='md'
-				radius='md'
-				className='w-full max-w-sm rounded-lg border border-violet-700/10 bg-transparent bg-gradient-to-tr from-violet-700/5 to-violet-700/20 p-5'
-			>
+			<div className='w-full max-w-sm rounded-lg border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-700/15 to-violet-700/25 p-5'>
 				<form
 					className='w-full space-y-5'
 					onSubmit={signInForm.onSubmit(handleSignIn)}
@@ -168,7 +163,7 @@ const SignInPage = () => {
 						{...signInForm.getInputProps('email')}
 						classNames={{
 							description: 'text-white',
-							input: 'placeholder:text-white/75 border border-violet-800 focus:border-violet-600 bg-violet-800/50 transition-all duration-300 ease-in-out'
+							input: 'text-white placeholder:text-white/75 border border-violet-800 focus:border-violet-600 bg-violet-800/50 transition-all duration-300 ease-in-out'
 						}}
 					/>
 
@@ -180,7 +175,7 @@ const SignInPage = () => {
 						classNames={{
 							description: 'text-white',
 							input: 'border-violet-800 bg-violet-800/50 transition-all duration-300 ease-in-out focus-within:border-violet-600',
-							innerInput: 'placeholder:text-white/75'
+							innerInput: 'text-white placeholder:text-white/75'
 						}}
 					/>
 
@@ -202,7 +197,7 @@ const SignInPage = () => {
 						Sign In
 					</Button>
 				</form>
-			</Paper>
+			</div>
 		</main>
 	);
 };

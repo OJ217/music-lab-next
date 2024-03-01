@@ -7,17 +7,7 @@ type NotificationType = 'success' | 'fail' | 'warning';
 // * [+] New notification caller function with above notification type
 // * [+] autoClose timing is passed as seconds
 
-export const notify = ({
-	type,
-	title,
-	message = null,
-	autoClose = 10
-}: {
-	type: NotificationType;
-	title: string | React.ReactNode;
-	message?: string | React.ReactNode | null;
-	autoClose?: number;
-}) => {
+export const notify = ({ type, title, message = null, autoClose = 10 }: { type: NotificationType; title: string | React.ReactNode; message?: string | React.ReactNode | null; autoClose?: number }) => {
 	const notificationStyle: Record<NotificationType, { iconClass: string; icon: JSX.Element }> = {
 		success: {
 			iconClass: 'bg-green-500 bg-opacity-25 border border-green-500',
@@ -56,6 +46,6 @@ export const notify = ({
 		withCloseButton: true,
 		autoClose: autoClose * 1000,
 		icon: notificationStyle[type].icon,
-		classNames: { icon: notificationStyle[type].iconClass }
+		classNames: { icon: notificationStyle[type].iconClass, root: 'rounded-lg' }
 	});
 };

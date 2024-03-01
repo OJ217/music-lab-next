@@ -8,7 +8,8 @@ interface IMantineProviderProps {
 
 const theme = createTheme({
 	colors: {
-		violet: ['#F5F3FF', '#EDE9FE', '#DDD6FE', '#C3B5FD', '#A78BFA', '#8A5CF6', '#7C3AED', '#6C28D9', '#5B21B6', '#4D1D95']
+		violet: ['#F5F3FF', '#EDE9FE', '#DDD6FE', '#C3B5FD', '#A78BFA', '#8A5CF6', '#7C3AED', '#6C28D9', '#5B21B6', '#4D1D95'],
+		dark: ['#c9c9c9', '#b8b8b8', '#828282', '#696969', '#424242', '#3b3b3b', '#2e2e2e', '#1f1f1f', '#141414', '#101010']
 	},
 	fontFamily: 'GIP',
 	primaryColor: 'violet',
@@ -90,7 +91,7 @@ const MantineProvider: React.FC<IMantineProviderProps> = ({ children }) => {
 				autoClose={100000}
 				zIndex={10000}
 				classNames={{
-					root: 'top-[calc(1rem_+_env(safe-area-inset-top))]'
+					root: 'top-[calc(2rem_+_env(safe-area-inset-top))]'
 				}}
 			/>
 			<ModalsProvider>{children}</ModalsProvider>

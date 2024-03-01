@@ -252,102 +252,121 @@ const PracticeChord = () => {
 	return (
 		<>
 			<EarTrainingLayout>
-				<div className='space-y-4'>
-					<h1 className='text-center text-xl font-semibold'>{t('chordIdentification')}</h1>
-					<div className='space-y-2'>
-						<Progress
-							value={sessionEnded ? 100 : (totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
-							classNames={{
-								root: 'max-w-[240px] mx-auto',
-								section: 'transition-all duration-300 ease-in-out'
-							}}
-						/>
-						<p className='text-center text-xs text-gray-300'>
-							{sessionEnded ? `${practiceSessionQuestions.length}/${practiceSessionQuestions.length}` : `${practiceSessionQuestions.length}/${TOTAL_QUESTIONS}`}
-						</p>
+				<motion.div
+					layout
+					transition={{ duration: 1.5, type: 'spring' }}
+				>
+					<div className='mb-12 space-y-4'>
+						<h1 className='text-center text-xl font-semibold'>{t('chordIdentification')}</h1>
+
+						<div className='space-y-2'>
+							<Progress
+								bg={'violet.8'}
+								value={sessionEnded ? 100 : (totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
+								classNames={{
+									root: 'max-w-[240px] mx-auto w-full',
+									section: 'transition-all duration-300 ease-in-out'
+								}}
+							/>
+							<p className='text-center text-xs text-gray-300'>
+								{sessionEnded ? `${practiceSessionQuestions.length}/${practiceSessionQuestions.length}` : `${practiceSessionQuestions.length}/${TOTAL_QUESTIONS}`}
+							</p>
+						</div>
+
+						<div className='flex flex-col items-center space-y-16'>
+							<ActionIcon
+								p={4}
+								radius='sm'
+								variant='light'
+								onClick={openSettingsModal}
+								disabled={practiceSessionQuestions.length > 0 && !sessionEnded}
+							>
+								<IconSettings />
+							</ActionIcon>
+							<Button
+								fw={500}
+								radius={'xl'}
+								disabled={practiceSessionMethodsDisabled || sessionEnded}
+								onClick={() => {
+									sessionEnded || !practiceSessionQuestions.length ? resetSession() : replayChord();
+								}}
+								className='disabled:bg-violet-600/25 disabled:opacity-50'
+							>
+								{sessionEnded ? t('restart') : !practiceSessionQuestions.length ? t('start') : t('replay')}
+							</Button>
+						</div>
 					</div>
+				</motion.div>
 
-					<div className='flex items-center justify-center gap-4'>
-						<ActionIcon
-							p={4}
-							radius='sm'
-							variant='light'
-							onClick={openSettingsModal}
-							disabled={practiceSessionQuestions.length > 0 && !sessionEnded}
-						>
-							<IconSettings />
-						</ActionIcon>
-					</div>
-				</div>
-
-				<div className='mt-16 flex flex-col items-center space-y-12'>
-					<Button
-						fw={500}
-						radius={'xl'}
-						disabled={practiceSessionMethodsDisabled || sessionEnded}
-						onClick={() => {
-							sessionEnded || !practiceSessionQuestions.length ? resetSession() : replayChord();
-						}}
-						className='disabled:bg-violet-600/25 disabled:opacity-50'
-					>
-						{sessionEnded ? t('restart') : !practiceSessionQuestions.length ? t('start') : t('replay')}
-					</Button>
-
+				<motion.div
+					layout
+					transition={{
+						duration: 1.5,
+						type: 'spring'
+					}}
+					className='w-full max-w-lg'
+				>
 					<AnimatePresence
 						mode='wait'
+						presenceAffectsLayout
 						initial={false}
 					>
-						{!selectedChord ? (
-							<motion.div
-								key={'chords'}
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								transition={{
-									duration: 0.3
-								}}
-								exit={{ opacity: 0 }}
-								className='flex max-w-lg flex-wrap items-center justify-center gap-6'
-							>
-								{CHORDS.map(chord => (
-									<Button
-										py={4}
-										px={16}
-										fw={400}
-										variant='light'
-										key={chord.value}
-										onClick={() => {
-											if (hasInversion(chord.value)) {
-												setSelectedChord({
-													name: chord.value,
-													length: Chord.getChord(chord.value).intervals.length
-												});
-											} else {
-												answerQuestion(chord.value);
-											}
-										}}
-										disabled={sessionEnded || !practiceSessionQuestions.length || practiceSessionMethodsDisabled}
-										className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
-									>
-										{chord.label}
-									</Button>
-								))}
-							</motion.div>
-						) : (
-							<motion.div
-								key={'chord_inversions'}
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								transition={{
-									duration: 0.3
-								}}
-								exit={{ opacity: 0 }}
-								className='flex flex-col items-center justify-center gap-20'
-							>
-								<div className='space-y-6'>
+						<motion.div
+							layout
+							transition={{
+								duration: 1.5,
+								type: 'spring'
+							}}
+						>
+							{!selectedChord ? (
+								<motion.div
+									layout
+									key={'chords'}
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 1.5, type: 'spring' }}
+									className='flex w-full flex-wrap items-center justify-center gap-6'
+								>
+									{CHORDS.map(chord => (
+										<Button
+											py={4}
+											px={16}
+											fw={400}
+											variant='light'
+											key={chord.value}
+											onClick={() => {
+												if (hasInversion(chord.value)) {
+													setSelectedChord({
+														name: chord.value,
+														length: Chord.getChord(chord.value).intervals.length
+													});
+												} else {
+													answerQuestion(chord.value);
+												}
+											}}
+											disabled={sessionEnded || !practiceSessionQuestions.length || practiceSessionMethodsDisabled}
+											className='rounded-full border-[1.5px] border-violet-700 text-violet-100 disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
+										>
+											{chord.label}
+										</Button>
+									))}
+								</motion.div>
+							) : (
+								<motion.div
+									layout
+									key={'chord_inversions'}
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 1.5, type: 'spring' }}
+									className='flex w-full flex-col items-center justify-center'
+								>
 									<p className='text-center'>
 										{t('selectedChord')}: <span className='font-semibold'>{t(`chord.${selectedChord.name}`)}</span>
 									</p>
-									<div className='flex max-w-md flex-wrap items-center justify-center gap-6'>
+
+									<div className='mb-20 mt-6 flex w-full flex-wrap items-center justify-center gap-6'>
 										{INVERSIONS.filter(i => {
 											return i < selectedChord.length;
 										}).map(inversion => (
@@ -365,22 +384,22 @@ const PracticeChord = () => {
 											</Button>
 										))}
 									</div>
-								</div>
 
-								<Button
-									color='violet.4'
-									variant='subtle'
-									leftSection={<IconArrowLeft size={16} />}
-									onClick={() => {
-										setSelectedChord(null);
-									}}
-								>
-									{t('back')}
-								</Button>
-							</motion.div>
-						)}
+									<Button
+										color='violet.4'
+										variant='subtle'
+										leftSection={<IconArrowLeft size={16} />}
+										onClick={() => {
+											setSelectedChord(null);
+										}}
+									>
+										{t('back')}
+									</Button>
+								</motion.div>
+							)}
+						</motion.div>
 					</AnimatePresence>
-				</div>
+				</motion.div>
 			</EarTrainingLayout>
 
 			<PracticeResultModal

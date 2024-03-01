@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { z } from 'zod';
 
 import { notify } from '@/utils/notification.util';
-import { Button, Paper, TextInput } from '@mantine/core';
+import { Button, TextInput, Tooltip } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { IconArrowLeft } from '@tabler/icons-react';
 
@@ -36,25 +36,22 @@ const ForgotPassword = () => {
 				<p className='text-sm text-violet-100'>Enter your email to get a reset link</p>
 			</section>
 
-			<Paper
-				withBorder
-				shadow='md'
-				radius='md'
-				className='w-full max-w-sm rounded-lg border border-violet-700/10 bg-transparent bg-gradient-to-tr from-violet-700/5 to-violet-700/20 p-5'
-			>
+			<div className='w-full max-w-sm rounded-lg border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-700/15 to-violet-700/25 p-5'>
 				<form
 					className='w-full space-y-5'
 					onSubmit={forgotPasswordForm.onSubmit(handleForgotPasswordRequest)}
 				>
-					<TextInput
-						description='Email'
-						placeholder='Enter your email'
-						{...forgotPasswordForm.getInputProps('email')}
-						classNames={{
-							description: 'text-white',
-							input: 'placeholder:text-white/75 border border-violet-800 focus:border-violet-600 bg-violet-800/50 transition-all duration-300 ease-in-out'
-						}}
-					/>
+					<Tooltip label={'This feature is not implemented at the moment'}>
+						<TextInput
+							disabled
+							placeholder='Enter your email'
+							{...forgotPasswordForm.getInputProps('email')}
+							classNames={{
+								description: 'text-white',
+								input: 'placeholder:text-white/75 border border-violet-800 focus:border-violet-600 bg-violet-800/50 transition-all duration-300 ease-in-out'
+							}}
+						/>
+					</Tooltip>
 
 					<div className='text-center'>
 						<Link
@@ -74,7 +71,7 @@ const ForgotPassword = () => {
 						Send
 					</Button>
 				</form>
-			</Paper>
+			</div>
 		</main>
 	);
 };

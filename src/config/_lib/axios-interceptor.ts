@@ -21,7 +21,7 @@ axios.interceptors.request.use((config: InternalAxiosRequestConfig<any>) => {
 	};
 
 	if (config.isPrivate) {
-		const authStore = JSON.parse(window.localStorage.getItem('music_lab.auth_store') as string);
+		const authStore = JSON.parse(window.localStorage.getItem('music_lab.auth_store')!);
 		const accessToken = authStore?.accessToken;
 		const refreshToken = authStore?.refreshToken;
 

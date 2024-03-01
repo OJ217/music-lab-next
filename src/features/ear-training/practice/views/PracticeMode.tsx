@@ -226,6 +226,7 @@ const PracticeMode = () => {
 					<h1 className='text-center text-xl font-semibold'>{t('modeIdentification')}</h1>
 					<div className='space-y-2'>
 						<Progress
+							bg={'violet.8'}
 							value={sessionEnded ? 100 : (totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
 							classNames={{
 								root: 'max-w-[240px] mx-auto',
@@ -273,7 +274,7 @@ const PracticeMode = () => {
 								key={mode.value}
 								onClick={() => answerQuestion(mode.value)}
 								disabled={sessionEnded || !practiceSessionQuestions.length || practiceSessionMethodsDisabled}
-								className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
+								className='rounded-full border-[1.5px] border-violet-700 text-violet-100 disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
 							>
 								{mode.label}
 							</Button>

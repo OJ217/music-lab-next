@@ -168,7 +168,6 @@ const PracticeHome = () => {
 							</div>
 							<div className='space-y-6'>
 								<h3 className='text-center text-lg font-semibold'>You&apos;re on a 2-day streak 🔥</h3>
-
 								<Link
 									href={'practice/mode'}
 									className='block'
