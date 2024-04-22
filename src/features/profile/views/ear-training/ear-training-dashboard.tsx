@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { useAuth } from '@/context/auth/auth.context';
-import EarTrainingLayout from '@/features/ear-training/practice/layouts/EarTrainingLayout';
+import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { SelectData } from '@/types';
 import { calculatePercentage } from '@/utils/format.util';
-import { Avatar, Badge, Card, LoadingOverlay, rem, SegmentedControl, Skeleton } from '@mantine/core';
+import { Avatar, Badge, LoadingOverlay, rem, SegmentedControl, Skeleton } from '@mantine/core';
 import { IconChartBarOff, IconCheck, IconChevronRight, IconMusic, IconX } from '@tabler/icons-react';
 
 import { useEarTrainingPracticeSessionActivityQuery, useEarTrainingPracticeSessionProgressQuery, useEarTrainingPracticeSessionScoresQuery } from '../../services/ear-training-dashboard.service';
@@ -139,10 +139,7 @@ const EarTrainingDashboard = () => {
 						onChange={t => setDashboardType(t as EarTrainingDashboardType)}
 						data={dashboardSegmentedControlData}
 					/>
-					<Card
-						className='border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 pl-2'
-						radius={'md'}
-					>
+					<div className='relative rounded-lg border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 pb-2 pl-2 pr-4 pt-4'>
 						{dashboardType === 'activity' ? (
 							<ResponsiveContainer
 								height={200}
@@ -150,10 +147,10 @@ const EarTrainingDashboard = () => {
 							>
 								{activityQueryPending ? (
 									<LoadingOverlay
-										visible={activityQueryPending}
+										visible={true}
 										loaderProps={{ type: 'dots' }}
 										classNames={{
-											overlay: 'border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25'
+											overlay: 'bg-transparent rounded-lg'
 										}}
 									/>
 								) : practiceSessionActivity && practiceSessionActivity?.length > 0 ? (
@@ -255,10 +252,10 @@ const EarTrainingDashboard = () => {
 							>
 								{progressQueryPending ? (
 									<LoadingOverlay
-										visible={activityQueryPending}
+										visible={true}
 										loaderProps={{ type: 'dots' }}
 										classNames={{
-											overlay: 'border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25'
+											overlay: 'bg-transparent rounded-lg'
 										}}
 									/>
 								) : practiceSessionProgress && practiceSessionProgress?.length > 0 ? (
@@ -297,7 +294,7 @@ const EarTrainingDashboard = () => {
 											radius={6}
 										>
 											<LabelList
-												angle={270}
+												angle={0}
 												fill='#E5E7EB'
 												dataKey={'score'}
 												position='center'
@@ -389,7 +386,7 @@ const EarTrainingDashboard = () => {
 								)}
 							</ResponsiveContainer>
 						)}
-					</Card>
+					</div>
 				</div>
 
 				<div className='space-y-4'>
@@ -398,8 +395,8 @@ const EarTrainingDashboard = () => {
 						? Array.from({ length: 5 }).map((_, index) => (
 								<Skeleton
 									key={index}
-									className='h-20 md:h-[5.5rem]'
 									radius={'md'}
+									className='h-20 before:!bg-transparent after:!bg-transparent after:bg-gradient-to-tr after:from-violet-600/15 after:to-violet-600/30 md:h-[5.5rem]'
 								/>
 							))
 						: Object.values(EarTrainingPracticeType)?.map(practiceType => {

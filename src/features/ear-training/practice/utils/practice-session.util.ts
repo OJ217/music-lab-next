@@ -48,3 +48,12 @@ export const resolvePracticeResultMessage = (totalCorrectAnswers: number, totalQ
 export const resolvePracticeResultColor = (totalCorrectAnswers: number, totalQuestions: number): MantineColor => {
 	return PRACTICE_RESULT_COLOR[resolvePracticeResultLevel(totalCorrectAnswers, totalQuestions)];
 };
+
+export const combineErrors = (errors: Array<Record<string, Array<string>>>) => {
+	return errors.reduce((acc, obj) => {
+		for (const [key, value] of Object.entries(obj)) {
+			acc[key] = acc[key] ? [...acc[key], ...value] : [...value];
+		}
+		return acc;
+	}, {});
+};

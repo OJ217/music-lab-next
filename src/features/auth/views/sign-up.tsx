@@ -1,18 +1,20 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { GOOGLE_OAUTH } from '@/config/constants/api.constant';
 import { useAuth } from '@/context/auth/auth.context';
 import { notify } from '@/utils/notification.util';
-import { Button, Divider, PasswordInput, TextInput } from '@mantine/core';
+import { Button, Divider, PasswordInput, TextInput, Tooltip } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
+import AuthLayout from '../layouts/auth-layout';
 import { useGoogleOAuthMutation, useSignUpMutation } from '../services/auth.service';
 
 const SignUpPage = () => {
 	const router = useRouter();
+	const { t: authT } = useTranslation('auth');
 	const { setAuthStore } = useAuth();
 
 	const { mutateGoogleOAuth, googleOAuthPending } = useGoogleOAuthMutation();
@@ -99,24 +101,24 @@ const SignUpPage = () => {
 	};
 
 	return (
-		<main className='flex min-h-screen flex-col items-center justify-center space-y-12 p-6'>
-			<section className='space-y-2 text-center'>
-				<h1 className='text-3xl font-semibold'>Sign Up to Music Lab</h1>
-				<p className='text-sm text-violet-100'>
-					Already have an account?{' '}
+		<AuthLayout>
+			<section className='space-y-2 text-center text-violet-100'>
+				<h1 className='text-2xl font-semibold'>{authT('signUp')}</h1>
+				{/* <p className='text-sm'>
+					{authT('alreadySignedUp')}{' '}
 					<Link
 						href={'/auth/sign-in'}
-						className='text-violet-500'
+						className='text-violet-400'
 					>
-						Sign In
+						{authT('signIn')}
 					</Link>
-				</p>
+				</p> */}
 			</section>
 
 			<div className='w-full max-w-sm rounded-lg border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-700/15 to-violet-700/25 p-5'>
 				<form
 					className='w-full space-y-10'
-					onSubmit={signUpForm.onSubmit(handleSignUp)}
+					// onSubmit={signUpForm.onSubmit(handleSignUp)}
 				>
 					<div className='space-y-5'>
 						<Button
@@ -155,20 +157,20 @@ const SignUpPage = () => {
 							onClick={handleGoogleOAuth}
 							loading={googleOAuthPending}
 						>
-							Continue with Google
+							{authT('signInWithGoogle')}
 						</Button>
 
 						<Divider
-							label='Or sign up with email'
+							label={authT('or')}
 							labelPosition='center'
 							className='my-5'
 							color='violet.1'
 						/>
 
 						<TextInput
-							description='Email'
-							placeholder='Enter your email'
-							disabled={signUpPending}
+							description={authT('email')}
+							placeholder={authT('emailInputPlaceholder')}
+							disabled={true ?? signUpPending}
 							{...signUpForm.getInputProps('email')}
 							classNames={{
 								description: 'text-white',
@@ -177,9 +179,9 @@ const SignUpPage = () => {
 						/>
 
 						<TextInput
-							description='Username'
-							placeholder='Enter your username'
-							disabled={signUpPending}
+							description={authT('username')}
+							placeholder={authT('usernameInputPlaceholder')}
+							disabled={true ?? signUpPending}
 							{...signUpForm.getInputProps('username')}
 							classNames={{
 								description: 'text-white',
@@ -188,9 +190,9 @@ const SignUpPage = () => {
 						/>
 
 						<PasswordInput
-							description='Password'
-							placeholder='Enter your password'
-							disabled={signUpPending}
+							description={authT('password')}
+							placeholder={authT('passwordInputPlaceholder')}
+							disabled={true ?? signUpPending}
 							{...signUpForm.getInputProps('password')}
 							classNames={{
 								description: 'text-white',
@@ -200,9 +202,9 @@ const SignUpPage = () => {
 						/>
 
 						<PasswordInput
-							description='Confirm Password'
-							placeholder='Re-enter your password'
-							disabled={signUpPending}
+							description={authT('passwordConfirmation')}
+							placeholder={authT('passwordConfirmationInputPlaceholder')}
+							disabled={true ?? signUpPending}
 							{...signUpForm.getInputProps('passwordConfirmation')}
 							classNames={{
 								description: 'text-white',
@@ -212,17 +214,19 @@ const SignUpPage = () => {
 						/>
 					</div>
 
-					<Button
-						fullWidth
-						type='submit'
-						loading={signUpPending}
-						className='font-normal hover:shadow-lg hover:shadow-violet-600/30 disabled:pointer-events-none'
-					>
-						Sign Up
-					</Button>
+					<Tooltip label={'This feature is not implemented at the moment'}>
+						<Button
+							fullWidth
+							// type='submit'
+							loading={signUpPending}
+							className='cursor-not-allowed font-normal opacity-25'
+						>
+							{authT('signUp')}
+						</Button>
+					</Tooltip>
 				</form>
 			</div>
-		</main>
+		</AuthLayout>
 	);
 };
 

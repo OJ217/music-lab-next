@@ -1,4 +1,4 @@
-import { SettingsView } from '@/features/profile/views/_index';
+import { SettingsView } from '@/features/profile/views';
 
 const Settings = () => <SettingsView />;
 

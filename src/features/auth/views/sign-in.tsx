@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { GOOGLE_OAUTH } from '@/config/constants/api.constant';
@@ -9,10 +9,12 @@ import { Button, Divider, PasswordInput, TextInput } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
+import AuthLayout from '../layouts/auth-layout';
 import { useGoogleOAuthMutation, useSignInMutation } from '../services/auth.service';
 
 const SignInPage = () => {
 	const router = useRouter();
+	const { t: authT } = useTranslation('auth');
 	const { setAuthStore } = useAuth();
 
 	const { mutateGoogleOAuth, googleOAuthPending } = useGoogleOAuthMutation();
@@ -88,18 +90,18 @@ const SignInPage = () => {
 	};
 
 	return (
-		<main className='flex min-h-screen flex-col items-center justify-center space-y-12 p-6'>
-			<section className='space-y-2 text-center'>
-				<h1 className='text-3xl font-semibold'>Sign In to Music Lab</h1>
-				<p className='text-sm text-violet-100'>
-					Do not have an account yet?{' '}
+		<AuthLayout>
+			<section className='space-y-2 text-center text-violet-100'>
+				<h1 className='text-2xl font-semibold'>{authT('signIn')}</h1>
+				{/* <p className='text-sm'>
+					{authT('notSignedUp')}{' '}
 					<Link
 						href={'/auth/sign-up'}
-						className='text-violet-500'
+						className='text-violet-400'
 					>
-						Sign Up
+						{authT('signUp')}
 					</Link>
-				</p>
+				</p> */}
 			</section>
 
 			<div className='w-full max-w-sm rounded-lg border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-700/15 to-violet-700/25 p-5'>
@@ -146,19 +148,19 @@ const SignInPage = () => {
 						}}
 						loading={googleOAuthPending}
 					>
-						Continue with Google
+						{authT('signInWithGoogle')}
 					</Button>
 
 					<Divider
-						label='Or sign in with email'
+						label={authT('or')}
 						labelPosition='center'
 						className='my-5'
-						color='violet.1'
+						color='violet.2'
 					/>
 
 					<TextInput
-						description='Email'
-						placeholder='Enter your email'
+						description={authT('email')}
+						placeholder={authT('emailInputPlaceholder')}
 						disabled={signInPending}
 						{...signInForm.getInputProps('email')}
 						classNames={{
@@ -168,8 +170,8 @@ const SignInPage = () => {
 					/>
 
 					<PasswordInput
-						description='Password'
-						placeholder='Enter your password'
+						description={authT('password')}
+						placeholder={authT('passwordInputPlaceholder')}
 						disabled={signInPending}
 						{...signInForm.getInputProps('password')}
 						classNames={{
@@ -179,14 +181,14 @@ const SignInPage = () => {
 						}}
 					/>
 
-					<div className='text-center'>
+					{/* <div className='text-center'>
 						<Link
 							href={'/auth/forgot-password'}
 							className='inline-block text-xs text-violet-100'
 						>
-							Forgot Password?
+							{authT('forgotPassword')}
 						</Link>
-					</div>
+					</div> */}
 
 					<Button
 						fullWidth
@@ -194,11 +196,11 @@ const SignInPage = () => {
 						loading={signInPending}
 						className='font-normal hover:shadow-lg hover:shadow-violet-600/30'
 					>
-						Sign In
+						{authT('signIn')}
 					</Button>
 				</form>
 			</div>
-		</main>
+		</AuthLayout>
 	);
 };
 

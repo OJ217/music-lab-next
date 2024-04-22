@@ -1,4 +1,4 @@
-import { ProfileView } from '@/features/profile/views/_index';
+import { ProfileView } from '@/features/profile/views';
 
 const Profile = () => <ProfileView />;
 

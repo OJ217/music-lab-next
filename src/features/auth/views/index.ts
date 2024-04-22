@@ -1,3 +1,3 @@
-export { default as SignInView } from './SignIn';
-export { default as SignUpView } from './SignUp';
-export { default as ForgotPasswordView } from './ForgotPassword';
+export { default as SignInView } from './sign-in';
+export { default as SignUpView } from './sign-up';
+export { default as ForgotPasswordView } from './forgot-password';

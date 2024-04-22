@@ -51,12 +51,11 @@ const PracticeResultModal: FC<IPracticeResultModalProps> = ({
 			closeOnEscape={false}
 			closeOnClickOutside={false}
 			withCloseButton={false}
-			title={t('result.practiceResult')}
 			classNames={{
 				header: 'font-semibold text-sm'
 			}}
 		>
-			<div className='mt-4 flex flex-col items-center space-y-8 text-center'>
+			<div className='flex flex-col items-center space-y-8 py-4 text-center'>
 				<div className='space-y-2'>
 					<h3 className='text-3xl font-semibold text-violet-500'>{practiceScorePercentage}%</h3>
 					<p className='mx-auto max-w-[240px] text-sm font-medium'>{t('result.practiceResultMessage', { correct: totalCorrectAnswers, incorrect: totalQuestions - totalCorrectAnswers })}</p>

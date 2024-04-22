@@ -18,7 +18,7 @@ const PublicOnlyRoute: React.FC<IPublicOnlyRouteProps> = ({ children }) => {
 
 	useEffect(() => {
 		if (!authContextLoading && authenticated) {
-			router.back();
+			router.replace('/ear-training/practice');
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [authenticated, authContextLoading]);

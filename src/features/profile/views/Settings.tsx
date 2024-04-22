@@ -1,6 +1,6 @@
-import EarTrainingLayout from '@/features/ear-training/practice/layouts/EarTrainingLayout';
+import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
 
-import InDevelopmentBanner from '../components/misc/InDevelopmentBanner';
+import InDevelopmentBanner from '../components/misc/in-development-banner';
 
 const Settings = () => {
 	return (

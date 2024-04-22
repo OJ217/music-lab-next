@@ -1,117 +1,75 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { t } from 'i18next';
-import React, { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-/* eslint-disable react/no-unescaped-entities */
-import { ActionIcon, Button, Progress } from '@mantine/core';
-import { IconSettings } from '@tabler/icons-react';
+import { lastNItems, randomNumberFromRange, randomWeightedSelection } from '@/utils/helper.util';
+import { Button } from '@mantine/core';
 
-/**
- * This is an example of position-only layout animations in Framer Motion 2.
- *
- * This is ideal for layers that are substantially changing their graphical content,
- * like this text layer. Try removing ="position" and see what effect we produce
- * by simply animating between bounding boxes.
- */
+const lastNThresholdDictionary = {
+	4: [0, 1],
+	5: [1, 2],
+	6: [2, 3]
+};
 
-export default function App() {
-	const [isOpen, setIsOpen] = useState(true);
+const Test = () => {
+	const errors: Record<string, Array<string>> = useMemo(() => {
+		return {
+			P4: ['P5', 'P5', 'M2', 'm6', 'P5', 'P5'],
+			P5: ['P4', 'P4', 'P4', 'd5', 'P4', 'M2', 'P4', 'P4']
+		};
+	}, []);
+
+	const errorWeight = useMemo(() => {
+		console.log('errorWeight');
+		return 0.5 / Math.max(...Object.values(errors).map(e => e.length));
+	}, [errors]);
+
+	const intervalRef = useRef<Array<string>>(['m2', 'M2', 'm3', 'M3', 'P4', 'd5', 'P5', 'm6', 'M6', 'm7', 'M7', 'P8']);
+	// const intervalRef = useRef<Array<string>>(['M2', 'M3', 'P4', 'P5', 'M6', 'M7']);
+
+	const lastNThresholdRange: [number, number] = useMemo(() => {
+		console.log('lastNThresholdRange');
+		if (intervalRef.current.length.toString() in lastNThresholdDictionary) {
+			// @ts-ignore
+			return lastNThresholdDictionary[intervalRef.current.length];
+		} else {
+			return [2, 4];
+		}
+	}, [intervalRef]);
+
+	const intervalSelectionRef = useRef<Array<{ value: string; weight: number }>>(
+		intervalRef.current.map(interval => {
+			let weight = 1;
+
+			if (interval in errors) {
+				weight = weight + errorWeight * errors[interval].length;
+			}
+
+			return {
+				value: interval,
+				weight
+			};
+		})
+	);
+
+	const [questions, setQuestions] = useState<Array<string>>([]);
+
+	useEffect(() => {
+		console.log('Questions', questions);
+	}, [questions]);
+
+	const playNextInterval = () => {
+		const lastNThreshold = randomNumberFromRange(lastNThresholdRange[0], lastNThresholdRange[1]);
+		const lastNIntervals = questions.length >= lastNThreshold ? lastNItems(questions, lastNThreshold) : questions;
+		const intervalOptions = intervalSelectionRef.current.filter(item => !lastNIntervals.includes(item.value));
+		const interval = randomWeightedSelection(intervalOptions);
+
+		setQuestions(q => [...q, interval]);
+	};
 
 	return (
-		<div className='grid min-h-screen place-content-center'>
-			<motion.div
-				layout='position'
-				transition={{ duration: 1.5, type: 'spring' }}
-			>
-				<div className='mb-12 space-y-4'>
-					<h1 className='text-center text-xl font-semibold'>{t('chordIdentification')}</h1>
-
-					<div className='space-y-2'>
-						<Progress
-							bg={'violet.8'}
-							value={50}
-							classNames={{
-								root: 'max-w-[240px] mx-auto w-full',
-								section: 'transition-all duration-300 ease-in-out'
-							}}
-						/>
-						<p className='text-center text-xs text-gray-300'>5/10</p>
-					</div>
-
-					<div className='flex flex-col items-center space-y-16'>
-						<ActionIcon
-							p={4}
-							radius='sm'
-							variant='light'
-						>
-							<IconSettings />
-						</ActionIcon>
-						<Button
-							fw={500}
-							radius={'xl'}
-							className='disabled:bg-violet-600/25 disabled:opacity-50'
-						>
-							Тоглох
-						</Button>
-					</div>
-				</div>
-			</motion.div>
-			<motion.div
-				layout
-				transition={{
-					duration: 1.5,
-					type: 'spring'
-				}}
-				onClick={() => setIsOpen(!isOpen)}
-				className='max-w-[400px] overflow-hidden bg-lime-500 bg-gradient-to-tr from-violet-700/10 to-violet-700/25 p-5 text-center'
-			>
-				<AnimatePresence
-					mode='wait'
-					presenceAffectsLayout
-					initial={false}
-				>
-					<motion.div
-						layout
-						transition={{
-							duration: 1.5,
-							type: 'spring'
-						}}
-					>
-						{isOpen ? (
-							<motion.div
-								layout
-								key={'chords'}
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								transition={{
-									duration: 1.5,
-									type: 'spring'
-								}}
-								exit={{ opacity: 0 }}
-							>
-								It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
-							</motion.div>
-						) : (
-							<motion.div
-								layout
-								key={'chord_inversions'}
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								transition={{
-									duration: 1.5,
-									type: 'spring'
-								}}
-								exit={{ opacity: 0 }}
-							>
-								It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it
-								has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing
-								packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.
-								Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-							</motion.div>
-						)}
-					</motion.div>
-				</AnimatePresence>
-			</motion.div>
-		</div>
+		<main className='grid min-h-screen place-content-center'>
+			<Button onClick={playNextInterval}>Next Interval</Button>
+		</main>
 	);
-}
+};
+
+export default Test;

@@ -22,7 +22,7 @@ type IPracticeSessionActivityResponse = IPracticeSessionActivity[];
 export const useEarTrainingPracticeSessionActivityQuery = ({ enabled = true, queryParams = {} }: IUsePracticeSessionActivityParams) => {
 	const fetchEarTrainingPracticeSessionActivity = async () => {
 		return (
-			await axios.get<IResponse<IPracticeSessionActivityResponse>>('/ear-training/practice-session/activity', {
+			await axios.get<IResponse<IPracticeSessionActivityResponse>>('/ear-training/analytics/activity', {
 				isPrivate: true,
 				params: queryParams
 			})
@@ -31,7 +31,7 @@ export const useEarTrainingPracticeSessionActivityQuery = ({ enabled = true, que
 
 	const { data, isPending } = useQuery({
 		queryFn: fetchEarTrainingPracticeSessionActivity,
-		queryKey: ['practice-session', 'activity', queryParams],
+		queryKey: ['ear-training', 'analytics', 'activity', queryParams],
 		enabled
 	});
 
@@ -58,7 +58,7 @@ type IPracticeSessionProgressResponse = IPracticeSessionProgress[];
 export const useEarTrainingPracticeSessionProgressQuery = ({ enabled, queryParams }: IUsePracticeSessionProgressParams) => {
 	const fetchEarTrainingPracticeSessionProgress = async () => {
 		const practiceSessionProgress = (
-			await axios.get<IResponse<IPracticeSessionProgressResponse>>('/ear-training/practice-session/progress', {
+			await axios.get<IResponse<IPracticeSessionProgressResponse>>('/ear-training/analytics/progress', {
 				isPrivate: true,
 				params: queryParams
 			})
@@ -69,7 +69,7 @@ export const useEarTrainingPracticeSessionProgressQuery = ({ enabled, queryParam
 
 	const { data, isPending } = useQuery({
 		queryFn: fetchEarTrainingPracticeSessionProgress,
-		queryKey: ['practice-session', 'progress', queryParams],
+		queryKey: ['ear-training', 'analytics', 'progress', queryParams],
 		enabled
 	});
 
@@ -90,7 +90,7 @@ type IPracticeSessionScoresResponse = IPracticeSessionScore[];
 export const useEarTrainingPracticeSessionScoresQuery = ({ enabled = true }: IUseQueryBase) => {
 	const fetchEarTrainingPracticeSessionScores = async () => {
 		const practiceSessionScores = (
-			await axios.get<IResponse<IPracticeSessionScoresResponse>>('/ear-training/practice-session/scores', {
+			await axios.get<IResponse<IPracticeSessionScoresResponse>>('/ear-training/analytics/scores', {
 				isPrivate: true
 			})
 		).data.data;
@@ -104,7 +104,7 @@ export const useEarTrainingPracticeSessionScoresQuery = ({ enabled = true }: IUs
 
 	const { data, isPending } = useQuery({
 		queryFn: fetchEarTrainingPracticeSessionScores,
-		queryKey: ['practice-session', 'scores'],
+		queryKey: ['ear-training', 'analytics', 'scores'],
 		enabled
 	});
 
@@ -138,7 +138,7 @@ interface IEarTrainingPracticeSession {
 export const useEarTrainingPracticeSessionListQuery = ({ enabled, queryParams }: IUsePracticeSessionListParams) => {
 	const fetchEarTrainingPracticeSessionList = async () => {
 		return (
-			await axios.get<IResponse<IPaginatedDocuments<IEarTrainingPracticeSession>>>('/ear-training/practice-session', {
+			await axios.get<IResponse<IPaginatedDocuments<IEarTrainingPracticeSession>>>('/ear-training/sessions', {
 				isPrivate: true,
 				params: queryParams
 			})
@@ -147,7 +147,7 @@ export const useEarTrainingPracticeSessionListQuery = ({ enabled, queryParams }:
 
 	const { data, isPending } = useQuery({
 		queryFn: fetchEarTrainingPracticeSessionList,
-		queryKey: ['practice-session', queryParams.type, queryParams.page],
+		queryKey: ['ear-training', 'sessions', queryParams.type, queryParams.page],
 		enabled
 	});
 
@@ -183,16 +183,17 @@ interface IEarTrainingPracticeSessionDetail {
 
 export const useEarTrainingPracticeSessionQuery = ({ enabled, practiceSessionId }: IUsePracticeSessionQueryParams) => {
 	const fecthEarTrainingPracticeSession = async () => {
-		return (
-			await axios.get<IResponse<IEarTrainingPracticeSessionDetail>>(`/ear-training/practice-session/${practiceSessionId}`, {
+		const data = (
+			await axios.get<IResponse<IEarTrainingPracticeSessionDetail>>(`/ear-training/sessions/${practiceSessionId}`, {
 				isPrivate: true
 			})
 		).data;
+		return data;
 	};
 
 	const { data, isPending } = useQuery({
 		queryFn: fecthEarTrainingPracticeSession,
-		queryKey: ['practice-session', practiceSessionId],
+		queryKey: ['ear-training', 'session', practiceSessionId],
 		staleTime: Infinity,
 		enabled
 	});

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { notify } from '@/utils/notification.util';
@@ -6,9 +7,12 @@ import { Button, TextInput, Tooltip } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { IconArrowLeft } from '@tabler/icons-react';
 
-const ForgotPassword = () => {
-	const forgotPasswordRequestSchema = z.object({ email: z.string().email() });
+import AuthLayout from '../layouts/auth-layout';
 
+const ForgotPassword = () => {
+	const { t: authT } = useTranslation('auth');
+
+	const forgotPasswordRequestSchema = z.object({ email: z.string().email() });
 	type ForgotPasswordRequestData = z.infer<typeof forgotPasswordRequestSchema>;
 
 	const forgotPasswordForm = useForm<ForgotPasswordRequestData>({
@@ -30,10 +34,10 @@ const ForgotPassword = () => {
 	};
 
 	return (
-		<main className='flex min-h-screen flex-col items-center justify-center space-y-12 p-6'>
-			<section className='space-y-2 text-center'>
-				<h1 className='text-3xl font-semibold'>Forgot your Password?</h1>
-				<p className='text-sm text-violet-100'>Enter your email to get a reset link</p>
+		<AuthLayout>
+			<section className='space-y-1.5 text-center text-violet-100'>
+				<h1 className='text-2xl font-semibold'>{authT('forgotPassword')}</h1>
+				<p className='max-w-xs text-sm'>{authT('forgotPasswordDesc')}</p>
 			</section>
 
 			<div className='w-full max-w-sm rounded-lg border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-700/15 to-violet-700/25 p-5'>
@@ -44,7 +48,7 @@ const ForgotPassword = () => {
 					<Tooltip label={'This feature is not implemented at the moment'}>
 						<TextInput
 							disabled
-							placeholder='Enter your email'
+							placeholder={authT('emailInputPlaceholder')}
 							{...forgotPasswordForm.getInputProps('email')}
 							classNames={{
 								description: 'text-white',
@@ -59,7 +63,7 @@ const ForgotPassword = () => {
 							className='inline-flex items-center gap-1 text-xs text-violet-100 transition-all duration-300 ease-in-out hover:gap-2'
 						>
 							<IconArrowLeft size={16} />
-							<p>Back to Sign In</p>
+							<p>{authT('signIn')}</p>
 						</Link>
 					</div>
 
@@ -68,11 +72,11 @@ const ForgotPassword = () => {
 						fullWidth
 						className='pointer-events-none cursor-not-allowed font-normal opacity-25 hover:shadow-lg hover:shadow-violet-600/30'
 					>
-						Send
+						{authT('send')}
 					</Button>
 				</form>
 			</div>
-		</main>
+		</AuthLayout>
 	);
 };
 

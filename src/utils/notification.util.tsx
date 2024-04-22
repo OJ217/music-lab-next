@@ -1,7 +1,7 @@
 import { notifications } from '@mantine/notifications';
-import { IconAlertTriangle, IconCheck, IconX } from '@tabler/icons-react';
+import { IconAlertTriangle, IconCheck, IconFileCode, IconX } from '@tabler/icons-react';
 
-type NotificationType = 'success' | 'fail' | 'warning';
+type NotificationType = 'success' | 'fail' | 'warning' | 'log';
 
 // * Utility function actions:
 // * [+] New notification caller function with above notification type
@@ -31,6 +31,15 @@ export const notify = ({ type, title, message = null, autoClose = 10 }: { type: 
 			iconClass: 'bg-yellow-500 bg-opacity-25 border border-yellow-500',
 			icon: (
 				<IconAlertTriangle
+					size={18}
+					stroke={1.6}
+				/>
+			)
+		},
+		log: {
+			iconClass: 'bg-violet-500 bg-opacity-25 border border-violet-500',
+			icon: (
+				<IconFileCode
 					size={18}
 					stroke={1.6}
 				/>
