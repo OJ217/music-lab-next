@@ -2,21 +2,35 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '@/context/auth/auth.context';
-import ProtectedRoute from '@/context/auth/hoc/ProtectedRoute';
+import ProtectedRoute from '@/context/auth/hoc/protected-route';
 import { ActionIcon, Avatar, Menu, rem, Skeleton } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { IconChartBar, IconFlask2, IconLogout, IconSettings, IconUser } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import NavigationAffix from '../components/overlay/NavigationAffix';
+import NavigationAffix from '../components/overlay/navigation-affix';
+
+type MaxWidthSizeKey = 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl';
+
+const maxWidthSizes: Record<MaxWidthSizeKey, number> = {
+	lg: 32,
+	xl: 36,
+	'2xl': 42,
+	'3xl': 48,
+	'4xl': 56,
+	'5xl': 64,
+	'6xl': 72,
+	'7xl': 80
+};
 
 interface IEarTrainingLayoutProps {
 	children: React.ReactNode;
 	centered?: boolean;
 	showAffix?: boolean;
+	maxWidthKey?: MaxWidthSizeKey;
 }
 
-const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, centered = true, showAffix = true }) => {
+const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, centered = true, showAffix = true, maxWidthKey = '5xl' }) => {
 	const { userInfo, signOut } = useAuth();
 	const queryClient = useQueryClient();
 	const { t: authT } = useTranslation('auth');
@@ -43,8 +57,11 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 					<div className='mx-auto max-w-4xl'>
 						<div className='flex items-center justify-between gap-8'>
 							<Link href={'/ear-training/practice'}>
-								<div className='inline-flex items-center gap-1 rounded-lg bg-gradient-to-tr from-cyan-600/20 to-violet-600/25 px-2 py-1'>
-									<IconFlask2 size={20} />
+								<div className='inline-flex items-center gap-1 rounded-lg bg-gradient-to-tr from-cyan-600/20 to-violet-600/25 px-3 py-2'>
+									<IconFlask2
+										size={20}
+										stroke={1.8}
+									/>
 									<h1 className='text-lg font-medium'>Music Lab</h1>
 								</div>
 							</Link>
@@ -154,7 +171,12 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 
 				{/* Content */}
 				<div className={`flex-grow ${centered && 'flex items-center justify-center'}`}>
-					<div className='mx-auto max-w-5xl p-4 md:p-6'>{children}</div>
+					<div
+						className='mx-auto flex-grow p-4 md:p-6'
+						style={{ maxWidth: `${maxWidthSizes[maxWidthKey]}rem` }}
+					>
+						{children}
+					</div>
 				</div>
 				{showAffix && <NavigationAffix />}
 			</main>

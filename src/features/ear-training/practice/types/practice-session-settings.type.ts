@@ -98,7 +98,7 @@ export const DEFAULT_INTERVAL_PRACTICE_SETTINGS: IntervalPracticeSettings = {
 		rootNote: 'C4'
 	},
 	playingMode: 'harmonic',
-	tempo: 60,
+	tempo: 80,
 	questionDuration: 30,
 	autoFeedback: true,
 	settingsLocked: false,

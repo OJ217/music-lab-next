@@ -1,4 +1,4 @@
-import { EarTrainingDashboardView } from '@/features/profile/views/_index';
+import { EarTrainingDashboardView } from '@/features/profile/views';
 
 const EarTrainingDashboard = () => <EarTrainingDashboardView />;
 

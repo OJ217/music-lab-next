@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/auth/auth.context';
-import EarTrainingLayout from '@/features/ear-training/practice/layouts/EarTrainingLayout';
+import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
 import { Avatar, Badge, rem } from '@mantine/core';
 
 const Profile = () => {

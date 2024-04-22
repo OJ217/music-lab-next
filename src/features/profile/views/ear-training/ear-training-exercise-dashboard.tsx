@@ -5,13 +5,13 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-import EarTrainingLayout from '@/features/ear-training/practice/layouts/EarTrainingLayout';
+import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { resolvePracticeResultMessage } from '@/features/ear-training/practice/utils/practice-session.util';
 import { SelectData } from '@/types';
 import { ActionIcon, Badge, Card, Center, Drawer, LoadingOverlay, Progress, RingProgress, ScrollArea, SegmentedControl, Select, Skeleton, ThemeIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconChartBarOff, IconCheck, IconDotsVertical, IconX } from '@tabler/icons-react';
+import { IconChartBarOff, IconCheck, IconDotsVertical, IconFilesOff, IconX } from '@tabler/icons-react';
 
 import {
 	useEarTrainingPracticeSessionActivityQuery,
@@ -53,7 +53,7 @@ const EarTrainingExerciseDashboard = () => {
 	});
 
 	const { practiceSessionDetail, practiceSessionDetailPending } = useEarTrainingPracticeSessionQuery({
-		enabled: !!selectedPracticeSessionId,
+		enabled: !!selectedPracticeSessionId && typeof selectedPracticeSessionId === 'string',
 		practiceSessionId: selectedPracticeSessionId
 	});
 
@@ -83,10 +83,7 @@ const EarTrainingExerciseDashboard = () => {
 						onChange={t => setDashboardType(t as EarTrainingDashboardType)}
 						data={dashboardSegmentedControlData}
 					/>
-					<Card
-						className='border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 pl-2'
-						radius={'md'}
-					>
+					<div className='relative rounded-lg border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 pb-2 pl-2 pr-4 pt-4'>
 						{dashboardType === 'activity' ? (
 							<ResponsiveContainer
 								height={200}
@@ -94,10 +91,10 @@ const EarTrainingExerciseDashboard = () => {
 							>
 								{activityQueryPending ? (
 									<LoadingOverlay
-										visible={activityQueryPending}
+										visible={true}
 										loaderProps={{ type: 'dots' }}
 										classNames={{
-											overlay: 'border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25'
+											overlay: 'bg-transparent rounded-lg'
 										}}
 									/>
 								) : practiceSessionActivity && practiceSessionActivity?.length > 0 ? (
@@ -181,13 +178,13 @@ const EarTrainingExerciseDashboard = () => {
 								) : (
 									<div className='grid h-full place-items-center'>
 										<div className='flex flex-col items-center gap-4'>
-											<p className='font-medium'>Data not available</p>
-											<div className='aspect-square rounded-full border border-violet-600 bg-violet-600/25 p-2'>
+											<div className='aspect-square rounded-full border-[1.5px] border-violet-600 bg-violet-600/25 p-2.5'>
 												<IconChartBarOff
 													stroke={1.6}
-													className='stroke-violet-600'
+													className='stroke-violet-600 text-lg font-medium'
 												/>
 											</div>
+											<p className='text-lg font-medium'>Data not available</p>
 										</div>
 									</div>
 								)}
@@ -202,7 +199,7 @@ const EarTrainingExerciseDashboard = () => {
 										visible={activityQueryPending}
 										loaderProps={{ type: 'dots' }}
 										classNames={{
-											overlay: 'border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/25'
+											overlay: 'bg-transparent rounded-lg'
 										}}
 									/>
 								) : practiceSessionProgress && practiceSessionProgress?.length > 0 ? (
@@ -321,19 +318,19 @@ const EarTrainingExerciseDashboard = () => {
 								) : (
 									<div className='grid h-full place-items-center'>
 										<div className='flex flex-col items-center gap-4'>
-											<p className='font-medium'>Data not available</p>
-											<div className='aspect-square rounded-full border border-violet-600 bg-violet-600/25 p-2'>
+											<div className='aspect-square rounded-full border-[1.5px] border-violet-600 bg-violet-600/25 p-2.5'>
 												<IconChartBarOff
 													stroke={1.6}
 													className='stroke-violet-600'
 												/>
 											</div>
+											<p className='text-lg font-medium'>Data not available</p>
 										</div>
 									</div>
 								)}
 							</ResponsiveContainer>
 						)}
-					</Card>
+					</div>
 				</div>
 				<div className='space-y-4'>
 					<h3 className='text-sm font-semibold md:text-base'>Practice session history</h3>
@@ -341,8 +338,8 @@ const EarTrainingExerciseDashboard = () => {
 						Array.from({ length: 10 }).map((_, index) => (
 							<Skeleton
 								key={index}
-								className='h-20 md:h-[5.5rem]'
 								radius={'md'}
+								className='h-20 before:!bg-transparent after:!bg-transparent after:bg-gradient-to-tr after:from-violet-600/15 after:to-violet-600/30 md:h-[5.5rem]'
 							/>
 						))
 					) : !!practiceSessionList && practiceSessionList?.docs.length > 0 ? (
@@ -410,7 +407,15 @@ const EarTrainingExerciseDashboard = () => {
 							</Card>
 						))
 					) : (
-						<div>No practice sessions found</div>
+						<div className='flex h-80 flex-col items-center justify-center gap-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20'>
+							<div className='aspect-square rounded-full border-[1.5px] border-violet-600 bg-violet-600/25 p-2.5'>
+								<IconFilesOff
+									stroke={1.6}
+									className='stroke-violet-600'
+								/>
+							</div>
+							<p className='text-lg font-medium'>No document found</p>
+						</div>
 					)}
 				</div>
 			</div>

@@ -43,7 +43,7 @@ export type SaveEarTrainingPracticeSessionRequestData = z.infer<typeof saveEarTr
 export const useSaveEarTrainingPracticeSessionMutation = () => {
 	const saveEarTrainingPracticeSession = async (practiceSessionData: SaveEarTrainingPracticeSessionRequestData) => {
 		return (
-			await axios.post<IResponse<{ _id: string }>>('/ear-training/practice-session', practiceSessionData, {
+			await axios.post<IResponse<{ _id: string }>>('/ear-training/sessions', practiceSessionData, {
 				isPrivate: true
 			})
 		).data;
@@ -55,7 +55,7 @@ export const useSaveEarTrainingPracticeSessionMutation = () => {
 		mutationFn: saveEarTrainingPracticeSession,
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: ['practice-session', 'activity'],
+				queryKey: ['ear-training', 'analytics', 'scores'],
 				exact: true
 			});
 		}

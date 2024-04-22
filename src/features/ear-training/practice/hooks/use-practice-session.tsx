@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { EarTrainingPracticeSettingsBase, NOTE_DURATION } from '../types/practice-session-settings.type';
-import { useSamplerMethods } from './useSampler';
+import { useSamplerMethods } from './use-sampler';
 
 export type Notes = Array<string | string[]>;
 
@@ -16,10 +16,7 @@ interface UseEarTrainingPracticeSessionParams {
 	playRandom: () => void;
 }
 
-export const useEarTrainingPracticeSession = <EarTrainingPracticeQuestion extends EarTrainingPracticeQuestionBase>({
-	practiceSessionSettings,
-	playRandom
-}: UseEarTrainingPracticeSessionParams) => {
+export const useEarTrainingPracticeSession = <EarTrainingPracticeQuestion extends EarTrainingPracticeQuestionBase>({ practiceSessionSettings, playRandom }: UseEarTrainingPracticeSessionParams) => {
 	const { playNotes, releaseNotes } = useSamplerMethods();
 
 	// ** Practice session questions
@@ -48,8 +45,7 @@ export const useEarTrainingPracticeSession = <EarTrainingPracticeQuestion extend
 		(notes: Notes) => {
 			setSamplerMethodsDisabled(true);
 
-			const noteDurationSeconds =
-				60 / (practiceSessionSettings.tempo * NOTE_DURATION[practiceSessionSettings.noteDuration]);
+			const noteDurationSeconds = 60 / (practiceSessionSettings.tempo * NOTE_DURATION[practiceSessionSettings.noteDuration]);
 
 			playNotes(notes, noteDurationSeconds);
 

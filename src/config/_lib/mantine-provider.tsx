@@ -1,4 +1,4 @@
-import { createTheme, MantineProvider as DefaultMantineProvider, TextInput } from '@mantine/core';
+import { createTheme, MantineProvider as DefaultMantineProvider, Overlay, TextInput } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
 
@@ -75,7 +75,14 @@ const theme = createTheme({
 			classNames: {
 				content: 'pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)]'
 			}
-		}
+		},
+		Overlay: Overlay.extend({
+			defaultProps: {
+				color: '#030712',
+				backgroundOpacity: 0.65,
+				blur: 1
+			}
+		})
 	}
 });
 

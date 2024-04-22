@@ -1,4 +1,4 @@
-export { default as PracticeHomeView } from './PracticeHome';
-export { default as PracticeIntervalView } from './PracticeInterval';
-export { default as PracticeChordView } from './PracticeChord';
-export { default as PracticeModeView } from './PracticeMode';
+export { default as PracticeHomeView } from './practice-home';
+export { default as PracticeIntervalView } from './practice-interval';
+export { default as PracticeChordView } from './practice-chord';
+export { default as PracticeModeView } from './practice-mode';

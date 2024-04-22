@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Note } from 'tonal';
 
 import { INTERVAL_TYPE_GROUPS, IntervalPracticeSettings } from '../types/practice-session-settings.type';
-import { EarTrainingPracticeQuestionBase, Notes, useEarTrainingPracticeSession } from './usePracticeSession';
+import { EarTrainingPracticeQuestionBase, Notes, useEarTrainingPracticeSession } from './use-practice-session';
 
 interface IntervalQuestion extends EarTrainingPracticeQuestionBase {
 	intervalName: string;
