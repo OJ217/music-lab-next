@@ -4,6 +4,7 @@ import { IResponse } from '@/types';
 import { notify } from '@/utils/notification.util';
 
 import { API_URL } from '../constants/api.constant';
+import { queryClient } from './react-query-provider';
 
 declare module 'axios' {
 	interface AxiosRequestConfig {
@@ -59,11 +60,12 @@ axios.interceptors.response.use(
 				message: errorObj?.message
 			};
 		} else if (error?.response?.status === 401) {
+			queryClient.cancelQueries();
+			queryClient.removeQueries();
 			window.localStorage.removeItem('music_lab.auth_store');
 			if (window.location.pathname !== '/auth/sign-in') {
 				window.location.pathname = '/auth/sign-in';
 			}
-			notify({ type: 'warning', title: 'Please sign in to continue.' });
 			return Promise.reject(error?.response);
 		}
 

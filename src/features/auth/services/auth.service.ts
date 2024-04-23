@@ -97,3 +97,11 @@ export const useGoogleOAuthMutation = () => {
 		mutateGoogleOAuth
 	};
 };
+
+export const removeAuthCredentials = async () => {
+	try {
+		await axios.post('http://localhost:3000/api/sign-out');
+	} catch (error) {
+		console.error(error);
+	}
+};

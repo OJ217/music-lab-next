@@ -44,7 +44,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 			labels: { confirm: systemT('yes'), cancel: systemT('no') },
 			onConfirm: () => {
 				signOut();
-				queryClient.invalidateQueries();
+				queryClient.removeQueries();
 			}
 		});
 	};

@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { z } from 'zod';
 
+import { removeAuthCredentials } from '@/features/auth/services/auth.service';
 import { notify } from '@/utils/notification.util';
 import { useLocalStorage } from '@mantine/hooks';
 import { useQueryClient } from '@tanstack/react-query';
@@ -64,7 +65,7 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 	const authContextLoading: boolean = authenticated === undefined;
 
 	useEffect(() => {
-		if (!authStore && !window.localStorage.getItem('music_lab.auth_store')) {
+		if (!window.localStorage.getItem('music_lab.auth_store')) {
 			setAuthenticated(false);
 		} else if (!!authStore) {
 			const authStoreParsed = authStoreSchema.safeParse(authStore);
@@ -75,12 +76,25 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 				setAuthenticated(false);
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [authStore]);
 
 	const signOut = () => {
-		removeAuthStore();
-		client.removeQueries();
-		router.push('/auth/sign-in').then(() => notify({ type: 'warning', title: 'Please sign in to continue.' }));
+		if (!client.isFetching() && !client.isMutating()) {
+			void removeAuthCredentials().then(() => {
+				client.cancelQueries();
+				client.removeQueries();
+
+				removeAuthStore();
+
+				router.push('/auth/sign-in').then(() =>
+					notify({
+						type: 'warning',
+						title: 'Please sign in to continue.'
+					})
+				);
+			});
+		}
 	};
 
 	const authContextValue: AuthContextPayload = {

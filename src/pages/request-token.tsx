@@ -19,6 +19,14 @@ const Token = () => {
 		}
 	};
 
+	const handleSignOut = async () => {
+		try {
+			await axios.post('http://localhost:3000/api/sign-out');
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	return (
 		<div className='grid min-h-screen place-content-center'>
 			<Button
@@ -27,6 +35,13 @@ const Token = () => {
 				}}
 			>
 				Request token
+			</Button>
+			<Button
+				onClick={() => {
+					void handleSignOut();
+				}}
+			>
+				Sign out
 			</Button>
 		</div>
 	);

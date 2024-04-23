@@ -18,7 +18,8 @@ const ProtectedRoute: React.FC<IProtectedRouteProps> = ({ children }) => {
 		if (!authContextLoading && !authenticated) {
 			signOut();
 		}
-	}, [authenticated, authContextLoading, signOut]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [authenticated, authContextLoading]);
 
 	if (authContextLoading || authenticated === undefined || !authenticated) {
 		return null;
