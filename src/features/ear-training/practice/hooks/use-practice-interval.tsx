@@ -56,8 +56,6 @@ export const usePracticeInterval = ({ practiceSessionSettings }: UsePracticeInte
 		intervalPracticeSession.practiceSessionMethods.stop();
 		intervalPracticeSession.practiceSessionMethods.play(intervalNotes);
 
-		console.log({ intervalName, intervalNotes });
-
 		intervalPracticeSession.setPracticeSessionQuestions(prevQuestions => [...prevQuestions, { intervalName, notes: intervalNotes, answered: false }]);
 	};
 

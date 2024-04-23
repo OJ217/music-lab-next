@@ -32,7 +32,7 @@ const SignInPage = () => {
 					title: 'Амжилттай нэвтэрлээ'
 				});
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 
 				notify({
 					type: 'fail',
@@ -41,7 +41,7 @@ const SignInPage = () => {
 			}
 		},
 		onError: error => {
-			console.log(error);
+			console.error(error);
 
 			notify({
 				type: 'fail',
@@ -80,7 +80,7 @@ const SignInPage = () => {
 				title: 'Signed in successfully'
 			});
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 
 			notify({
 				type: 'fail',

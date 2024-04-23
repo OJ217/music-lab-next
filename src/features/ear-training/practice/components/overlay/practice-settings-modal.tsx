@@ -214,6 +214,8 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 	const handleSettingsFormSubmit = (settings: ChordPracticeSettings) => {
 		if (settings.playingMode !== 'harmonic') {
 			practiceSettingsForm.setFieldValue('noteDuration', 'quarter');
+		} else {
+			practiceSettingsForm.setFieldValue('noteDuration', 'whole');
 		}
 
 		notify({
@@ -316,6 +318,7 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 											allowNegative={false}
 											description={settingsT('tempo')}
 											placeholder={settingsT('tempoPlaceholder')}
+											disabled={practiceSettingsForm.values.playingMode === 'harmonic'}
 											{...practiceSettingsForm.getInputProps('tempo')}
 										/>
 										{/* <NumberInput
@@ -465,15 +468,15 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 							<div className='space-y-4'>
 								<p className='text-sm'>{settingsT('advancedSettings')}</p>
 								<div className='space-y-6'>
-									<Select
-										allowDeselect={false}
-										maxDropdownHeight={120}
-										data={NON_HARMONIC_PLAYING_MODE_SELECT_OPTIONS}
-										description={settingsT('playingMode')}
-										placeholder={settingsT('playingModePlaceholder')}
-										{...practiceSettingsForm.getInputProps('playingMode')}
-									/>
 									<div className='grid grid-cols-2 gap-4'>
+										<Select
+											allowDeselect={false}
+											maxDropdownHeight={120}
+											data={NON_HARMONIC_PLAYING_MODE_SELECT_OPTIONS}
+											description={settingsT('playingMode')}
+											placeholder={settingsT('playingModePlaceholder')}
+											{...practiceSettingsForm.getInputProps('playingMode')}
+										/>
 										<NumberInput
 											min={60}
 											max={180}

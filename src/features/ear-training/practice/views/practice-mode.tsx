@@ -305,7 +305,7 @@ const PracticeMode = () => {
 						<p className='text-center text-xs text-violet-100'>{sessionEnded ? `${TOTAL_QUESTIONS}/${TOTAL_QUESTIONS}` : `${totalAnsweredQuestions}/${TOTAL_QUESTIONS}`}</p>
 					</div>
 
-					<div className='flex items-center justify-center gap-4'>
+					<div className='flex items-center justify-center'>
 						<ActionIcon
 							p={4}
 							radius='sm'
@@ -504,14 +504,14 @@ const PracticeMode = () => {
 									duration: 1.5,
 									type: 'spring'
 								}}
-								className='flex flex-col items-center space-y-12'
+								className='flex flex-col items-center'
 							>
-								<div className='max-w-sm rounded-lg bg-gradient-to-tr from-violet-700/10 to-violet-700/25 px-5 py-4 md:px-6 md:py-5'>
-									<div className='grid grid-cols-2 gap-10'>
+								<div className='flex max-w-md flex-col items-center space-y-12 rounded-lg bg-gradient-to-tr from-violet-700/10 to-violet-700/25 px-4 py-8 md:px-5 md:py-10'>
+									<div className='grid grid-cols-2 gap-4'>
 										<div className='flex flex-col items-center justify-between space-y-4 text-center'>
 											<div>
 												<p className='text-xs'>Сонгосон лад</p>
-												<h3 className='text-xl font-semibold'>{practiceSessionMeta.feedback ? t(`mode.${practiceSessionMeta.feedback?.answer.value}`) + ' лад' : '--'}</h3>
+												<h3 className='text-lg font-semibold'>{practiceSessionMeta.feedback ? t(`mode.${practiceSessionMeta.feedback?.answer.value}`) : '--'}</h3>
 											</div>
 											<ActionIcon
 												size={72}
@@ -529,7 +529,7 @@ const PracticeMode = () => {
 										<div className='flex flex-col items-center justify-between space-y-4 text-center'>
 											<div>
 												<p className='text-xs'>Тоглосон лад</p>
-												<h3 className='text-xl font-semibold'>{practiceSessionMeta.feedback ? t(`mode.${practiceSessionMeta.feedback?.question.value}`) + ' лад' : '--'}</h3>
+												<h3 className='text-lg font-semibold'>{practiceSessionMeta.feedback ? t(`mode.${practiceSessionMeta.feedback?.question.value}`) : '--'}</h3>
 											</div>
 											<ActionIcon
 												size={72}
@@ -545,21 +545,21 @@ const PracticeMode = () => {
 											</ActionIcon>
 										</div>
 									</div>
+									<Button
+										fw={500}
+										radius={'xl'}
+										disabled={practiceSessionMethodsDisabled}
+										onClick={() => {
+											setPracticeSessionMethodsDisabled(true);
+											hideQuestionExplanation();
+											setPracticeSessionMeta(meta => ({ ...meta, feedback: undefined }));
+											playNextModeWithTimeout(1.5);
+										}}
+										className='disabled:bg-violet-600/25 disabled:opacity-50'
+									>
+										{t('continue')}
+									</Button>
 								</div>
-								<Button
-									fw={500}
-									radius={'xl'}
-									disabled={practiceSessionMethodsDisabled}
-									onClick={() => {
-										setPracticeSessionMethodsDisabled(true);
-										hideQuestionExplanation();
-										setPracticeSessionMeta(meta => ({ ...meta, feedback: undefined }));
-										playNextModeWithTimeout(1.5);
-									}}
-									className='disabled:bg-violet-600/25 disabled:opacity-50'
-								>
-									{t('continue')}
-								</Button>
 							</motion.div>
 						)}
 					</motion.div>

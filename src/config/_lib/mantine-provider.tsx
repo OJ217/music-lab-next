@@ -1,4 +1,4 @@
-import { createTheme, MantineProvider as DefaultMantineProvider, Overlay, TextInput } from '@mantine/core';
+import { createTheme, MantineProvider as DefaultMantineProvider, MultiSelect, Overlay, TextInput } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
 
@@ -48,6 +48,13 @@ const theme = createTheme({
 				classNames: {
 					input: 'focus-within:bg-violet-600/25',
 					section: 'hidden'
+				}
+			}
+		},
+		MultiSelect: {
+			defaultProps: {
+				classNames: {
+					input: 'focus-within:bg-violet-600/25 transition-all ease-in-out duration-500'
 				}
 			}
 		},

@@ -2,14 +2,14 @@ import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Chord, Note } from 'tonal';
+import { Chord, distance, Note } from 'tonal';
 
 import { calculatePercentage } from '@/utils/format.util';
 import { notify } from '@/utils/notification.util';
 import { ActionIcon, Button, Progress } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { IconArrowLeft, IconSettings } from '@tabler/icons-react';
+import { IconArrowLeft, IconMusicCheck, IconMusicX, IconSettings } from '@tabler/icons-react';
 
 import PracticeResultDetailDrawer from '../components/overlay/practice-result-detail-drawer';
 import PracticeResultModal from '../components/overlay/practice-result-modal';
@@ -56,7 +56,7 @@ const PracticeChord = () => {
 
 	// ** Practice Session States
 	const [practiceSessionQuestions, setPracticeSessionQuestions] = useState<Array<ChordQuestion>>([]);
-	const [practiceSessionMeta, setPracticeSessionMeta] = useState<EarTrainingSessionMeta>({ errors: {} });
+	const [practiceSessionMeta, setPracticeSessionMeta] = useState<EarTrainingSessionMeta & { selectedChord?: SelectedChord }>({ errors: {} });
 	const [selectedChord, setSelectedChord] = useState<SelectedChord | null>();
 	const { totalAnsweredQuestions, totalCorrectAnswers, practiceScorePercentage, sessionEnded, practiceSessionQuestionGroups } = useMemo<EarTrainingSessionResult>(() => {
 		const totalAnsweredQuestions = practiceSessionQuestions.filter(q => q.answered).length;
@@ -122,24 +122,27 @@ const PracticeChord = () => {
 	 * Arranges notes for the sampler based on playing mode
 	 */
 	const arrangeChordNotes = (rootNote: string, chordName: string, chordInversion?: number): Notes => {
-		let chordNotesBase = Chord.getChord(chordName, rootNote).notes;
+		let chordNotesBase = Chord.getChord(chordName)
+			.intervals.map(interval => Note.transpose(rootNote, interval))
+			.map(Note.simplify);
 
 		if (chordInversion !== undefined) {
-			const chord = Chord.degrees([rootNote, chordName]);
-			chordNotesBase = Array.from({ length: chordNotesBase.length }, (_, index) => chordInversion + index + 1).map(chord);
-		}
+			const chordDegree = Chord.degrees([rootNote, chordName]);
 
-		const rootNoteOctave = Note.get(chordNotesBase[0]).oct as number;
+			const inversionNotes = Array.from({ length: chordNotesBase.length }, (_, index) => chordInversion + index + 1)
+				.map(chordDegree)
+				.map((note, _, inversionArr) => distance(inversionArr[0], note))
+				.map(interval => Note.transpose(rootNote, interval))
+				.map(Note.simplify);
 
-		if (rootNoteOctave >= 5) {
-			chordNotesBase = chordNotesBase.map(n => Note.transposeOctaves(n, -1));
+			chordNotesBase = inversionNotes;
 		}
 
 		switch (chordPracticeSettings.playingMode) {
 			case 'harmonic':
 				return [chordNotesBase];
 			case 'ascending':
-				return [chordNotesBase];
+				return chordNotesBase;
 			case 'descending':
 				return chordNotesBase.reverse();
 			case 'ascending-descending':
@@ -160,12 +163,12 @@ const PracticeChord = () => {
 	};
 
 	const playNextChord = () => {
-		const rootNote = ROOT_NOTE ?? Note.fromMidi(Math.floor(Math.random() * 25) + 48);
-		const chordName = CHORDS[Math.floor(Math.random() * CHORDS.length)].value;
-		let chordNotesBase = Chord.getChord(chordName, rootNote).notes;
-		let chordInversion: number | undefined = undefined;
+		const rootNote = ROOT_NOTE ?? Note.fromMidi(Math.floor(Math.random() * 18) + 48);
+		const chordName = selectNextQuestion(practiceSessionQuestions.map(q => q.chordName));
+		const chordNotesBase = Chord.getChord(chordName, rootNote).notes;
 
-		if (hasInversion(chordName)) {
+		let chordInversion: number | undefined = undefined;
+		if (hasInversion(chordName) && INVERSIONS.length > 1) {
 			chordInversion = INVERSIONS[Math.floor(Math.random() * INVERSIONS.filter(i => i < chordNotesBase.length).length)];
 		}
 
@@ -186,6 +189,13 @@ const PracticeChord = () => {
 		]);
 	};
 
+	/**
+	 * @param timeout - in seconds
+	 */
+	const playNextChordWithTimeout = (timeout: number) => {
+		setTimeout(playNextChord, timeout * 1000);
+	};
+
 	const replayChord = () => {
 		releaseNotes();
 
@@ -204,7 +214,7 @@ const PracticeChord = () => {
 			const previousSessionQuestions = [...sq];
 			const lastQuestion = previousSessionQuestions[previousSessionQuestions.length - 1];
 			const chordNameCorrect = answerChordName === lastQuestion.chordName;
-			answerCorrect = !!lastQuestion.chordInversion ? chordNameCorrect && inversion === lastQuestion.chordInversion : chordNameCorrect;
+			answerCorrect = lastQuestion.chordInversion !== undefined ? chordNameCorrect && inversion === lastQuestion.chordInversion : chordNameCorrect;
 
 			previousSessionQuestions[previousSessionQuestions.length - 1] = {
 				...lastQuestion,
@@ -236,6 +246,7 @@ const PracticeChord = () => {
 		}
 
 		if (!chordPracticeSettings.autoFeedback) {
+			playNextChord();
 		} else {
 			setPracticeSessionMeta(meta => {
 				const lastQuestion = practiceSessionQuestions[practiceSessionQuestions.length - 1];
@@ -256,8 +267,6 @@ const PracticeChord = () => {
 				};
 			});
 		}
-
-		playNextChord();
 	};
 
 	const resetSession = (options: { startSession?: boolean } = { startSession: true }) => {
@@ -319,48 +328,34 @@ const PracticeChord = () => {
 				<motion.div
 					layout={'position'}
 					transition={{ duration: 1.5, type: 'spring' }}
+					className='space-y-4'
 				>
-					<div className='space-y-4'>
-						<h1 className='text-center text-xl font-semibold'>{t('chordIdentification')}</h1>
+					<h1 className='text-center text-xl font-semibold'>{t('chordIdentification')}</h1>
+					<div className='space-y-2'>
+						<Progress
+							bg={'violet.8'}
+							value={sessionEnded ? 100 : (totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
+							classNames={{
+								root: 'max-w-[240px] mx-auto w-full',
+								section: 'transition-all duration-300 ease-in-out rounded-r'
+							}}
+						/>
+						<p className='text-center text-xs text-violet-100'>{sessionEnded ? `${TOTAL_QUESTIONS}/${TOTAL_QUESTIONS}` : `${totalAnsweredQuestions}/${TOTAL_QUESTIONS}`}</p>
+					</div>
 
-						<div className='space-y-2'>
-							<Progress
-								bg={'violet.8'}
-								value={sessionEnded ? 100 : (totalAnsweredQuestions / TOTAL_QUESTIONS) * 100}
-								classNames={{
-									root: 'max-w-[240px] mx-auto w-full',
-									section: 'transition-all duration-300 ease-in-out'
-								}}
-							/>
-							<p className='text-center text-xs text-gray-300'>
-								{sessionEnded ? `${practiceSessionQuestions.length}/${practiceSessionQuestions.length}` : `${practiceSessionQuestions.length}/${TOTAL_QUESTIONS}`}
-							</p>
-						</div>
-
-						<div className='flex flex-col items-center space-y-16'>
-							<ActionIcon
-								p={4}
-								radius='sm'
-								variant='light'
-								onClick={openSettingsModal}
-								disabled={practiceSessionQuestions.length > 0 && !sessionEnded}
-							>
-								<IconSettings />
-							</ActionIcon>
-							<Button
-								fw={500}
-								radius={'xl'}
-								disabled={practiceSessionMethodsDisabled || sessionEnded}
-								onClick={() => {
-									sessionEnded || !practiceSessionQuestions.length ? resetSession() : replayChord();
-								}}
-								className='disabled:bg-violet-600/25 disabled:opacity-50'
-							>
-								{sessionEnded ? t('restart') : !practiceSessionQuestions.length ? t('start') : t('replay')}
-							</Button>
-						</div>
+					<div className='flex items-center justify-center'>
+						<ActionIcon
+							p={4}
+							radius='sm'
+							variant='light'
+							onClick={openSettingsModal}
+							disabled={practiceSessionQuestions.length > 0 && !sessionEnded}
+						>
+							<IconSettings />
+						</ActionIcon>
 					</div>
 				</motion.div>
+
 				<AnimatePresence
 					mode='wait'
 					initial={false}
@@ -374,83 +369,300 @@ const PracticeChord = () => {
 						}}
 						className='mt-16'
 					>
-						{!selectedChord ? (
+						{!practiceSessionMeta.feedback ? (
+							!selectedChord ? (
+								<motion.div
+									layout='position'
+									key={'chords'}
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 1.5, type: 'spring' }}
+									className='flex flex-col items-center space-y-12'
+								>
+									<Button
+										fw={500}
+										radius={'xl'}
+										disabled={practiceSessionMethodsDisabled || sessionEnded}
+										onClick={() => {
+											sessionEnded || !practiceSessionQuestions.length ? resetSession() : replayChord();
+										}}
+										className='disabled:bg-violet-600/25 disabled:opacity-50'
+									>
+										{sessionEnded ? t('restart') : !practiceSessionQuestions.length ? t('start') : t('replay')}
+									</Button>
+									<div className='flex w-full flex-wrap items-center justify-center gap-6'>
+										{CHORDS.map(chord => (
+											<Button
+												py={4}
+												px={16}
+												fw={400}
+												variant='light'
+												key={chord.value}
+												onClick={() => {
+													if (hasInversion(chord.value) && INVERSIONS.length > 1) {
+														setSelectedChord({
+															name: chord.value,
+															length: Chord.getChord(chord.value).intervals.length
+														});
+													} else {
+														answerQuestion(chord.value);
+													}
+												}}
+												disabled={sessionEnded || !practiceSessionQuestions.length || practiceSessionMethodsDisabled}
+												className='rounded-full border-[1.5px] border-violet-700 text-violet-100 disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
+											>
+												{chord.label}
+											</Button>
+										))}
+									</div>
+								</motion.div>
+							) : (
+								<motion.div
+									layout='position'
+									key={'chord_inversions'}
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 1.5, type: 'spring' }}
+									className='flex flex-col items-center space-y-12'
+								>
+									<Button
+										fw={500}
+										radius={'xl'}
+										disabled={practiceSessionMethodsDisabled || sessionEnded}
+										onClick={() => {
+											sessionEnded || !practiceSessionQuestions.length ? resetSession() : replayChord();
+										}}
+										className='disabled:bg-violet-600/25 disabled:opacity-50'
+									>
+										{sessionEnded ? t('restart') : !practiceSessionQuestions.length ? t('start') : t('replay')}
+									</Button>
+									<div className='flex w-full flex-col items-center justify-center'>
+										<p className='text-center'>
+											{t('selectedChord')}: <span className='font-semibold'>{t(`chord.${selectedChord.name}`)}</span>
+										</p>
+
+										<div className='mb-20 mt-6 flex w-full flex-wrap items-center justify-center gap-6'>
+											{INVERSIONS.filter(i => {
+												return i < selectedChord.length;
+											}).map(inversion => (
+												<Button
+													py={4}
+													px={16}
+													fw={400}
+													variant='light'
+													key={inversion}
+													onClick={() => answerQuestion(selectedChord.name, inversion)}
+													disabled={sessionEnded || !practiceSessionQuestions.length || practiceSessionMethodsDisabled}
+													className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
+												>
+													{inversion !== 0 ? t('chordInversion', { inversion }) : t('rootInversion')}
+												</Button>
+											))}
+										</div>
+
+										<Button
+											color='violet.4'
+											variant='subtle'
+											leftSection={<IconArrowLeft size={16} />}
+											onClick={() => {
+												setSelectedChord(null);
+											}}
+										>
+											{t('back')}
+										</Button>
+									</div>
+								</motion.div>
+							)
+						) : !questionExplanationVisible ? (
+							// ** Feedback
 							<motion.div
-								layout='position'
-								key={'chords'}
+								layout={'position'}
+								key={'feedback'}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								exit={{ opacity: 0 }}
-								transition={{ duration: 1.5, type: 'spring' }}
-								className='flex w-full flex-wrap items-center justify-center gap-6'
+								transition={{
+									duration: 1.5,
+									type: 'spring'
+								}}
+								className='flex flex-col items-center space-y-12'
 							>
-								{CHORDS.map(chord => (
+								<>
+									{practiceSessionMeta.feedback.correct ? (
+										<div className='grid size-24 place-content-center rounded-full border-[2.5px] border-green-600/75 bg-transparent bg-gradient-to-tr from-green-600/35 to-green-600/50 text-green-200 shadow-round-2xl shadow-green-600/50'>
+											<motion.svg
+												xmlns='http://www.w3.org/2000/svg'
+												width='48'
+												height='48'
+												viewBox='0 0 24 24'
+												fill='none'
+												stroke='currentColor'
+												strokeWidth='2'
+												strokeLinecap='round'
+												strokeLinejoin='round'
+												className='tabler-icon tabler-icon-check'
+											>
+												<motion.path
+													d='M5 12l5 5l10 -10'
+													variants={{
+														hidden: {
+															pathLength: 0
+														},
+														visible: {
+															pathLength: 1,
+															transition: {
+																duration: 0.8,
+																ease: 'easeInOut'
+															}
+														}
+													}}
+													initial='hidden'
+													animate='visible'
+												/>
+											</motion.svg>
+										</div>
+									) : (
+										<div className='grid size-24 place-content-center rounded-full border-[2.5px] border-red-600/75 bg-transparent bg-gradient-to-tr from-red-600/35 to-red-600/50 text-red-200 shadow-round-2xl shadow-red-600/50'>
+											<motion.svg
+												xmlns='http://www.w3.org/2000/svg'
+												width='48'
+												height='48'
+												viewBox='0 0 24 24'
+												fill='none'
+												stroke='currentColor'
+												strokeWidth='2'
+												strokeLinecap='round'
+												strokeLinejoin='round'
+												className='tabler-icon tabler-icon-x'
+												initial='hidden'
+												animate='visible'
+											>
+												<motion.path
+													d='M18 6l-12 12'
+													variants={{
+														hidden: {
+															pathLength: 0
+														},
+														visible: {
+															pathLength: 1,
+															transition: {
+																duration: 0.4,
+																ease: 'easeInOut'
+															}
+														}
+													}}
+												/>
+												<motion.path
+													d='M6 6l12 12'
+													variants={{
+														hidden: {
+															pathLength: 0,
+															opacity: 0
+														},
+														visible: {
+															pathLength: 1,
+															opacity: 1,
+															transition: {
+																duration: 0.55,
+																delay: 0.45,
+																ease: 'easeInOut'
+															}
+														}
+													}}
+												/>
+											</motion.svg>
+										</div>
+									)}
+									<h3 className='text-center text-4xl font-semibold'>{t(`chord.${practiceSessionMeta.feedback.question.value}`)}</h3>
 									<Button
-										py={4}
-										px={16}
-										fw={400}
-										variant='light'
-										key={chord.value}
+										fw={500}
+										radius={'xl'}
+										disabled={!practiceSessionMeta.feedback}
 										onClick={() => {
-											if (hasInversion(chord.value)) {
-												setSelectedChord({
-													name: chord.value,
-													length: Chord.getChord(chord.value).intervals.length
-												});
+											if (practiceSessionMeta.feedback?.correct) {
+												setPracticeSessionMethodsDisabled(true);
+												setPracticeSessionMeta(meta => ({ ...meta, feedback: undefined }));
+												playNextChordWithTimeout(1.5);
 											} else {
-												answerQuestion(chord.value);
+												showQuestionExplanation();
 											}
 										}}
-										disabled={sessionEnded || !practiceSessionQuestions.length || practiceSessionMethodsDisabled}
-										className='rounded-full border-[1.5px] border-violet-700 text-violet-100 disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
+										className='disabled:bg-violet-600/25 disabled:opacity-50'
 									>
-										{chord.label}
+										{practiceSessionMeta.feedback.correct ? t('continue') : t('explanation')}
 									</Button>
-								))}
+								</>
 							</motion.div>
 						) : (
+							// ** Explanation
 							<motion.div
-								layout='position'
-								key={'chord_inversions'}
+								layout={'position'}
+								key={'explanation'}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								exit={{ opacity: 0 }}
-								transition={{ duration: 1.5, type: 'spring' }}
-								className='flex w-full flex-col items-center justify-center'
+								transition={{
+									duration: 1.5,
+									type: 'spring'
+								}}
+								className='flex flex-col items-center'
 							>
-								<p className='text-center'>
-									{t('selectedChord')}: <span className='font-semibold'>{t(`chord.${selectedChord.name}`)}</span>
-								</p>
-
-								<div className='mb-20 mt-6 flex w-full flex-wrap items-center justify-center gap-6'>
-									{INVERSIONS.filter(i => {
-										return i < selectedChord.length;
-									}).map(inversion => (
-										<Button
-											py={4}
-											px={16}
-											fw={400}
-											variant='light'
-											key={inversion}
-											onClick={() => answerQuestion(selectedChord.name, inversion)}
-											disabled={sessionEnded || !practiceSessionQuestions.length || practiceSessionMethodsDisabled}
-											className='rounded-full border border-violet-600 text-white disabled:pointer-events-none disabled:bg-violet-600/25 disabled:opacity-50'
-										>
-											{inversion !== 0 ? t('chordInversion', { inversion }) : t('chordInversion', { inversion })}
-										</Button>
-									))}
+								<div className='flex max-w-md flex-col items-center space-y-12 rounded-lg bg-gradient-to-tr from-violet-700/10 to-violet-700/25 px-4 py-8 md:px-5 md:py-10'>
+									<div className='grid grid-cols-2 gap-4'>
+										<div className='flex flex-col items-center justify-between space-y-4 text-center'>
+											<div>
+												<p className='text-xs'>Сонгосон аккорд</p>
+												<h3 className='text-lg font-semibold'>{practiceSessionMeta.feedback ? t(`chord.${practiceSessionMeta.feedback?.answer.value}`) : '--'}</h3>
+											</div>
+											<ActionIcon
+												size={72}
+												className='rounded-xl border-2 border-red-600/50 bg-transparent bg-gradient-to-tr from-red-600/20 to-red-600/40 text-red-300 transition-all duration-300 ease-in-out disabled:opacity-50'
+												onClick={() => {
+													if (practiceSessionMeta.feedback) {
+														playChord(practiceSessionMeta.feedback.answer.notes);
+													}
+												}}
+												disabled={practiceSessionMethodsDisabled}
+											>
+												<IconMusicX size={36} />
+											</ActionIcon>
+										</div>
+										<div className='flex flex-col items-center justify-between space-y-4 text-center'>
+											<div>
+												<p className='text-xs'>Тоглогдсон аккорд</p>
+												<h3 className='text-lg font-semibold'>{practiceSessionMeta.feedback ? t(`chord.${practiceSessionMeta.feedback?.question.value}`) : '--'}</h3>
+											</div>
+											<ActionIcon
+												size={72}
+												className='rounded-xl border-2 border-green-600/50 bg-transparent bg-gradient-to-tr from-green-600/20 to-green-600/40 text-green-300 transition-all duration-300 ease-in-out disabled:opacity-50'
+												onClick={() => {
+													if (practiceSessionMeta.feedback) {
+														playChord(practiceSessionMeta.feedback.question.notes);
+													}
+												}}
+												disabled={practiceSessionMethodsDisabled}
+											>
+												<IconMusicCheck size={36} />
+											</ActionIcon>
+										</div>
+									</div>
+									<Button
+										fw={500}
+										radius={'xl'}
+										disabled={practiceSessionMethodsDisabled}
+										onClick={() => {
+											setPracticeSessionMethodsDisabled(true);
+											hideQuestionExplanation();
+											setPracticeSessionMeta(meta => ({ ...meta, feedback: undefined }));
+											playNextChordWithTimeout(1.5);
+										}}
+										className='disabled:bg-violet-600/25 disabled:opacity-50'
+									>
+										{t('continue')}
+									</Button>
 								</div>
-
-								<Button
-									color='violet.4'
-									variant='subtle'
-									leftSection={<IconArrowLeft size={16} />}
-									onClick={() => {
-										setSelectedChord(null);
-									}}
-								>
-									{t('back')}
-								</Button>
 							</motion.div>
 						)}
 					</motion.div>

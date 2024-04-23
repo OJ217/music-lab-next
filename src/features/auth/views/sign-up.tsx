@@ -32,7 +32,7 @@ const SignUpPage = () => {
 					title: 'Амжилттай нэвтэрлээ'
 				});
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 
 				notify({
 					type: 'fail',
@@ -41,7 +41,7 @@ const SignUpPage = () => {
 			}
 		},
 		onError: error => {
-			console.log(error);
+			console.error(error);
 
 			notify({
 				type: 'fail',
@@ -91,7 +91,7 @@ const SignUpPage = () => {
 				title: 'Signed up successfully'
 			});
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 
 			notify({
 				type: 'fail',

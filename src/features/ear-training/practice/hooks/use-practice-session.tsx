@@ -60,12 +60,8 @@ export const useEarTrainingPracticeSession = <EarTrainingPracticeQuestion extend
 		const previousQuestion = practiceSessionQuestions[practiceSessionQuestions?.length - 1];
 
 		if (!previousQuestion || !!previousQuestion?.answered) {
-			console.log('New random chord');
-
 			playRandom();
 		} else {
-			console.log('Previous chord');
-
 			play(previousQuestion.notes);
 		}
 	};
