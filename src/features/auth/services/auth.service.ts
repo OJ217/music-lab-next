@@ -12,6 +12,7 @@ export interface AuthResponse {
 
 import axios from 'axios';
 
+import { WEB_APP_URL } from '@/config/constants/api.constant';
 import { IResponse } from '@/types';
 import { CodeResponse } from '@react-oauth/google';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -100,7 +101,7 @@ export const useGoogleOAuthMutation = () => {
 
 export const removeAuthCredentials = async () => {
 	try {
-		await axios.post('http://localhost:3000/api/sign-out');
+		await axios.post(WEB_APP_URL.API_ROUTE('/sign-out'));
 	} catch (error) {
 		console.error(error);
 	}

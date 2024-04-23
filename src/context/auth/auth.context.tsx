@@ -81,7 +81,7 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 
 	const signOut = () => {
 		if (!client.isFetching() && !client.isMutating()) {
-			void removeAuthCredentials().then(() => {
+			removeAuthCredentials().then(() => {
 				client.cancelQueries();
 				client.removeQueries();
 
