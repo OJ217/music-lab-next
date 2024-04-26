@@ -8,8 +8,8 @@ import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-trai
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { SelectData } from '@/types';
 import { calculatePercentage } from '@/utils/format.util';
-import { Badge, Center, LoadingOverlay, RingProgress, SegmentedControl, Skeleton, ThemeIcon, Tooltip as TooltipOverlay } from '@mantine/core';
-import { IconChartBarOff, IconCheck, IconChevronRight, IconMusic, IconX } from '@tabler/icons-react';
+import { Badge, LoadingOverlay, SegmentedControl, Skeleton, Tooltip as TooltipOverlay } from '@mantine/core';
+import { IconActivity, IconCalendar, IconChartBarOff, IconCheck, IconChevronRight, IconHistory, IconMusic, IconStar, IconX } from '@tabler/icons-react';
 
 import { useEarTrainingPracticeSessionActivityQuery, useEarTrainingPracticeSessionProgressQuery, useEarTrainingPracticeSessionScoresQuery } from '../../services/ear-training-dashboard.service';
 
@@ -25,7 +25,7 @@ const EAR_TRAINING_EXERCISES_META: Record<EarTrainingPracticeType, { icon: JSX.E
 				/>
 			</div>
 		),
-		cardClass: 'bg-gradient-to-tr from-violet-600/10 to-violet-600/25 bg-transparent',
+		cardClass: 'bg-gradient-to-tr from-violet-600/15 to-violet-600/30 bg-transparent',
 		badgeClass: 'bg-violet-600/75'
 	},
 	'chord-identification': {
@@ -39,7 +39,7 @@ const EAR_TRAINING_EXERCISES_META: Record<EarTrainingPracticeType, { icon: JSX.E
 				/>
 			</div>
 		),
-		cardClass: 'bg-gradient-to-tr from-sky-600/10 to-sky-600/25 bg-transparent',
+		cardClass: 'bg-gradient-to-tr from-sky-600/15 to-sky-600/30 bg-transparent',
 		badgeClass: 'bg-sky-600/75'
 	},
 	'mode-identification': {
@@ -53,7 +53,7 @@ const EAR_TRAINING_EXERCISES_META: Record<EarTrainingPracticeType, { icon: JSX.E
 				/>
 			</div>
 		),
-		cardClass: 'bg-gradient-to-tr from-amber-600/10 to-amber-600/25 bg-transparent',
+		cardClass: 'bg-gradient-to-tr from-amber-600/15 to-amber-600/30 bg-transparent',
 		badgeClass: 'bg-amber-600/75'
 	}
 };
@@ -390,112 +390,113 @@ const EarTrainingDashboard = () => {
 					</div>
 				</div>
 
-				<div className='grid gap-4 xs:grid-cols-[2fr_3fr]'>
-					<div className='space-y-1 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 px-2 pb-2 pt-4'>
-						<h3 className='text-center text-sm font-semibold'>Activity average</h3>
-						<Center>
-							<RingProgress
-								size={120}
-								roundCaps
-								thickness={4}
-								label={
-									<Center>
-										<ThemeIcon
-											size={80}
-											color={'teal'}
-											variant='light'
-											className='rounded-full text-xl font-bold'
-										>
-											65.5
-										</ThemeIcon>
-									</Center>
-								}
-								sections={[{ value: 65.5, color: 'green' }]}
+				<div className='grid grid-cols-2 gap-4'>
+					<div className='rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4'>
+						<div className='flex justify-between'>
+							<h2 className='text-2xl font-semibold text-violet-200'>65.5</h2>
+							<IconActivity
+								size={28}
+								className='stroke-violet-200'
 							/>
-						</Center>
+						</div>
+						<p>Average activity</p>
 					</div>
-
-					<div className='flex flex-col justify-between space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 p-4'>
-						<h3 className='text-sm font-semibold'>Monthly activity summary</h3>
-						<div className='flex h-2.5 items-stretch overflow-hidden rounded-xl shadow-round-md'>
-							<TooltipOverlay
-								label={'50%'}
-								className='bg-violet-600/50 font-semibold text-white backdrop-blur-sm'
-							>
-								<div className='h-full w-[50%] bg-transparent bg-gradient-to-tr from-violet-600/40 to-violet-600/80' />
-							</TooltipOverlay>
-							<TooltipOverlay
-								label={'30%'}
-								className='bg-sky-600/50 font-semibold text-white backdrop-blur-sm'
-							>
-								<div className='h-full w-[30%] bg-transparent bg-gradient-to-tr from-sky-600/40 to-sky-600/80' />
-							</TooltipOverlay>
-							<TooltipOverlay
-								label={'20%'}
-								className='bg-amber-600/50 font-semibold text-white backdrop-blur-sm'
-							>
-								<div className='h-full w-[20%] bg-transparent bg-gradient-to-tr from-amber-600/40 to-amber-600/80' />
-							</TooltipOverlay>
+					<div className='rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4'>
+						<div className='flex justify-between'>
+							<h2 className='text-2xl font-semibold text-violet-200'>15</h2>
+							<IconCalendar
+								size={28}
+								className='stroke-violet-200'
+							/>
 						</div>
-						<div className='space-y-2'>
-							<div className='flex items-center gap-2'>
-								<div className='size-2.5 rounded-full bg-gradient-to-r from-violet-600/50 to-violet-600/75' />
-								<div className='flex items-center gap-6'>
-									<p className='text-sm'>Interval practice</p>
-									<Badge
-										variant='light'
-										color='violet'
-									>
-										500
-									</Badge>
-								</div>
-							</div>
-
-							<div className='flex items-center gap-2'>
-								<div className='size-2.5 rounded-full bg-gradient-to-r from-sky-600/50 to-sky-600/75' />
-								<div className='flex items-center gap-6'>
-									<p className='text-sm'>Chord practice</p>
-									<Badge
-										variant='light'
-										color='blue'
-									>
-										300
-									</Badge>
-								</div>
-							</div>
-
-							<div className='flex items-center gap-2'>
-								<div className='size-2.5 rounded-full bg-gradient-to-r from-amber-600/50 to-amber-600/75' />
-								<div className='flex items-center gap-6'>
-									<p className='text-sm'>Mode practice</p>
-									<Badge
-										variant='light'
-										color='orange'
-									>
-										200
-									</Badge>
-								</div>
-							</div>
+						<p>Total active days</p>
+					</div>
+					<div className='rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4'>
+						<div className='flex justify-between'>
+							<h2 className='text-2xl font-semibold text-violet-200'>400</h2>
+							<IconStar
+								size={28}
+								className='stroke-violet-200'
+							/>
 						</div>
-						{/* <h3 className='text-center font-semibold'>Progress average</h3>
-						<div className='flex h-4 w-full items-stretch overflow-hidden rounded-2xl'>
-							<div className='from h-full w-[50%] bg-gradient-to-tr from-violet-600/40 to-violet-600/65'>
-								<Center className='h-full'>
-									<span className='text-xs font-semibold'>50%</span>
-								</Center>
-							</div>
-							<div className='from h-full w-[30%] bg-gradient-to-tr from-sky-600/40 to-sky-600/65'>
-								<Center className='h-full'>
-									<span className='text-xs font-semibold'>30%</span>
-								</Center>
-							</div>
+						<p>Best activity</p>
+					</div>
+					<div className='rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4'>
+						<div className='flex justify-between'>
+							<h2 className='text-2xl font-semibold text-violet-200'>2000</h2>
+							<IconHistory
+								size={28}
+								className='stroke-violet-200'
+							/>
+						</div>
+						<p>Total activity</p>
+					</div>
+				</div>
 
-							<div className='from h-full w-[20%] bg-gradient-to-tr from-amber-600/40 to-amber-600/65'>
-								<Center className='h-full'>
-									<span className='text-xs font-semibold'>20%</span>
-								</Center>
+				<div className='space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4'>
+					<h3 className='text-sm font-semibold'>Monthly activity summary</h3>
+					<div className='flex h-2.5 items-stretch overflow-hidden rounded-2xl shadow-round-md'>
+						<TooltipOverlay
+							label={'50%'}
+							className='bg-violet-600/50 font-semibold text-white backdrop-blur-sm'
+						>
+							<div className='h-full w-[50%] bg-transparent bg-gradient-to-r from-violet-600/40 to-violet-600/80' />
+						</TooltipOverlay>
+						<TooltipOverlay
+							label={'30%'}
+							className='bg-sky-600/50 font-semibold text-white backdrop-blur-sm'
+						>
+							<div className='h-full w-[30%] bg-transparent bg-gradient-to-r from-sky-600/40 to-sky-600/80' />
+						</TooltipOverlay>
+						<TooltipOverlay
+							label={'20%'}
+							className='bg-amber-600/50 font-semibold text-white backdrop-blur-sm'
+						>
+							<div className='h-full w-[20%] bg-transparent bg-gradient-to-r from-amber-600/40 to-amber-600/80' />
+						</TooltipOverlay>
+					</div>
+					<div className='space-y-2'>
+						<div className='flex items-center justify-between'>
+							<div className='flex items-center gap-2'>
+								<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-violet-600/50 to-violet-600/75' />
+								<p>Interval practice</p>
 							</div>
-						</div> */}
+							<Badge
+								size='lg'
+								variant='light'
+								color='violet'
+							>
+								500
+							</Badge>
+						</div>
+
+						<div className='flex items-center justify-between'>
+							<div className='flex items-center gap-2'>
+								<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-sky-600/50 to-sky-600/75' />
+								<p>Chord practice</p>
+							</div>
+							<Badge
+								size='lg'
+								variant='light'
+								color='blue'
+							>
+								300
+							</Badge>
+						</div>
+
+						<div className='flex items-center justify-between'>
+							<div className='flex items-center gap-2'>
+								<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-amber-600/50 to-amber-600/75' />
+								<p>Mode practice</p>
+							</div>
+							<Badge
+								size='lg'
+								variant='light'
+								color='orange'
+							>
+								200
+							</Badge>
+						</div>
 					</div>
 				</div>
 
