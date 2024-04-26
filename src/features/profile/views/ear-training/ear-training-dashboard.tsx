@@ -137,6 +137,7 @@ const EarTrainingDashboard = () => {
 						value={dashboardType}
 						color='violet.6'
 						className='bg-violet-600/10'
+						classNames={{ label: 'text-sm' }}
 						onChange={t => setDashboardType(t as EarTrainingDashboardType)}
 						data={dashboardSegmentedControlData}
 					/>
@@ -390,8 +391,8 @@ const EarTrainingDashboard = () => {
 					</div>
 				</div>
 
-				<div className='grid gap-4 xs:grid-cols-2'>
-					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 px-4 py-3'>
+				<div className='grid grid-cols-2 gap-4'>
+					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
 						<div className='flex justify-between'>
 							<h2 className='text-2xl font-semibold text-violet-100'>65.5</h2>
 							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
@@ -401,11 +402,14 @@ const EarTrainingDashboard = () => {
 								/>
 							</div>
 						</div>
-						<div className='inline-flex rounded-xl bg-violet-600/20 px-2.5 py-1'>
-							<p className=' text-xs font-bold uppercase text-violet-100'>Average activity</p>
-						</div>
+						<Badge
+							variant='light'
+							size='lg'
+						>
+							Average activity
+						</Badge>
 					</div>
-					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 px-4 py-3'>
+					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
 						<div className='flex justify-between'>
 							<h2 className='text-viol1t-200 text-2xl font-semibold'>400</h2>
 							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
@@ -415,11 +419,14 @@ const EarTrainingDashboard = () => {
 								/>
 							</div>
 						</div>
-						<div className='inline-flex rounded-xl bg-violet-600/20 px-2.5 py-1'>
-							<p className='text-xs font-bold uppercase text-violet-100'>Best activity</p>
-						</div>
+						<Badge
+							variant='light'
+							size='lg'
+						>
+							Best activity
+						</Badge>
 					</div>
-					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 px-4 pb-4 pt-3'>
+					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
 						<div className='flex justify-between'>
 							<h2 className='text-2xl font-semibold text-violet-100'>15</h2>
 							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
@@ -429,11 +436,14 @@ const EarTrainingDashboard = () => {
 								/>
 							</div>
 						</div>
-						<div className='inline-flex rounded-xl bg-violet-600/20 px-2.5 py-1'>
-							<p className=' text-xs font-bold uppercase text-violet-100'>Total active days</p>
-						</div>
+						<Badge
+							variant='light'
+							size='lg'
+						>
+							Total active days
+						</Badge>
 					</div>
-					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 px-4 py-3'>
+					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
 						<div className='flex justify-between'>
 							<h2 className='text-2xl font-semibold text-violet-100'>2000</h2>
 							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
@@ -443,69 +453,86 @@ const EarTrainingDashboard = () => {
 								/>
 							</div>
 						</div>
-						<div className='inline-flex rounded-xl bg-violet-600/20 px-2.5 py-1'>
-							<p className=' text-xs font-bold uppercase text-violet-100'>Total activity</p>
-						</div>
+						<Badge
+							variant='light'
+							size='lg'
+						>
+							Total activity
+						</Badge>
 					</div>
 				</div>
 
-				<div className='space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 p-4'>
-					<h3 className='text-sm font-semibold'>Monthly activity summary</h3>
-					<div className='flex h-2.5 items-stretch overflow-hidden rounded-2xl shadow-round-md'>
-						<TooltipOverlay
-							label={'50%'}
-							className='bg-violet-600/50 font-semibold text-white backdrop-blur-sm'
-						>
-							<div className='h-full w-[50%] bg-transparent bg-gradient-to-r from-violet-600/40 to-violet-600/80' />
-						</TooltipOverlay>
-						<TooltipOverlay
-							label={'30%'}
-							className='bg-sky-600/50 font-semibold text-white backdrop-blur-sm'
-						>
-							<div className='h-full w-[30%] bg-transparent bg-gradient-to-r from-sky-600/40 to-sky-600/80' />
-						</TooltipOverlay>
-						<TooltipOverlay
-							label={'20%'}
-							className='bg-amber-600/50 font-semibold text-white backdrop-blur-sm'
-						>
-							<div className='h-full w-[20%] bg-transparent bg-gradient-to-r from-amber-600/40 to-amber-600/80' />
-						</TooltipOverlay>
-					</div>
-					<div className='space-y-2'>
-						<div className='flex items-center justify-between'>
-							<div className='flex items-center gap-2'>
-								<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-violet-600/50 to-violet-600/75' />
-								<p>Interval practice</p>
-							</div>
-							<div className='inline-flex rounded-2xl bg-violet-600/20 px-4 py-1'>
-								<p className='text-sm font-bold uppercase text-violet-200'>500</p>
-							</div>
+				<div className='space-y-4'>
+					<h3 className='font-medium'>Monthly activity summary</h3>
+					<div className='space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4'>
+						<div className='flex h-2.5 items-stretch overflow-hidden rounded-2xl shadow-round-md'>
+							<TooltipOverlay
+								label={'50%'}
+								className='bg-violet-600/50 font-semibold text-white backdrop-blur-sm'
+							>
+								<div className='h-full w-[50%] bg-transparent bg-gradient-to-r from-violet-600/40 to-violet-600/80' />
+							</TooltipOverlay>
+							<TooltipOverlay
+								label={'30%'}
+								className='bg-sky-600/50 font-semibold text-white backdrop-blur-sm'
+							>
+								<div className='h-full w-[30%] bg-transparent bg-gradient-to-r from-sky-600/40 to-sky-600/80' />
+							</TooltipOverlay>
+							<TooltipOverlay
+								label={'20%'}
+								className='bg-amber-600/50 font-semibold text-white backdrop-blur-sm'
+							>
+								<div className='h-full w-[20%] bg-transparent bg-gradient-to-r from-amber-600/40 to-amber-600/80' />
+							</TooltipOverlay>
 						</div>
+						<div className='space-y-3'>
+							<div className='flex items-center justify-between'>
+								<div className='flex items-center gap-4 font-medium'>
+									<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-violet-600/50 to-violet-600/75' />
+									<p className='text-lg'>Interval practice</p>
+								</div>
+								<Badge
+									size={'xl'}
+									color='violet'
+									variant='light'
+								>
+									500
+								</Badge>
+							</div>
 
-						<div className='flex items-center justify-between'>
-							<div className='flex items-center gap-2'>
-								<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-sky-600/50 to-sky-600/75' />
-								<p>Chord practice</p>
+							<div className='flex items-center justify-between'>
+								<div className='flex items-center gap-4 font-medium'>
+									<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-sky-600/50 to-sky-600/75' />
+									<p className='text-lg'>Chord practice</p>
+								</div>
+								<Badge
+									size={'xl'}
+									color='blue'
+									variant='light'
+								>
+									300
+								</Badge>
 							</div>
-							<div className='inline-flex rounded-2xl bg-sky-600/20 px-4 py-1'>
-								<p className='text-sm font-bold uppercase text-sky-200'>300</p>
-							</div>
-						</div>
 
-						<div className='flex items-center justify-between'>
-							<div className='flex items-center gap-2'>
-								<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-amber-600/50 to-amber-600/75' />
-								<p>Mode practice</p>
-							</div>
-							<div className='inline-flex rounded-2xl bg-amber-600/20 px-4 py-1'>
-								<p className='text-sm font-bold uppercase text-amber-200'>200</p>
+							<div className='flex items-center justify-between'>
+								<div className='flex items-center gap-4 font-medium'>
+									<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-amber-600/50 to-amber-600/75' />
+									<p className='text-lg'>Mode practice</p>
+								</div>
+								<Badge
+									size={'xl'}
+									color='orange'
+									variant='light'
+								>
+									200
+								</Badge>
 							</div>
 						</div>
 					</div>
 				</div>
 
 				<div className='space-y-4'>
-					<h3 className='text-sm font-semibold md:text-base'>Ear training exercises</h3>
+					<h3 className='font-medium'>Ear training exercises</h3>
 					{scoresQueryPending
 						? Array.from({ length: 5 }).map((_, index) => (
 								<Skeleton
