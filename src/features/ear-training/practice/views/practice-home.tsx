@@ -2,7 +2,6 @@ import '@mantine/carousel/styles.css';
 
 import Autoplay from 'embla-carousel-autoplay';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useRef } from 'react';
 
 import { Carousel } from '@mantine/carousel';
@@ -12,7 +11,6 @@ import { IconArrowRight, IconCheck, IconMusic } from '@tabler/icons-react';
 import EarTrainingLayout from '../layouts/ear-training-layout';
 
 const PracticeHome = () => {
-	const router = useRouter();
 	const autoplay = useRef(Autoplay({ delay: 5000 }));
 
 	return (

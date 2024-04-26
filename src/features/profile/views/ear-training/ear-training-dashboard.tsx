@@ -390,50 +390,66 @@ const EarTrainingDashboard = () => {
 					</div>
 				</div>
 
-				<div className='grid grid-cols-2 gap-4'>
-					<div className='rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4'>
+				<div className='grid gap-4 xs:grid-cols-2'>
+					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 px-4 py-3'>
 						<div className='flex justify-between'>
-							<h2 className='text-2xl font-semibold text-violet-200'>65.5</h2>
-							<IconActivity
-								size={28}
-								className='stroke-violet-200'
-							/>
+							<h2 className='text-2xl font-semibold text-violet-100'>65.5</h2>
+							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+								<IconActivity
+									size={20}
+									className='stroke-violet-400'
+								/>
+							</div>
 						</div>
-						<p>Average activity</p>
+						<div className='inline-flex rounded-xl bg-violet-600/20 px-2.5 py-1'>
+							<p className=' text-xs font-bold uppercase text-violet-100'>Average activity</p>
+						</div>
 					</div>
-					<div className='rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4'>
+					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 px-4 py-3'>
 						<div className='flex justify-between'>
-							<h2 className='text-2xl font-semibold text-violet-200'>15</h2>
-							<IconCalendar
-								size={28}
-								className='stroke-violet-200'
-							/>
+							<h2 className='text-viol1t-200 text-2xl font-semibold'>400</h2>
+							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+								<IconStar
+									size={20}
+									className='stroke-violet-400'
+								/>
+							</div>
 						</div>
-						<p>Total active days</p>
+						<div className='inline-flex rounded-xl bg-violet-600/20 px-2.5 py-1'>
+							<p className='text-xs font-bold uppercase text-violet-100'>Best activity</p>
+						</div>
 					</div>
-					<div className='rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4'>
+					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 px-4 pb-4 pt-3'>
 						<div className='flex justify-between'>
-							<h2 className='text-2xl font-semibold text-violet-200'>400</h2>
-							<IconStar
-								size={28}
-								className='stroke-violet-200'
-							/>
+							<h2 className='text-2xl font-semibold text-violet-100'>15</h2>
+							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+								<IconCalendar
+									size={20}
+									className='stroke-violet-400'
+								/>
+							</div>
 						</div>
-						<p>Best activity</p>
+						<div className='inline-flex rounded-xl bg-violet-600/20 px-2.5 py-1'>
+							<p className=' text-xs font-bold uppercase text-violet-100'>Total active days</p>
+						</div>
 					</div>
-					<div className='rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4'>
+					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 px-4 py-3'>
 						<div className='flex justify-between'>
-							<h2 className='text-2xl font-semibold text-violet-200'>2000</h2>
-							<IconHistory
-								size={28}
-								className='stroke-violet-200'
-							/>
+							<h2 className='text-2xl font-semibold text-violet-100'>2000</h2>
+							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+								<IconHistory
+									size={20}
+									className='stroke-violet-400'
+								/>
+							</div>
 						</div>
-						<p>Total activity</p>
+						<div className='inline-flex rounded-xl bg-violet-600/20 px-2.5 py-1'>
+							<p className=' text-xs font-bold uppercase text-violet-100'>Total activity</p>
+						</div>
 					</div>
 				</div>
 
-				<div className='space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4'>
+				<div className='space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 p-4'>
 					<h3 className='text-sm font-semibold'>Monthly activity summary</h3>
 					<div className='flex h-2.5 items-stretch overflow-hidden rounded-2xl shadow-round-md'>
 						<TooltipOverlay
@@ -461,13 +477,9 @@ const EarTrainingDashboard = () => {
 								<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-violet-600/50 to-violet-600/75' />
 								<p>Interval practice</p>
 							</div>
-							<Badge
-								size='lg'
-								variant='light'
-								color='violet'
-							>
-								500
-							</Badge>
+							<div className='inline-flex rounded-2xl bg-violet-600/20 px-4 py-1'>
+								<p className='text-sm font-bold uppercase text-violet-200'>500</p>
+							</div>
 						</div>
 
 						<div className='flex items-center justify-between'>
@@ -475,13 +487,9 @@ const EarTrainingDashboard = () => {
 								<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-sky-600/50 to-sky-600/75' />
 								<p>Chord practice</p>
 							</div>
-							<Badge
-								size='lg'
-								variant='light'
-								color='blue'
-							>
-								300
-							</Badge>
+							<div className='inline-flex rounded-2xl bg-sky-600/20 px-4 py-1'>
+								<p className='text-sm font-bold uppercase text-sky-200'>300</p>
+							</div>
 						</div>
 
 						<div className='flex items-center justify-between'>
@@ -489,13 +497,9 @@ const EarTrainingDashboard = () => {
 								<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-amber-600/50 to-amber-600/75' />
 								<p>Mode practice</p>
 							</div>
-							<Badge
-								size='lg'
-								variant='light'
-								color='orange'
-							>
-								200
-							</Badge>
+							<div className='inline-flex rounded-2xl bg-amber-600/20 px-4 py-1'>
+								<p className='text-sm font-bold uppercase text-amber-200'>200</p>
+							</div>
 						</div>
 					</div>
 				</div>
