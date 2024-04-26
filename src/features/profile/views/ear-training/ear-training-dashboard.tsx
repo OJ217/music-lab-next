@@ -391,74 +391,77 @@ const EarTrainingDashboard = () => {
 					</div>
 				</div>
 
-				<div className='grid grid-cols-2 gap-4'>
-					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
-						<div className='flex justify-between'>
-							<h2 className='text-2xl font-semibold text-violet-100'>65.5</h2>
-							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-								<IconActivity
-									size={20}
-									className='stroke-violet-400'
-								/>
+				<div className='space-y-4'>
+					<h3 className='font-medium'>Monthly activity insights</h3>
+					<div className='grid grid-cols-2 gap-4'>
+						<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
+							<div className='flex justify-between'>
+								<h2 className='text-2xl font-semibold text-violet-100'>65.5</h2>
+								<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+									<IconActivity
+										size={20}
+										className='stroke-violet-400'
+									/>
+								</div>
 							</div>
+							<Badge
+								variant='light'
+								size='lg'
+							>
+								Average activity
+							</Badge>
 						</div>
-						<Badge
-							variant='light'
-							size='lg'
-						>
-							Average activity
-						</Badge>
-					</div>
-					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
-						<div className='flex justify-between'>
-							<h2 className='text-viol1t-200 text-2xl font-semibold'>400</h2>
-							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-								<IconStar
-									size={20}
-									className='stroke-violet-400'
-								/>
+						<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
+							<div className='flex justify-between'>
+								<h2 className='text-viol1t-200 text-2xl font-semibold'>400</h2>
+								<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+									<IconStar
+										size={20}
+										className='stroke-violet-400'
+									/>
+								</div>
 							</div>
+							<Badge
+								variant='light'
+								size='lg'
+							>
+								Best activity
+							</Badge>
 						</div>
-						<Badge
-							variant='light'
-							size='lg'
-						>
-							Best activity
-						</Badge>
-					</div>
-					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
-						<div className='flex justify-between'>
-							<h2 className='text-2xl font-semibold text-violet-100'>15</h2>
-							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-								<IconCalendar
-									size={20}
-									className='stroke-violet-400'
-								/>
+						<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
+							<div className='flex justify-between'>
+								<h2 className='text-2xl font-semibold text-violet-100'>15</h2>
+								<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+									<IconCalendar
+										size={20}
+										className='stroke-violet-400'
+									/>
+								</div>
 							</div>
+							<Badge
+								variant='light'
+								size='lg'
+							>
+								Total active days
+							</Badge>
 						</div>
-						<Badge
-							variant='light'
-							size='lg'
-						>
-							Total active days
-						</Badge>
-					</div>
-					<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
-						<div className='flex justify-between'>
-							<h2 className='text-2xl font-semibold text-violet-100'>2000</h2>
-							<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-								<IconHistory
-									size={20}
-									className='stroke-violet-400'
-								/>
+						<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
+							<div className='flex justify-between'>
+								<h2 className='text-2xl font-semibold text-violet-100'>2000</h2>
+								<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+									<IconHistory
+										size={20}
+										className='stroke-violet-400'
+									/>
+								</div>
 							</div>
+							<Badge
+								variant='light'
+								size='lg'
+							>
+								Total activity
+							</Badge>
 						</div>
-						<Badge
-							variant='light'
-							size='lg'
-						>
-							Total activity
-						</Badge>
 					</div>
 				</div>
 
