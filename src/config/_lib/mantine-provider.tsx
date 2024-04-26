@@ -89,7 +89,15 @@ const theme = createTheme({
 				backgroundOpacity: 0.65,
 				blur: 1
 			}
-		})
+		}),
+		Tooltip: {
+			defaultProps: {
+				transitionProps: {
+					transition: 'pop',
+					duration: 300
+				}
+			}
+		}
 	}
 });
 

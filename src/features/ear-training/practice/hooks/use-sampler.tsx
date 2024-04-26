@@ -46,7 +46,6 @@ export const useSamplerMethods = (): SamplerMethods => {
 	const playNotes = useCallback(
 		(notes: Array<string | string[]>, noteDuration: number) => {
 			notes.forEach((note, index) => {
-				console.log(note);
 				const time = Tone.now() + index * noteDuration;
 				samplerInstance?.current?.triggerAttackRelease(note, noteDuration, time);
 			});

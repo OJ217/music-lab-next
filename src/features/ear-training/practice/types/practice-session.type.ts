@@ -1,8 +1,20 @@
 import { Dayjs } from 'dayjs';
 
+import { SelectData } from '@/types';
+
 export type Notes = Array<string | string[]>;
 
+export type EarTrainingExerciseType = 'interval' | 'chord' | 'mode';
+
 export interface EarTrainingPracticeQuestionBase {
+	answered: boolean;
+	correct?: boolean;
+}
+
+export interface EarTrainingExerciseQuestionBase {
+	notes: Notes;
+	rootNote: string;
+	questionValue: string;
 	answered: boolean;
 	correct?: boolean;
 }
@@ -15,7 +27,7 @@ export interface EarTrainingPracticeDetail {
 	questionType: string;
 }
 
-export interface EarTrainingSessionMeta {
+export interface EarTrainingSessionResultMeta {
 	startTime?: Dayjs;
 	endTime?: Dayjs;
 	errors: Record<string, Array<string>>;
@@ -37,6 +49,36 @@ export interface EarTrainingSessionResult {
 		incorrect: number;
 		questionType: string;
 	}>;
+}
+
+export interface IEarTrainingSessionMeta {
+	sessionEnded: boolean;
+	totalAnsweredQuestions: number;
+	totalCorrectAnswers: number;
+	scorePercentage: number;
+	progressPercentage: number;
+	progessIndicatorText: string;
+	practiceSessionResultDetail: Array<{
+		score: number;
+		correct: number;
+		incorrect: number;
+		questionType: string;
+	}>;
+}
+
+export interface EarTrainingSessionProgress {
+	totalAnsweredQuestions: number;
+	totalCorrectAnswers: number;
+	sessionEnded: boolean;
+	practiceScorePercentage: number;
+	practiceSessionQuestionGroups: EarTrainingPracticeDetail[];
+}
+
+export interface IEarTrainingSessionSettingsMeta {
+	TOTAL_QUESTIONS: number;
+	QUESTIONS: SelectData;
+	ROOT_NOTE: string | null;
+	NOTE_DURATION_SECONDS: number;
 }
 
 // ***********************

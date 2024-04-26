@@ -64,7 +64,7 @@ class EarTrainingErrorIDB extends Dexie {
 
 const earTrainingErrorIDB = new EarTrainingErrorIDB();
 
-type EarTrainingErrorStores = 'intervalErrors' | 'chordErrors' | 'modeErrors';
+export type EarTrainingErrorStores = 'intervalErrors' | 'chordErrors' | 'modeErrors';
 
 export const fetchEarTrainingErrorLocal = async (storeName: EarTrainingErrorStores) => {
 	const errors = await earTrainingErrorIDB.table(storeName).limit(10).toArray();

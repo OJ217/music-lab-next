@@ -13,6 +13,7 @@ declare module 'axios' {
 	}
 }
 
+// TODO: Refactor interceptors to comply with current auth method (header, cookie)
 axios.interceptors.request.use((config: InternalAxiosRequestConfig<any>) => {
 	// @ts-ignore
 	config.headers = {

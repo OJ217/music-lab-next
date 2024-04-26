@@ -1,71 +1,135 @@
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
+import { useCallback } from 'react';
 import { Note } from 'tonal';
 
-import { INTERVAL_TYPE_GROUPS, IntervalPracticeSettings } from '../types/practice-session-settings.type';
-import { EarTrainingPracticeQuestionBase, Notes, useEarTrainingPracticeSession } from './use-practice-session';
+import { randomNumberFromRange } from '@/utils/helper.util';
 
-interface IntervalQuestion extends EarTrainingPracticeQuestionBase {
-	intervalName: string;
-}
+import { IntervalPracticeSettings } from '../types/practice-session-settings.type';
+import { useEarTrainingPracticeSession } from './use-practice-session';
 
 interface UsePracticeIntervalParams {
 	practiceSessionSettings: IntervalPracticeSettings;
+	questionValues: string[];
 }
 
-export const usePracticeInterval = ({ practiceSessionSettings }: UsePracticeIntervalParams) => {
-	const { t } = useTranslation();
+export const usePracticeInterval = ({ practiceSessionSettings, questionValues }: UsePracticeIntervalParams) => {
+	/**
+	 * Arranges notes for the sampler based on playing mode
+	 */
+	const arrangeIntervalNotes = useCallback(
+		(rootNote: string, intervalName: string) => {
+			const upperNote = Note.transpose(rootNote, intervalName);
+			const intervalNotesBase = [rootNote, upperNote].map(Note.simplify);
 
-	const intervalPracticeSettingsMeta = useMemo(() => {
-		const INTERVALS = INTERVAL_TYPE_GROUPS[practiceSessionSettings.typeGroup].map(intervalName => ({
-			label: t(`interval.${intervalName}`),
-			value: intervalName
-		}));
-		const TOTAL_QUESTIONS = practiceSessionSettings.numberOfQuestions;
-		const ROOT_NOTE = practiceSessionSettings.fixedRoot.enabled ? practiceSessionSettings.fixedRoot.rootNote : null;
-		return {
-			INTERVALS,
-			TOTAL_QUESTIONS,
-			ROOT_NOTE
-		};
-	}, [practiceSessionSettings, t]);
+			switch (practiceSessionSettings.playingMode) {
+				case 'harmonic':
+					return [intervalNotesBase];
+				case 'ascending':
+					return intervalNotesBase;
+				case 'descending':
+					return intervalNotesBase.toReversed();
+				case 'ascending-descending':
+					return [...intervalNotesBase, ...intervalNotesBase.toReversed()];
+				default:
+					return [intervalNotesBase];
+			}
+		},
+		[practiceSessionSettings.playingMode]
+	);
 
-	const playRandomInterval = () => {
-		const rootNote = intervalPracticeSettingsMeta.ROOT_NOTE ?? Note.fromMidi(Math.floor(Math.random() * 25) + 48);
-		const intervalName = intervalPracticeSettingsMeta.INTERVALS[Math.floor(Math.random() * intervalPracticeSettingsMeta.INTERVALS.length)].value;
-		const upperNote = Note.transpose(rootNote, intervalName);
-		const intervalNotesBase = [rootNote, upperNote];
+	/**
+	 * Determines next interval to play based on previous errors
+	 */
+	const playNextQuestion = () => {
+		const rootNote = intervalPracticeSession.practiceSessionSettingsMeta.ROOT_NOTE ?? Note.fromMidi(randomNumberFromRange(48, 72));
+		const intervalName = intervalPracticeSession.selectNextQuestion(intervalPracticeSession.practiceSessionQuestions.map(q => q.questionValue));
+		const intervalNotes = arrangeIntervalNotes(rootNote, intervalName);
 
-		let intervalNotes: Notes;
+		intervalPracticeSession.play(intervalNotes);
 
-		switch (practiceSessionSettings.playingMode) {
-			case 'harmonic':
-				intervalNotes = [intervalNotesBase];
-				break;
-			case 'ascending':
-				intervalNotes = intervalNotesBase;
-				break;
-			case 'descending':
-				intervalNotes = intervalNotesBase.reverse();
-				break;
-			default:
-				intervalNotes = [intervalNotesBase];
-				break;
-		}
-
-		intervalPracticeSession.practiceSessionMethods.stop();
-		intervalPracticeSession.practiceSessionMethods.play(intervalNotes);
-
-		intervalPracticeSession.setPracticeSessionQuestions(prevQuestions => [...prevQuestions, { intervalName, notes: intervalNotes, answered: false }]);
+		intervalPracticeSession.setPracticeSessionQuestions(prevQuestions => [
+			...prevQuestions,
+			{
+				questionValue: intervalName,
+				notes: intervalNotes,
+				rootNote,
+				answered: false
+			}
+		]);
 	};
 
-	const intervalPracticeSession = useEarTrainingPracticeSession<IntervalQuestion>({
+	const intervalPracticeSession = useEarTrainingPracticeSession({
 		practiceSessionSettings,
-		playRandom: playRandomInterval
+		playNextQuestion,
+		exerciseType: 'interval',
+		questionValues
 	});
 
+	/**
+	 * Answers question and continues the flow
+	 */
+	const answerQuestion = (answerIntervalValue: string) => {
+		let answerCorrect: boolean;
+
+		intervalPracticeSession.setPracticeSessionQuestions(sq => {
+			const previousSessionQuestions = [...sq];
+			const lastQuestion = previousSessionQuestions[previousSessionQuestions.length - 1];
+			answerCorrect = answerIntervalValue === lastQuestion.questionValue;
+
+			previousSessionQuestions[previousSessionQuestions.length - 1] = {
+				...lastQuestion,
+				answered: true,
+				correct: answerCorrect
+			};
+
+			if (!answerCorrect) {
+				intervalPracticeSession.setPracticeSessionResultMeta(meta => {
+					if (!(lastQuestion.questionValue in meta.errors)) {
+						meta.errors[lastQuestion.questionValue] = [answerIntervalValue];
+					} else {
+						meta.errors[lastQuestion.questionValue] = [...meta.errors[lastQuestion.questionValue], answerIntervalValue];
+					}
+
+					return meta;
+				});
+			}
+
+			return previousSessionQuestions;
+		});
+
+		if (intervalPracticeSession.practiceSessionQuestions.length === intervalPracticeSession.practiceSessionSettingsMeta.TOTAL_QUESTIONS) {
+			intervalPracticeSession.stop(5);
+			intervalPracticeSession.practiceResultModal.open();
+			intervalPracticeSession.setPracticeSessionResultMeta(meta => ({ ...meta, endTime: dayjs() }));
+			return;
+		}
+
+		if (!practiceSessionSettings.autoFeedback) {
+			playNextQuestion();
+		} else {
+			intervalPracticeSession.setPracticeSessionResultMeta(meta => {
+				const lastQuestion = intervalPracticeSession.practiceSessionQuestions[intervalPracticeSession.practiceSessionQuestions.length - 1];
+
+				return {
+					...meta,
+					feedback: {
+						correct: answerCorrect,
+						answer: {
+							value: answerIntervalValue,
+							notes: arrangeIntervalNotes(lastQuestion.rootNote, answerIntervalValue)
+						},
+						question: {
+							value: lastQuestion.questionValue,
+							notes: lastQuestion.notes
+						}
+					}
+				};
+			});
+		}
+	};
+
 	return {
-		...intervalPracticeSession,
-		intervalPracticeSettingsMeta
+		answerQuestion,
+		...intervalPracticeSession
 	};
 };
