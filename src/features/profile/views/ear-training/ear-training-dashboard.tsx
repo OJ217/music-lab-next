@@ -618,7 +618,7 @@ const EarTrainingDashboard = () => {
 										color='orange'
 										variant='light'
 									>
-										{practiceSessionScores ? practiceSessionScores['mode-identification'].questionCount : '--'}
+										{practiceSessionScores ? practiceSessionScores['mode-identification']?.questionCount : '--'}
 									</Badge>
 								</div>
 							</div>
