@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { useAuth } from '@/context/auth/auth.context';
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { SelectData } from '@/types';
@@ -18,10 +17,11 @@ const EAR_TRAINING_EXERCISES_META: Record<EarTrainingPracticeType, { icon: JSX.E
 		label: 'Interval',
 		description: 'Distance between two notes',
 		icon: (
-			<div className='grid aspect-square h-9 place-content-center rounded-md border border-violet-600 bg-violet-600/10 md:h-12'>
+			<div className='grid aspect-square h-9 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 md:h-12'>
 				<IconMusic
-					stroke={1.6}
-					className='h-5 w-5 stroke-violet-600 md:h-7 md:w-7'
+					stroke={2}
+					size={20}
+					className='h-5 w-5 stroke-violet-400 md:h-7 md:w-7'
 				/>
 			</div>
 		),
@@ -32,10 +32,11 @@ const EAR_TRAINING_EXERCISES_META: Record<EarTrainingPracticeType, { icon: JSX.E
 		label: 'Chord',
 		description: 'Combination of three or more notes',
 		icon: (
-			<div className='grid aspect-square h-9 place-content-center rounded-md border border-sky-600 bg-sky-600/10 md:h-12'>
+			<div className='grid aspect-square h-9 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-sky-600/20 to-sky-600/40 md:h-12'>
 				<IconMusic
-					stroke={1.6}
-					className='h-5 w-5 stroke-sky-600 md:h-7 md:w-7'
+					stroke={2}
+					size={20}
+					className='h-5 w-5 stroke-sky-400 md:h-7 md:w-7'
 				/>
 			</div>
 		),
@@ -46,10 +47,11 @@ const EAR_TRAINING_EXERCISES_META: Record<EarTrainingPracticeType, { icon: JSX.E
 		label: 'Mode',
 		description: 'Specific scale or tonal pattern',
 		icon: (
-			<div className='grid aspect-square h-9 place-content-center rounded-md border border-amber-600 bg-amber-600/10 md:h-12'>
+			<div className='grid aspect-square h-9 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-amber-600/20 to-amber-600/40 md:h-12'>
 				<IconMusic
-					stroke={1.6}
-					className='h-5 w-5 stroke-amber-600 md:h-7 md:w-7'
+					stroke={2}
+					size={20}
+					className='h-5 w-5 stroke-amber-400 md:h-7 md:w-7'
 				/>
 			</div>
 		),
@@ -72,8 +74,6 @@ const EarTrainingDashboard = () => {
 		{ label: 'Activity', value: 'activity' },
 		{ label: 'Progress', value: 'progress' }
 	];
-
-	const { userInfo } = useAuth();
 
 	return (
 		<EarTrainingLayout
@@ -186,6 +186,8 @@ const EarTrainingDashboard = () => {
 											fill={'url(#color)'}
 											stroke={'#7C3AED'}
 											strokeWidth={2.4}
+											animationDuration={1500}
+											animationEasing='ease-in-out'
 										/>
 										<XAxis
 											padding={{ left: 8, right: 4 }}
@@ -287,13 +289,13 @@ const EarTrainingDashboard = () => {
 											</linearGradient>
 										</defs>
 										<Bar
+											radius={6}
+											maxBarSize={30}
+											strokeWidth={1.6}
 											type='monotone'
 											dataKey={'score'}
 											fill={'url(#color)'}
 											stroke={'#7C3AED'}
-											strokeWidth={1.6}
-											maxBarSize={30}
-											radius={6}
 										>
 											<LabelList
 												angle={0}
@@ -394,150 +396,240 @@ const EarTrainingDashboard = () => {
 				<div className='space-y-4'>
 					<h3 className='font-medium'>Monthly activity insights</h3>
 					<div className='grid grid-cols-2 gap-4'>
-						<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
-							<div className='flex justify-between'>
-								<h2 className='text-2xl font-semibold text-violet-100'>65.5</h2>
-								<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-									<IconActivity
-										size={20}
-										className='stroke-violet-400'
-									/>
+						{activityQueryPending ? (
+							Array.from({ length: 4 }).map((_, index) => (
+								<Skeleton
+									key={index}
+									radius={'md'}
+									className='h-[6.65rem] before:!bg-transparent after:!bg-transparent after:bg-gradient-to-tr after:from-violet-600/15 after:to-violet-600/30 md:h-[7.15rem]'
+								/>
+							))
+						) : (
+							<>
+								<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
+									<div className='flex justify-between'>
+										<h2 className='text-2xl font-semibold text-violet-100'>
+											{practiceSessionActivity ? (practiceSessionActivity.map(a => a.activity).reduce((a, b) => a + b, 0) / practiceSessionActivity.length).toFixed(2) : '--'}
+										</h2>
+										<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+											<IconActivity
+												size={20}
+												className='stroke-violet-400'
+											/>
+										</div>
+									</div>
+									<Badge
+										variant='light'
+										size='lg'
+									>
+										Average activity
+									</Badge>
 								</div>
-							</div>
-							<Badge
-								variant='light'
-								size='lg'
-							>
-								Average activity
-							</Badge>
-						</div>
-						<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
-							<div className='flex justify-between'>
-								<h2 className='text-viol1t-200 text-2xl font-semibold'>400</h2>
-								<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-									<IconStar
-										size={20}
-										className='stroke-violet-400'
-									/>
+								<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
+									<div className='flex justify-between'>
+										<h2 className='text-viol1t-200 text-2xl font-semibold'>{practiceSessionActivity ? Math.max(...practiceSessionActivity.map(a => a.activity)) : '--'}</h2>
+										<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+											<IconStar
+												size={20}
+												className='stroke-violet-400'
+											/>
+										</div>
+									</div>
+									<Badge
+										variant='light'
+										size='lg'
+									>
+										Best activity
+									</Badge>
 								</div>
-							</div>
-							<Badge
-								variant='light'
-								size='lg'
-							>
-								Best activity
-							</Badge>
-						</div>
-						<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
-							<div className='flex justify-between'>
-								<h2 className='text-2xl font-semibold text-violet-100'>15</h2>
-								<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-									<IconCalendar
-										size={20}
-										className='stroke-violet-400'
-									/>
+								<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
+									<div className='flex justify-between'>
+										<h2 className='text-2xl font-semibold text-violet-100'>
+											{practiceSessionActivity ? practiceSessionActivity.map(a => a.activity).filter(a => a > 0).length : '--'}
+										</h2>
+										<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+											<IconCalendar
+												size={20}
+												className='stroke-violet-400'
+											/>
+										</div>
+									</div>
+									<Badge
+										variant='light'
+										size='lg'
+									>
+										Total active days
+									</Badge>
 								</div>
-							</div>
-							<Badge
-								variant='light'
-								size='lg'
-							>
-								Total active days
-							</Badge>
-						</div>
-						<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 px-4 pb-4 pt-3'>
-							<div className='flex justify-between'>
-								<h2 className='text-2xl font-semibold text-violet-100'>2000</h2>
-								<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-									<IconHistory
-										size={20}
-										className='stroke-violet-400'
-									/>
+								<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
+									<div className='flex justify-between'>
+										<h2 className='text-2xl font-semibold text-violet-100'>
+											{practiceSessionActivity ? practiceSessionActivity.map(a => a.activity).reduce((a, b) => a + b, 0) : '--'}
+										</h2>
+										<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+											<IconHistory
+												size={20}
+												className='stroke-violet-400'
+											/>
+										</div>
+									</div>
+									<Badge
+										variant='light'
+										size='lg'
+									>
+										Total activity
+									</Badge>
 								</div>
-							</div>
-							<Badge
-								variant='light'
-								size='lg'
-							>
-								Total activity
-							</Badge>
-						</div>
+							</>
+						)}
 					</div>
 				</div>
 
 				<div className='space-y-4'>
 					<h3 className='font-medium'>Monthly activity summary</h3>
-					<div className='space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4'>
-						<div className='flex h-2.5 items-stretch overflow-hidden rounded-2xl shadow-round-md'>
-							<TooltipOverlay
-								label={'50%'}
-								className='bg-violet-600/50 font-semibold text-white backdrop-blur-sm'
-							>
-								<div className='h-full w-[50%] bg-transparent bg-gradient-to-r from-violet-600/40 to-violet-600/80' />
-							</TooltipOverlay>
-							<TooltipOverlay
-								label={'30%'}
-								className='bg-sky-600/50 font-semibold text-white backdrop-blur-sm'
-							>
-								<div className='h-full w-[30%] bg-transparent bg-gradient-to-r from-sky-600/40 to-sky-600/80' />
-							</TooltipOverlay>
-							<TooltipOverlay
-								label={'20%'}
-								className='bg-amber-600/50 font-semibold text-white backdrop-blur-sm'
-							>
-								<div className='h-full w-[20%] bg-transparent bg-gradient-to-r from-amber-600/40 to-amber-600/80' />
-							</TooltipOverlay>
-						</div>
-						<div className='space-y-3'>
-							<div className='flex items-center justify-between'>
-								<div className='flex items-center gap-4 font-medium'>
-									<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-violet-600/50 to-violet-600/75' />
-									<p className='text-lg'>Interval practice</p>
-								</div>
-								<Badge
-									size={'xl'}
-									color='violet'
-									variant='light'
+					{scoresQueryPending ? (
+						<Skeleton
+							radius={'md'}
+							className='h-[11.15rem] before:!bg-transparent after:!bg-transparent after:bg-gradient-to-tr after:from-violet-600/15 after:to-violet-600/30 md:h-[11.65rem]'
+						/>
+					) : (
+						<div className='space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
+							<div className='flex h-2.5 items-stretch overflow-hidden rounded-2xl shadow-round-md'>
+								<TooltipOverlay
+									label={calculatePercentage(
+										practiceSessionScores!['interval-identification'].questionCount,
+										Object.entries(practiceSessionScores!)
+											.map(([_exercise, { questionCount }]) => questionCount)
+											.reduce((a, b) => a + b, 0)
+									)}
+									className='bg-violet-600/50 font-semibold text-white backdrop-blur-sm'
 								>
-									500
-								</Badge>
+									<div
+										className='h-full bg-transparent bg-gradient-to-r from-violet-600/40 to-violet-600/80'
+										style={{
+											width:
+												calculatePercentage(
+													practiceSessionScores!['interval-identification'].questionCount,
+													Object.entries(practiceSessionScores!)
+														.map(([_exercise, { questionCount }]) => questionCount)
+														.reduce((a, b) => a + b, 0)
+												) + '%'
+										}}
+									/>
+								</TooltipOverlay>
+								<TooltipOverlay
+									label={calculatePercentage(
+										practiceSessionScores!['chord-identification'].questionCount,
+										Object.entries(practiceSessionScores!)
+											.map(([_exercise, { questionCount }]) => questionCount)
+											.reduce((a, b) => a + b, 0)
+									)}
+									className='bg-sky-600/50 font-semibold text-white backdrop-blur-sm'
+								>
+									<div
+										className='h-full bg-transparent bg-gradient-to-r from-sky-600/40 to-sky-600/80'
+										style={{
+											width:
+												calculatePercentage(
+													practiceSessionScores!['chord-identification'].questionCount,
+													Object.entries(practiceSessionScores!)
+														.map(([_exercise, { questionCount }]) => questionCount)
+														.reduce((a, b) => a + b, 0)
+												) + '%'
+										}}
+									/>
+								</TooltipOverlay>
+								<TooltipOverlay
+									label={(
+										100 -
+										(calculatePercentage(
+											practiceSessionScores!['interval-identification'].questionCount,
+											Object.entries(practiceSessionScores!)
+												.map(([_exercise, { questionCount }]) => questionCount)
+												.reduce((a, b) => a + b, 0)
+										) +
+											calculatePercentage(
+												practiceSessionScores!['chord-identification'].questionCount,
+												Object.entries(practiceSessionScores!)
+													.map(([_exercise, { questionCount }]) => questionCount)
+													.reduce((a, b) => a + b, 0)
+											))
+									).toFixed(1)}
+									className='bg-amber-600/50 font-semibold text-white backdrop-blur-sm'
+								>
+									<div
+										className='h-full bg-transparent bg-gradient-to-r from-amber-600/40 to-amber-600/80'
+										style={{
+											width:
+												100 -
+												(calculatePercentage(
+													practiceSessionScores!['interval-identification'].questionCount,
+													Object.entries(practiceSessionScores!)
+														.map(([_exercise, { questionCount }]) => questionCount)
+														.reduce((a, b) => a + b, 0)
+												) +
+													calculatePercentage(
+														practiceSessionScores!['chord-identification'].questionCount,
+														Object.entries(practiceSessionScores!)
+															.map(([_exercise, { questionCount }]) => questionCount)
+															.reduce((a, b) => a + b, 0)
+													)) +
+												'%'
+										}}
+									/>
+								</TooltipOverlay>
 							</div>
+							<div className='space-y-3'>
+								<div className='flex items-center justify-between'>
+									<div className='flex items-center gap-3 font-medium'>
+										<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-violet-600/50 to-violet-600/75' />
+										<p className='text-lg'>Interval practice</p>
+									</div>
+									<Badge
+										size={'xl'}
+										color='violet'
+										variant='light'
+									>
+										{practiceSessionScores ? practiceSessionScores['interval-identification'].questionCount : '--'}
+									</Badge>
+								</div>
 
-							<div className='flex items-center justify-between'>
-								<div className='flex items-center gap-4 font-medium'>
-									<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-sky-600/50 to-sky-600/75' />
-									<p className='text-lg'>Chord practice</p>
+								<div className='flex items-center justify-between'>
+									<div className='flex items-center gap-3 font-medium'>
+										<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-sky-600/50 to-sky-600/75' />
+										<p className='text-lg'>Chord practice</p>
+									</div>
+									<Badge
+										size={'xl'}
+										color='blue'
+										variant='light'
+									>
+										{practiceSessionScores ? practiceSessionScores['chord-identification'].questionCount : '--'}
+									</Badge>
 								</div>
-								<Badge
-									size={'xl'}
-									color='blue'
-									variant='light'
-								>
-									300
-								</Badge>
-							</div>
 
-							<div className='flex items-center justify-between'>
-								<div className='flex items-center gap-4 font-medium'>
-									<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-amber-600/50 to-amber-600/75' />
-									<p className='text-lg'>Mode practice</p>
+								<div className='flex items-center justify-between'>
+									<div className='flex items-center gap-3 font-medium'>
+										<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-amber-600/50 to-amber-600/75' />
+										<p className='text-lg'>Mode practice</p>
+									</div>
+									<Badge
+										size={'xl'}
+										color='orange'
+										variant='light'
+									>
+										{practiceSessionScores ? practiceSessionScores['mode-identification'].questionCount : '--'}
+									</Badge>
 								</div>
-								<Badge
-									size={'xl'}
-									color='orange'
-									variant='light'
-								>
-									200
-								</Badge>
 							</div>
 						</div>
-					</div>
+					)}
 				</div>
 
 				<div className='space-y-4'>
 					<h3 className='font-medium'>Ear training exercises</h3>
 					{scoresQueryPending
-						? Array.from({ length: 5 }).map((_, index) => (
+						? Array.from({ length: 3 }).map((_, index) => (
 								<Skeleton
 									key={index}
 									radius={'md'}
@@ -558,14 +650,14 @@ const EarTrainingDashboard = () => {
 											<div className='flex items-center gap-4'>
 												{icon}
 												<div className='text-white'>
-													<h3 className='text-lg font-semibold'>{label}</h3>
-													<p className='text-[13px]'>{description}</p>
+													<h3 className='text-xl font-semibold'>{label}</h3>
+													<p>{description}</p>
 												</div>
 											</div>
 
 											<div className='flex items-center gap-2'>
 												<Badge
-													size='lg'
+													size='xl'
 													className={badgeClass}
 												>
 													{practiceTypeScore ? calculatePercentage(practiceTypeScore?.correct, practiceTypeScore?.questionCount) : 0}%
