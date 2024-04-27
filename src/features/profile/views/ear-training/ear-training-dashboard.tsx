@@ -497,9 +497,9 @@ const EarTrainingDashboard = () => {
 							<div className='flex h-2.5 items-stretch overflow-hidden rounded-2xl shadow-round-md'>
 								<TooltipOverlay
 									label={calculatePercentage(
-										practiceSessionScores!['interval-identification'].questionCount,
+										practiceSessionScores!['interval-identification']?.questionCount ?? 0,
 										Object.entries(practiceSessionScores!)
-											.map(([_exercise, { questionCount }]) => questionCount)
+											.map(([_exercise, exerciseDetail]) => exerciseDetail?.questionCount ?? 0)
 											.reduce((a, b) => a + b, 0)
 									)}
 									className='bg-violet-600/50 font-semibold text-white backdrop-blur-sm'
@@ -509,9 +509,9 @@ const EarTrainingDashboard = () => {
 										style={{
 											width:
 												calculatePercentage(
-													practiceSessionScores!['interval-identification'].questionCount,
+													practiceSessionScores!['interval-identification']?.questionCount ?? 0,
 													Object.entries(practiceSessionScores!)
-														.map(([_exercise, { questionCount }]) => questionCount)
+														.map(([_exercise, exerciseDetail]) => exerciseDetail?.questionCount ?? 0)
 														.reduce((a, b) => a + b, 0)
 												) + '%'
 										}}
@@ -519,9 +519,9 @@ const EarTrainingDashboard = () => {
 								</TooltipOverlay>
 								<TooltipOverlay
 									label={calculatePercentage(
-										practiceSessionScores!['chord-identification'].questionCount,
+										practiceSessionScores!['chord-identification']?.questionCount ?? 0,
 										Object.entries(practiceSessionScores!)
-											.map(([_exercise, { questionCount }]) => questionCount)
+											.map(([_exercise, exerciseDetail]) => exerciseDetail?.questionCount ?? 0)
 											.reduce((a, b) => a + b, 0)
 									)}
 									className='bg-sky-600/50 font-semibold text-white backdrop-blur-sm'
@@ -531,9 +531,9 @@ const EarTrainingDashboard = () => {
 										style={{
 											width:
 												calculatePercentage(
-													practiceSessionScores!['chord-identification'].questionCount,
+													practiceSessionScores!['chord-identification']?.questionCount ?? 0,
 													Object.entries(practiceSessionScores!)
-														.map(([_exercise, { questionCount }]) => questionCount)
+														.map(([_exercise, exerciseDetail]) => exerciseDetail?.questionCount ?? 0)
 														.reduce((a, b) => a + b, 0)
 												) + '%'
 										}}
@@ -543,15 +543,15 @@ const EarTrainingDashboard = () => {
 									label={(
 										100 -
 										(calculatePercentage(
-											practiceSessionScores!['interval-identification'].questionCount,
+											practiceSessionScores!['interval-identification']?.questionCount ?? 0,
 											Object.entries(practiceSessionScores!)
-												.map(([_exercise, { questionCount }]) => questionCount)
+												.map(([_exercise, exerciseDetail]) => exerciseDetail?.questionCount ?? 0)
 												.reduce((a, b) => a + b, 0)
 										) +
 											calculatePercentage(
-												practiceSessionScores!['chord-identification'].questionCount,
+												practiceSessionScores!['chord-identification']?.questionCount ?? 0,
 												Object.entries(practiceSessionScores!)
-													.map(([_exercise, { questionCount }]) => questionCount)
+													.map(([_exercise, exerciseDetail]) => exerciseDetail?.questionCount ?? 0)
 													.reduce((a, b) => a + b, 0)
 											))
 									).toFixed(1)}
@@ -563,15 +563,15 @@ const EarTrainingDashboard = () => {
 											width:
 												100 -
 												(calculatePercentage(
-													practiceSessionScores!['interval-identification'].questionCount,
+													practiceSessionScores!['interval-identification']?.questionCount ?? 0,
 													Object.entries(practiceSessionScores!)
-														.map(([_exercise, { questionCount }]) => questionCount)
+														.map(([_exercise, exerciseDetail]) => exerciseDetail?.questionCount ?? 0)
 														.reduce((a, b) => a + b, 0)
 												) +
 													calculatePercentage(
-														practiceSessionScores!['chord-identification'].questionCount,
+														practiceSessionScores!['chord-identification']?.questionCount ?? 0,
 														Object.entries(practiceSessionScores!)
-															.map(([_exercise, { questionCount }]) => questionCount)
+															.map(([_exercise, exerciseDetail]) => exerciseDetail?.questionCount ?? 0)
 															.reduce((a, b) => a + b, 0)
 													)) +
 												'%'
@@ -590,7 +590,7 @@ const EarTrainingDashboard = () => {
 										color='violet'
 										variant='light'
 									>
-										{practiceSessionScores ? practiceSessionScores['interval-identification'].questionCount : '--'}
+										{practiceSessionScores ? practiceSessionScores['interval-identification']?.questionCount : '--'}
 									</Badge>
 								</div>
 
@@ -604,7 +604,7 @@ const EarTrainingDashboard = () => {
 										color='blue'
 										variant='light'
 									>
-										{practiceSessionScores ? practiceSessionScores['chord-identification'].questionCount : '--'}
+										{practiceSessionScores ? practiceSessionScores['chord-identification']?.questionCount : '--'}
 									</Badge>
 								</div>
 
