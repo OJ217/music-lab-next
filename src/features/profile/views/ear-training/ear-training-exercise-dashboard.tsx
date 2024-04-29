@@ -18,7 +18,7 @@ import {
 	useEarTrainingPracticeSessionListQuery,
 	useEarTrainingPracticeSessionProgressQuery,
 	useEarTrainingPracticeSessionQuery
-} from '../../services/ear-training-dashboard.service';
+} from '../../services/ear-training-analytics.service';
 
 dayjs.extend(duration);
 
@@ -238,11 +238,10 @@ const EarTrainingExerciseDashboard = () => {
 											radius={6}
 										>
 											<LabelList
-												angle={270}
 												fill='#E5E7EB'
 												dataKey={'score'}
 												position='center'
-												className='animate-fade-in text-xs font-medium'
+												className='animate-fade-in text-[0.625rem] font-medium'
 												formatter={(data: number) => {
 													return data > 0 ? data : null;
 												}}

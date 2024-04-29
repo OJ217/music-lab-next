@@ -6,6 +6,108 @@ import { IPaginatedDocuments, IResponse, IUseQueryBase } from '@/types';
 import { calculatePercentage } from '@/utils/format.util';
 import { useQuery } from '@tanstack/react-query';
 
+interface IEarTrainingStatisticsBase {
+	correct: number;
+	activity: number;
+}
+
+interface IOverallStatisticsResponse {
+	dateRangeStatistics: Array<{ date: string } & IEarTrainingStatisticsBase>;
+	exerciseTypeStatistics: Array<{ type: EarTrainingPracticeType } & IEarTrainingStatisticsBase>;
+}
+
+interface IUseOverallStatisticsQueryResponse {
+	activity: Array<{ date: string; activity: number }>;
+	progress: Array<{ date: string; correct: number; activity: number; score: number }>;
+	exercises: Array<{ type: EarTrainingPracticeType; score: number; activity: number }>;
+	insights: {
+		activity: {
+			averageActivity: number | string;
+			bestActivity: number | string;
+			totalActiveDays: number | string;
+			totalActivity: number | string;
+		};
+		exercises: Record<EarTrainingPracticeType, { activity: number; segmentPercentage: number }>;
+	};
+}
+
+export const useEarTrainingOverallStatisticsQuery = ({ enabled }: IUseQueryBase) => {
+	const fetchEarTrainingOverallStatistics = async (): Promise<IUseOverallStatisticsQueryResponse> => {
+		const earTrainingOverallStatistics = (
+			await axios.get<IResponse<IOverallStatisticsResponse>>('/ear-training/analytics', {
+				isPrivate: true
+			})
+		)?.data?.data;
+
+		const dateRangeStatisticsSorted = earTrainingOverallStatistics.dateRangeStatistics.sort((a, b) => dayjs(a.date).diff(dayjs(b.date)));
+		const activity = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, activity: stat.activity }));
+		const progress = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, correct: stat.correct, activity: stat.activity, score: calculatePercentage(stat.correct, stat.activity) }));
+		const exercises = earTrainingOverallStatistics.exerciseTypeStatistics.map(stat => ({ type: stat.type, score: calculatePercentage(stat.correct, stat.activity), activity: stat.activity }));
+
+		const totalActiveDays = dateRangeStatisticsSorted.filter(stat => stat.activity > 0).length;
+		const totalActivity = dateRangeStatisticsSorted.map(stat => stat.activity).reduce((a, b) => a + b, 0);
+		const bestActivity = Math.max(...dateRangeStatisticsSorted.map(stat => stat.activity));
+		const averageActivity = (totalActivity / dateRangeStatisticsSorted.length).toFixed(1);
+
+		return {
+			activity,
+			progress,
+			exercises,
+			insights: {
+				activity: {
+					averageActivity,
+					bestActivity,
+					totalActiveDays,
+					totalActivity
+				},
+				exercises: Object.assign(
+					{},
+					...exercises.map(exercise => ({
+						[exercise.type]: {
+							activity: exercise.activity,
+							segmentPercentage: calculatePercentage(exercise.activity, totalActivity)
+						}
+					}))
+				)
+			}
+		};
+	};
+
+	const { data, isPending } = useQuery({
+		queryFn: fetchEarTrainingOverallStatistics,
+		queryKey: ['ear-training', 'analytics', 'overall-statistics'],
+		enabled
+	});
+
+	return {
+		earTrainingOverallStatistics: data,
+		earTrainingOverallStatisticsPending: isPending
+	};
+};
+
+interface IUseExerciseStatisticsQueryParams extends IUseQueryBase {
+	exerciseType: EarTrainingPracticeType;
+}
+
+type IExerciseStatisticsResponse = Array<{ type: EarTrainingPracticeType } & IEarTrainingStatisticsBase>;
+
+export const useEarTrainingExerciseStatisticsQuery = ({ enabled = true, exerciseType }: IUseExerciseStatisticsQueryParams) => {
+	const fetchEarTrainingExerciseStatistics = async () => {
+		return (await axios.get<IResponse<IExerciseStatisticsResponse>>(`/ear-training/analytics/${exerciseType}`)).data;
+	};
+
+	const { data, isPending } = useQuery({
+		queryFn: fetchEarTrainingExerciseStatistics,
+		queryKey: ['ear-training', 'analytics', `${exerciseType}-statistics`],
+		enabled
+	});
+
+	return {
+		earTrainingExerciseStatistics: data,
+		earTrainingExerciseStatisticsPending: isPending
+	};
+};
+
 interface IUsePracticeSessionActivityParams extends IUseQueryBase {
 	queryParams?: {
 		type?: EarTrainingPracticeType;
