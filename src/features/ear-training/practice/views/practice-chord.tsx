@@ -90,7 +90,7 @@ const PracticeChordView: React.FC<IPracticeChordView> = ({ chordPracticeSettings
 						incorrect: practiceSessionSettingsMeta.TOTAL_QUESTIONS - practiceSessionMeta.totalCorrectAnswers,
 						questionCount: practiceSessionSettingsMeta.TOTAL_QUESTIONS
 					},
-					type: EarTrainingPracticeType.IntervalIdentification,
+					type: EarTrainingPracticeType.ChordIdentification,
 					duration: dayjs().diff(practiceSessionResultMeta?.startTime, 'seconds'),
 					statistics: refineEarTrainingSessionResult(practiceSessionQuestions)
 				};

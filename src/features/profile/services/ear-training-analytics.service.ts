@@ -19,7 +19,7 @@ interface IOverallStatisticsResponse {
 interface IUseOverallStatisticsQueryResponse {
 	activity: Array<{ date: string; activity: number }>;
 	progress: Array<{ date: string; correct: number; activity: number; score: number }>;
-	exercises: Array<{ type: EarTrainingPracticeType; score: number; activity: number }>;
+	exercises: Array<{ type: EarTrainingPracticeType; score: number }>;
 	insights: {
 		activity: {
 			averageActivity: number | string;
@@ -27,7 +27,11 @@ interface IUseOverallStatisticsQueryResponse {
 			totalActiveDays: number | string;
 			totalActivity: number | string;
 		};
-		exercises: Record<EarTrainingPracticeType, { activity: number; segmentPercentage: number }>;
+		exercises: Array<{
+			type: EarTrainingPracticeType;
+			activity: number | string;
+			segmentPercentage: number;
+		}>;
 	};
 }
 
@@ -39,15 +43,49 @@ export const useEarTrainingOverallStatisticsQuery = ({ enabled }: IUseQueryBase)
 			})
 		)?.data?.data;
 
-		const dateRangeStatisticsSorted = earTrainingOverallStatistics.dateRangeStatistics.sort((a, b) => dayjs(a.date).diff(dayjs(b.date)));
+		if (!earTrainingOverallStatistics || (earTrainingOverallStatistics.dateRangeStatistics.length === 0 && earTrainingOverallStatistics.exerciseTypeStatistics.length === 0)) {
+			return {
+				activity: [],
+				exercises: [],
+				progress: [],
+				insights: {
+					activity: {
+						averageActivity: '--',
+						bestActivity: '--',
+						totalActiveDays: '--',
+						totalActivity: '--'
+					},
+					exercises: []
+				}
+			};
+		}
+
+		// ** Statistics Data Sorted
+		const dateRangeStatisticsSorted = earTrainingOverallStatistics.dateRangeStatistics.toSorted((a, b) => dayjs(a.date).diff(dayjs(b.date)));
+		const exerciseTypeOrders: Record<EarTrainingPracticeType, number> = {
+			'interval-identification': 0,
+			'chord-identification': 1,
+			'mode-identification': 2
+		};
+		const exerciseTypeStatisticsSorted = earTrainingOverallStatistics.exerciseTypeStatistics.toSorted((a, b) => exerciseTypeOrders[a.type] - exerciseTypeOrders[b.type]);
+
+		// ** Statistics Data
 		const activity = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, activity: stat.activity }));
 		const progress = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, correct: stat.correct, activity: stat.activity, score: calculatePercentage(stat.correct, stat.activity) }));
-		const exercises = earTrainingOverallStatistics.exerciseTypeStatistics.map(stat => ({ type: stat.type, score: calculatePercentage(stat.correct, stat.activity), activity: stat.activity }));
+		const exercises = exerciseTypeStatisticsSorted.map(stat => ({ type: stat.type, score: calculatePercentage(stat.correct, stat.activity) }));
 
+		// ** Activity Insights
 		const totalActiveDays = dateRangeStatisticsSorted.filter(stat => stat.activity > 0).length;
 		const totalActivity = dateRangeStatisticsSorted.map(stat => stat.activity).reduce((a, b) => a + b, 0);
 		const bestActivity = Math.max(...dateRangeStatisticsSorted.map(stat => stat.activity));
 		const averageActivity = (totalActivity / dateRangeStatisticsSorted.length).toFixed(1);
+
+		// ** Exercise Insights
+		const exerciseInsights = exerciseTypeStatisticsSorted.map(exercise => ({
+			type: exercise.type,
+			activity: exercise.activity,
+			segmentPercentage: calculatePercentage(exercise.activity, totalActivity)
+		}));
 
 		return {
 			activity,
@@ -60,15 +98,7 @@ export const useEarTrainingOverallStatisticsQuery = ({ enabled }: IUseQueryBase)
 					totalActiveDays,
 					totalActivity
 				},
-				exercises: Object.assign(
-					{},
-					...exercises.map(exercise => ({
-						[exercise.type]: {
-							activity: exercise.activity,
-							segmentPercentage: calculatePercentage(exercise.activity, totalActivity)
-						}
-					}))
-				)
+				exercises: exerciseInsights
 			}
 		};
 	};
@@ -89,11 +119,37 @@ interface IUseExerciseStatisticsQueryParams extends IUseQueryBase {
 	exerciseType: EarTrainingPracticeType;
 }
 
-type IExerciseStatisticsResponse = Array<{ type: EarTrainingPracticeType } & IEarTrainingStatisticsBase>;
+type IExerciseStatisticsResponse = Array<{ date: string } & IEarTrainingStatisticsBase>;
+
+interface IUseExerciseStatisticsQueryResponse {
+	activity: Array<{ date: string; activity: number }>;
+	progress: Array<{ date: string; correct: number; activity: number; score: number }>;
+}
 
 export const useEarTrainingExerciseStatisticsQuery = ({ enabled = true, exerciseType }: IUseExerciseStatisticsQueryParams) => {
-	const fetchEarTrainingExerciseStatistics = async () => {
-		return (await axios.get<IResponse<IExerciseStatisticsResponse>>(`/ear-training/analytics/${exerciseType}`)).data;
+	const fetchEarTrainingExerciseStatistics = async (): Promise<IUseExerciseStatisticsQueryResponse> => {
+		const earTrainingExerciseStatistics = (
+			await axios.get<IResponse<IExerciseStatisticsResponse>>(`/ear-training/analytics/${exerciseType}`, {
+				isPrivate: true
+			})
+		)?.data?.data;
+
+		if (!earTrainingExerciseStatistics || earTrainingExerciseStatistics.length === 0) {
+			return {
+				activity: [],
+				progress: []
+			};
+		}
+
+		// ** Statistics Data Sorted
+		const dateRangeStatisticsSorted = earTrainingExerciseStatistics.toSorted((a, b) => dayjs(a.date).diff(dayjs(b.date)));
+		const activity = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, activity: stat.activity }));
+		const progress = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, correct: stat.correct, activity: stat.activity, score: calculatePercentage(stat.correct, stat.activity) }));
+
+		return {
+			activity,
+			progress
+		};
 	};
 
 	const { data, isPending } = useQuery({
@@ -224,7 +280,7 @@ interface IUsePracticeSessionListParams extends IUseQueryBase {
 	};
 }
 
-interface IEarTrainingPracticeSession {
+export interface IEarTrainingPracticeSession {
 	_id: string;
 	type: EarTrainingPracticeType;
 	duration: number;
@@ -234,6 +290,13 @@ interface IEarTrainingPracticeSession {
 		incorrect: number;
 		questionCount: number;
 	};
+	statistics: Array<{
+		score: number;
+		correct: number;
+		incorrect: number;
+		questionCount: number;
+		questionType: string;
+	}>;
 	createdAt: Date;
 }
 

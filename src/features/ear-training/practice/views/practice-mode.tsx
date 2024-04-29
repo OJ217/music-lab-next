@@ -87,7 +87,7 @@ const PracticeIntervalView: React.FC<IPracticeModeView> = ({ modePracticeSetting
 						incorrect: practiceSessionSettingsMeta.TOTAL_QUESTIONS - practiceSessionMeta.totalCorrectAnswers,
 						questionCount: practiceSessionSettingsMeta.TOTAL_QUESTIONS
 					},
-					type: EarTrainingPracticeType.IntervalIdentification,
+					type: EarTrainingPracticeType.ModeIdentification,
 					duration: dayjs().diff(practiceSessionResultMeta?.startTime, 'seconds'),
 					statistics: refineEarTrainingSessionResult(practiceSessionQuestions)
 				};

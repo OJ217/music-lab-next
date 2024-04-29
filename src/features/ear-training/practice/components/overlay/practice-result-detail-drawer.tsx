@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { capitalize } from '@/utils/format.util';
-import { Accordion, Badge, Card, Center, Drawer, List, Progress, RingProgress, ScrollArea, ThemeIcon } from '@mantine/core';
+import { Accordion, Badge, Card, Center, Drawer, List, Progress, RingProgress, ThemeIcon } from '@mantine/core';
 import { IconCheck, IconSettings, IconX } from '@tabler/icons-react';
 
 import { EarTrainingExerciseType } from '../../types/practice-session.type';
@@ -61,9 +61,8 @@ const PracticeResultDetailDrawer: FC<IPracticeResultDetailDrawerProps> = ({
 			title='Practice Overview'
 			opened={practiceDetailDrawerOpened && sessionEnded}
 			onClose={closePracticeDetailDrawer}
-			scrollAreaComponent={ScrollArea.Autosize}
 			closeButtonProps={{ size: 'sm' }}
-			classNames={{ title: 'font-semibold text-sm' }}
+			classNames={{ title: 'font-semibold text-sm', content: 'scrollbar-none' }}
 			withinPortal
 		>
 			<div className='mt-6 space-y-6'>

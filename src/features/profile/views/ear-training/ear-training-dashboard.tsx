@@ -1,18 +1,22 @@
+import dayjs from 'dayjs';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState } from 'react';
 
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
-import DashboardAreaChart from '@/features/profile/components/chart/dashboard-area-chart';
-import DashboardBarChart from '@/features/profile/components/chart/dashboard-bar-chart';
-import DashboardChartSegmentedControl from '@/features/profile/components/input/dashboard-segmented-control';
-import { useEarTrainingOverallStatisticsQuery } from '@/features/profile/services/ear-training-analytics.service';
-import { EarTrainingDashboardChartType } from '@/features/profile/types';
-import { Badge, Skeleton, Tooltip } from '@mantine/core';
+import { Badge, MantineColor, Skeleton, Tooltip } from '@mantine/core';
 import { IconActivity, IconCalendar, IconChevronRight, IconHistory, IconMusic, IconStar } from '@tabler/icons-react';
 
-const EAR_TRAINING_EXERCISES_META: Record<EarTrainingPracticeType, { icon: JSX.Element | React.ReactNode; label: string; description: string; badgeClass: string; cardClass: string }> = {
+import ChartLoader from '../../components/chart/chart-loader';
+import DashboardAreaChart from '../../components/chart/dashboard-area-chart';
+import DashboardBarChart from '../../components/chart/dashboard-bar-chart';
+import DashboardStatisticCard from '../../components/data-display/dashboard-statistic-card';
+import DashboardChartSegmentedControl from '../../components/input/dashboard-segmented-control';
+import { useEarTrainingOverallStatisticsQuery } from '../../services/ear-training-analytics.service';
+import { EarTrainingDashboardChartType } from '../../types';
+
+const EXERCISES_SCORE_META: Record<EarTrainingPracticeType, { icon: JSX.Element | React.ReactNode; label: string; description: string; badgeClass: string; cardClass: string }> = {
 	'interval-identification': {
 		label: 'Interval',
 		description: 'Distance between two notes',
@@ -60,6 +64,30 @@ const EAR_TRAINING_EXERCISES_META: Record<EarTrainingPracticeType, { icon: JSX.E
 	}
 };
 
+const MONTHLY_ACTIVITY_SUMMARY_META: Record<EarTrainingPracticeType, { tooltipClass: string; segmentClass: string; listBulletClass: string; label: string; badgeColor: MantineColor }> = {
+	'interval-identification': {
+		tooltipClass: 'bg-violet-600/50 font-semibold text-white backdrop-blur-sm',
+		segmentClass: 'h-full bg-transparent bg-gradient-to-r from-violet-600/40 to-violet-600/80',
+		listBulletClass: 'aspect-square size-2 rounded-full bg-gradient-to-r from-violet-600/50 to-violet-600/75',
+		label: 'Interval practice',
+		badgeColor: 'violet'
+	},
+	'chord-identification': {
+		tooltipClass: 'bg-sky-600/50 font-semibold text-white backdrop-blur-sm',
+		segmentClass: 'h-full bg-transparent bg-gradient-to-r from-sky-600/40 to-sky-600/80',
+		listBulletClass: 'aspect-square size-2 rounded-full bg-gradient-to-r from-sky-600/50 to-sky-600/75',
+		label: 'Chord practice',
+		badgeColor: 'blue'
+	},
+	'mode-identification': {
+		tooltipClass: 'bg-amber-600/50 font-semibold text-white backdrop-blur-sm',
+		segmentClass: 'h-full bg-transparent bg-gradient-to-r from-amber-600/40 to-amber-600/80',
+		listBulletClass: 'aspect-square size-2 rounded-full bg-gradient-to-r from-amber-600/50 to-amber-600/75',
+		label: 'Mode practice',
+		badgeColor: 'orange'
+	}
+};
+
 const EarTrainingDashboard = () => {
 	const { earTrainingOverallStatistics, earTrainingOverallStatisticsPending } = useEarTrainingOverallStatisticsQuery({});
 	const [dashboardChartType, setDashboardChartType] = useState<EarTrainingDashboardChartType>('activity');
@@ -80,25 +108,28 @@ const EarTrainingDashboard = () => {
 						setDashboardChartType={setDashboardChartType}
 					/>
 					{dashboardChartType === 'activity' ? (
-						<DashboardAreaChart
+						<ChartLoader
 							pending={earTrainingOverallStatisticsPending}
 							data={earTrainingOverallStatistics?.activity}
-							dataKeys={{
-								area: 'activity',
-								xAxis: 'date',
-								yAxis: 'activity'
-							}}
+							chart={
+								<DashboardAreaChart
+									data={earTrainingOverallStatistics?.activity!}
+									dataKeys={{ area: 'activity', xAxis: 'date', yAxis: 'activity' }}
+									tooltipLabel={'exercises'} // TODO: Translation
+									tickFormatter={(date: string) => dayjs(date).format('MM/DD')}
+								/>
+							}
 						/>
 					) : (
-						<DashboardBarChart
+						<ChartLoader
 							pending={earTrainingOverallStatisticsPending}
 							data={earTrainingOverallStatistics?.progress}
-							dataKeys={{
-								bar: 'score',
-								label: 'score',
-								xAxis: 'date',
-								yAxis: 'score'
-							}}
+							chart={
+								<DashboardBarChart
+									data={earTrainingOverallStatistics?.progress!}
+									dataKeys={{ bar: 'score', label: 'score', xAxis: 'date', yAxis: 'score' }}
+								/>
+							}
 						/>
 					)}
 				</motion.div>
@@ -120,62 +151,19 @@ const EarTrainingDashboard = () => {
 							))
 						) : (
 							<>
-								<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
-									<div className='flex justify-between'>
-										<h2 className='text-2xl font-semibold text-violet-100'>
-											{!!earTrainingOverallStatistics ? earTrainingOverallStatistics?.insights.activity.averageActivity : '--'}
-										</h2>
-										<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-											<IconActivity
-												size={20}
-												className='stroke-violet-400'
-											/>
-										</div>
-									</div>
-									<Badge variant='light'>Average activity</Badge>
-								</div>
-								<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
-									<div className='flex justify-between'>
-										<h2 className='text-viol1t-200 text-2xl font-semibold'>
-											{!!earTrainingOverallStatistics ? earTrainingOverallStatistics?.insights.activity.bestActivity : '--'}
-										</h2>
-										<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-											<IconStar
-												size={20}
-												className='stroke-violet-400'
-											/>
-										</div>
-									</div>
-									<Badge variant='light'>Best activity</Badge>
-								</div>
-								<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
-									<div className='flex justify-between'>
-										<h2 className='text-2xl font-semibold text-violet-100'>
-											{!!earTrainingOverallStatistics ? earTrainingOverallStatistics?.insights.activity.totalActiveDays : '--'}
-										</h2>
-										<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-											<IconCalendar
-												size={20}
-												className='stroke-violet-400'
-											/>
-										</div>
-									</div>
-									<Badge variant='light'>Total active days</Badge>
-								</div>
-								<div className='space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
-									<div className='flex justify-between'>
-										<h2 className='text-2xl font-semibold text-violet-100'>
-											{!!earTrainingOverallStatistics ? earTrainingOverallStatistics?.insights.activity.totalActivity : '--'}
-										</h2>
-										<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
-											<IconHistory
-												size={20}
-												className='stroke-violet-400'
-											/>
-										</div>
-									</div>
-									<Badge variant='light'>Total activity</Badge>
-								</div>
+								{[
+									{ Icon: IconActivity, label: 'Average activity', value: earTrainingOverallStatistics?.insights.activity.averageActivity },
+									{ Icon: IconStar, label: 'Best activity', value: earTrainingOverallStatistics?.insights.activity.bestActivity },
+									{ Icon: IconCalendar, label: 'Total active days', value: earTrainingOverallStatistics?.insights.activity.totalActiveDays },
+									{ Icon: IconHistory, label: 'Total activity', value: earTrainingOverallStatistics?.insights.activity.totalActivity }
+								].map((insight, index) => (
+									<DashboardStatisticCard
+										key={index}
+										label={insight.label}
+										value={insight.value}
+										Icon={insight.Icon}
+									/>
+								))}
 							</>
 						)}
 					</div>
@@ -193,85 +181,78 @@ const EarTrainingDashboard = () => {
 							className='h-[9.5rem] before:!bg-transparent after:!bg-transparent after:bg-gradient-to-tr after:from-violet-600/15 after:to-violet-600/30 md:h-40'
 						/>
 					) : (
+						// TODO: Extract a component
 						<div className='space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
-							<div className='flex h-2.5 items-stretch overflow-hidden rounded-2xl shadow-round-md'>
-								<Tooltip
-									label={earTrainingOverallStatistics?.insights.exercises['interval-identification'].segmentPercentage}
-									className='bg-violet-600/50 font-semibold text-white backdrop-blur-sm'
-								>
-									<div
-										className='h-full bg-transparent bg-gradient-to-r from-violet-600/40 to-violet-600/80'
-										style={{
-											width: `${earTrainingOverallStatistics?.insights.exercises['interval-identification'].segmentPercentage}%`
-										}}
-									/>
-								</Tooltip>
-								<Tooltip
-									label={earTrainingOverallStatistics?.insights.exercises['chord-identification'].segmentPercentage}
-									className='bg-sky-600/50 font-semibold text-white backdrop-blur-sm'
-								>
-									<div
-										className='h-full bg-transparent bg-gradient-to-r from-sky-600/40 to-sky-600/80'
-										style={{
-											width: `${earTrainingOverallStatistics?.insights.exercises['chord-identification'].segmentPercentage}%`
-										}}
-									/>
-								</Tooltip>
-								<Tooltip
-									label={earTrainingOverallStatistics?.insights.exercises['mode-identification'].segmentPercentage}
-									className='bg-amber-600/50 font-semibold text-white backdrop-blur-sm'
-								>
-									<div
-										className='h-full bg-transparent bg-gradient-to-r from-amber-600/40 to-amber-600/80'
-										style={{
-											width: `${earTrainingOverallStatistics?.insights.exercises['mode-identification'].segmentPercentage}%`
-										}}
-									/>
-								</Tooltip>
-							</div>
-							<div className='space-y-2'>
-								<div className='flex items-center justify-between'>
-									<div className='flex items-center gap-3 font-medium'>
-										<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-violet-600/50 to-violet-600/75' />
-										<p>Interval practice</p>
+							{!!earTrainingOverallStatistics?.insights?.exercises && earTrainingOverallStatistics?.insights?.exercises.length > 0 ? (
+								<>
+									<div className='flex h-2.5 items-stretch overflow-hidden rounded-2xl shadow-round-md'>
+										{earTrainingOverallStatistics.insights.exercises.map(exercise => {
+											const { tooltipClass, segmentClass } = MONTHLY_ACTIVITY_SUMMARY_META[exercise.type];
+											return (
+												<Tooltip
+													key={exercise.type}
+													label={exercise.segmentPercentage}
+													className={tooltipClass}
+												>
+													<div
+														className={segmentClass}
+														style={{ width: `${exercise.segmentPercentage}%` }}
+													/>
+												</Tooltip>
+											);
+										})}
 									</div>
-									<Badge
-										size={'lg'}
-										color='violet'
-										variant='light'
-									>
-										{earTrainingOverallStatistics ? earTrainingOverallStatistics?.insights.exercises['interval-identification'].activity : '--'}
-									</Badge>
-								</div>
+									<div className='space-y-2'>
+										{earTrainingOverallStatistics.insights.exercises.map(exercise => {
+											const { listBulletClass, label, badgeColor } = MONTHLY_ACTIVITY_SUMMARY_META[exercise.type];
 
-								<div className='flex items-center justify-between'>
-									<div className='flex items-center gap-3 font-medium'>
-										<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-sky-600/50 to-sky-600/75' />
-										<p>Chord practice</p>
+											return (
+												<div
+													key={exercise.type}
+													className='flex items-center justify-between'
+												>
+													<div className='flex items-center gap-3 font-medium'>
+														<div className={listBulletClass} />
+														<p>{label}</p>
+													</div>
+													<Badge
+														size={'lg'}
+														variant='light'
+														color={badgeColor}
+													>
+														{exercise.activity ?? '--'}
+													</Badge>
+												</div>
+											);
+										})}
 									</div>
-									<Badge
-										size={'lg'}
-										color='blue'
-										variant='light'
-									>
-										{earTrainingOverallStatistics ? earTrainingOverallStatistics?.insights.exercises['chord-identification'].activity : '--'}
-									</Badge>
-								</div>
+								</>
+							) : (
+								<div className='space-y-2'>
+									{Object.values(EarTrainingPracticeType).map(type => {
+										const { listBulletClass, label, badgeColor } = MONTHLY_ACTIVITY_SUMMARY_META[type];
 
-								<div className='flex items-center justify-between'>
-									<div className='flex items-center gap-3 font-medium'>
-										<div className='aspect-square size-3 rounded-full bg-gradient-to-r from-amber-600/50 to-amber-600/75' />
-										<p>Mode practice</p>
-									</div>
-									<Badge
-										size={'lg'}
-										color='orange'
-										variant='light'
-									>
-										{earTrainingOverallStatistics ? earTrainingOverallStatistics?.insights.exercises['mode-identification'].activity : '--'}
-									</Badge>
+										return (
+											<div
+												key={type}
+												className='flex items-center justify-between'
+											>
+												<div className='flex items-center gap-3 font-medium'>
+													<div className={listBulletClass} />
+													<p>{label}</p>
+												</div>
+												<Badge
+													size={'lg'}
+													variant='light'
+													color={badgeColor}
+												>
+													--
+												</Badge>
+											</div>
+										);
+									})}
 								</div>
-							</div>
+							)}
 						</div>
 					)}
 				</motion.div>
@@ -290,39 +271,74 @@ const EarTrainingDashboard = () => {
 									className='h-[4.8rem] before:!bg-transparent after:!bg-transparent after:bg-gradient-to-tr after:from-violet-600/15 after:to-violet-600/30 md:h-[5.3rem]'
 								/>
 							))
-						: earTrainingOverallStatistics?.exercises.map(stat => {
-								const { icon, label, description, badgeClass, cardClass } = EAR_TRAINING_EXERCISES_META[stat.type];
+						: !!earTrainingOverallStatistics?.exercises && earTrainingOverallStatistics.exercises.length > 0
+							? // TODO: Extract a component
+								earTrainingOverallStatistics?.exercises.map(stat => {
+									const { icon, label, description, badgeClass, cardClass } = EXERCISES_SCORE_META[stat.type];
 
-								return (
-									<div
-										key={stat.type}
-										className={`${cardClass} rounded-lg bg-transparent p-4 md:p-5`}
-									>
-										<div className='flex items-center justify-between gap-4'>
-											<div className='flex items-center gap-4'>
-												{icon}
-												<div className='text-white'>
-													<h3 className='font-semibold'>{label}</h3>
-													<p className='text-sm'>{description}</p>
+									return (
+										<div
+											key={stat.type}
+											className={`${cardClass} rounded-lg bg-transparent p-4 md:p-5`}
+										>
+											<div className='flex items-center justify-between gap-4'>
+												<div className='flex items-center gap-4'>
+													{icon}
+													<div className='text-white'>
+														<h3 className='font-semibold'>{label}</h3>
+														<p className='text-sm'>{description}</p>
+													</div>
+												</div>
+
+												<div className='flex items-center gap-2'>
+													<Badge
+														size='lg'
+														className={badgeClass}
+													>
+														{stat.score}%
+													</Badge>
+
+													<Link href={`/profile/ear-training/${stat.type}`}>
+														<IconChevronRight />
+													</Link>
 												</div>
 											</div>
+										</div>
+									);
+								})
+							: Object.values(EarTrainingPracticeType).map(type => {
+									const { icon, label, description, badgeClass, cardClass } = EXERCISES_SCORE_META[type];
 
-											<div className='flex items-center gap-2'>
-												<Badge
-													size='lg'
-													className={badgeClass}
-												>
-													{stat.score}%
-												</Badge>
+									return (
+										<div
+											key={type}
+											className={`${cardClass} rounded-lg bg-transparent p-4 md:p-5`}
+										>
+											<div className='flex items-center justify-between gap-4'>
+												<div className='flex items-center gap-4'>
+													{icon}
+													<div className='text-white'>
+														<h3 className='font-semibold'>{label}</h3>
+														<p className='text-sm'>{description}</p>
+													</div>
+												</div>
 
-												<Link href={`/profile/ear-training/${stat}`}>
-													<IconChevronRight />
-												</Link>
+												<div className='flex items-center gap-2'>
+													<Badge
+														size='lg'
+														className={badgeClass}
+													>
+														--
+													</Badge>
+
+													<Link href={`/profile/ear-training/${type}`}>
+														<IconChevronRight />
+													</Link>
+												</div>
 											</div>
 										</div>
-									</div>
-								);
-							})}
+									);
+								})}
 				</motion.div>
 			</div>
 		</EarTrainingLayout>
