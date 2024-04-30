@@ -80,7 +80,7 @@ const theme = createTheme({
 		},
 		Drawer: {
 			classNames: {
-				content: 'pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)]'
+				content: 'pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] scrollbar-none'
 			}
 		},
 		Overlay: Overlay.extend({

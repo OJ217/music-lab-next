@@ -31,7 +31,7 @@ const EarTrainingDetailDrawer: React.FC<IEarTrainingDetailDrawerProps> = ({ earT
 			opened={earTrainingDetailDrawerOpened}
 			onClose={closeEarTrainingDetailDrawer}
 			closeButtonProps={{ size: 'sm' }}
-			classNames={{ title: 'font-semibold text-sm', content: 'scrollbar-none' }}
+			classNames={{ title: 'font-semibold text-sm' }}
 			withinPortal
 		>
 			<div className='space-y-6'>

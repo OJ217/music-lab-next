@@ -170,7 +170,7 @@ const EarTrainingExerciseDashboard = () => {
 				>
 					<h3 className='text-sm font-semibold'>Common errors</h3>
 					{earTrainingExerciseErrorsPending ? (
-						Array.from({ length: 5 }).map((_, index) => (
+						Array.from({ length: 2 }).map((_, index) => (
 							<Skeleton
 								key={index}
 								radius={'md'}
@@ -192,6 +192,7 @@ const EarTrainingExerciseDashboard = () => {
 									</Accordion.Control>
 
 									<Accordion.Panel classNames={{ content: 'space-y-2 pt-0 pl-6' }}>
+										<h3 className='text-sm'>Андуурсан {t(`${EAR_TRAINING_PRACTICE_TYPE_NAMESPACES[exerciseType]}s`).toLowerCase()}:</h3>
 										<List listStyleType='initial'>
 											{e.errors.map((mistakenType, index) => (
 												<List.Item

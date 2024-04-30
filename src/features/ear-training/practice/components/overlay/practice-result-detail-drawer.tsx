@@ -62,7 +62,7 @@ const PracticeResultDetailDrawer: FC<IPracticeResultDetailDrawerProps> = ({
 			opened={practiceDetailDrawerOpened && sessionEnded}
 			onClose={closePracticeDetailDrawer}
 			closeButtonProps={{ size: 'sm' }}
-			classNames={{ title: 'font-semibold text-sm', content: 'scrollbar-none' }}
+			classNames={{ title: 'font-semibold text-sm' }}
 			withinPortal
 		>
 			<div className='mt-6 space-y-6'>
