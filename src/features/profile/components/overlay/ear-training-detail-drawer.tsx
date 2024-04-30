@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { resolvePracticeResultColor, resolvePracticeResultMessage } from '@/features/ear-training/practice/utils/practice-session.util';
-import { Badge, Card, Center, Drawer, Progress, RingProgress, Skeleton, ThemeIcon } from '@mantine/core';
+import { Badge, Card, Center, Drawer, Progress, RingProgress, ScrollArea, Skeleton, ThemeIcon } from '@mantine/core';
 import { IconCheck, IconX } from '@tabler/icons-react';
 
 import { IEarTrainingPracticeSession } from '../../services/ear-training-analytics.service';
@@ -32,6 +32,7 @@ const EarTrainingDetailDrawer: React.FC<IEarTrainingDetailDrawerProps> = ({ earT
 			onClose={closeEarTrainingDetailDrawer}
 			closeButtonProps={{ size: 'sm' }}
 			classNames={{ title: 'font-semibold text-sm' }}
+			scrollAreaComponent={ScrollArea.Autosize}
 			withinPortal
 		>
 			<div className='space-y-6'>
