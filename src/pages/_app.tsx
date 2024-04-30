@@ -35,7 +35,6 @@ export default function App({ Component, pageProps }: AppProps) {
 							content='black-translucent'
 						/>
 					</Head>
-
 					<Component {...pageProps} />
 				</AuthProvider>
 			</QueryClientProvider>

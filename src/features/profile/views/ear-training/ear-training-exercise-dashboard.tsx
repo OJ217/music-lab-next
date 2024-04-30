@@ -2,21 +2,36 @@ import dayjs, { duration } from 'dayjs';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
-import { resolvePracticeResultColor } from '@/features/ear-training/practice/utils/practice-session.util';
-import { ActionIcon, Badge, Card, Progress, Skeleton } from '@mantine/core';
+import { resolvePracticeResultColor, resolvePracticeResultLevel } from '@/features/ear-training/practice/utils/practice-session.util';
+import { Accordion, Center, List, RingProgress, Skeleton, ThemeIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconCheck, IconDotsVertical, IconFilesOff, IconX } from '@tabler/icons-react';
+import { IconActivity, IconAlertTriangle, IconCheck, IconFilesOff } from '@tabler/icons-react';
 
 import ChartLoader from '../../components/chart/chart-loader';
 import DashboardAreaChart from '../../components/chart/dashboard-area-chart';
 import DashboardBarChart from '../../components/chart/dashboard-bar-chart';
+import DashboardStatisticCard from '../../components/data-display/dashboard-statistic-card';
+import EarTrainingSessionCard from '../../components/data-display/ear-training-session-card';
 import DashboardChartSegmentedControl from '../../components/input/dashboard-segmented-control';
+import IconWrapper from '../../components/misc/icon-wrapper';
 import EarTrainingDetailDrawer from '../../components/overlay/ear-training-detail-drawer';
-import { IEarTrainingPracticeSession, useEarTrainingExerciseStatisticsQuery, useEarTrainingPracticeSessionListQuery } from '../../services/ear-training-analytics.service';
+import {
+	IEarTrainingPracticeSession,
+	useEarTrainingExerciseErrorsQuery,
+	useEarTrainingExerciseStatisticsQuery,
+	useEarTrainingPracticeSessionListQuery
+} from '../../services/ear-training-analytics.service';
 import { EarTrainingDashboardChartType } from '../../types';
+
+const EAR_TRAINING_PRACTICE_TYPE_NAMESPACES: Record<EarTrainingPracticeType, string> = {
+	'interval-identification': 'interval',
+	'chord-identification': 'chord',
+	'mode-identification': 'mode'
+};
 
 dayjs.extend(duration);
 
@@ -24,10 +39,14 @@ const EarTrainingExerciseDashboard = () => {
 	const router = useRouter();
 	const exerciseType = router.query?.exercise as EarTrainingPracticeType;
 
-	const [selectedPracticeSession, setSelectedPracticeSession] = useState<IEarTrainingPracticeSession | null>(null);
-	const [practiceSessionDetailDrawerOpened, { open: openPracticeSessionDetailDrawer, close: closePracticeSessionDetailDrawer }] = useDisclosure();
+	const { t } = useTranslation();
 
 	const { earTrainingExerciseStatistics, earTrainingExerciseStatisticsPending } = useEarTrainingExerciseStatisticsQuery({
+		enabled: !!exerciseType,
+		exerciseType
+	});
+
+	const { earTrainingExerciseErrors, earTrainingExerciseErrorsPending } = useEarTrainingExerciseErrorsQuery({
 		enabled: !!exerciseType,
 		exerciseType
 	});
@@ -36,6 +55,9 @@ const EarTrainingExerciseDashboard = () => {
 		enabled: !!exerciseType,
 		queryParams: { type: exerciseType, page: 1 }
 	});
+
+	const [selectedPracticeSession, setSelectedPracticeSession] = useState<IEarTrainingPracticeSession | null>(null);
+	const [practiceSessionDetailDrawerOpened, { open: openPracticeSessionDetailDrawer, close: closePracticeSessionDetailDrawer }] = useDisclosure();
 
 	const [dashboardChartType, setDashboardChartType] = useState<EarTrainingDashboardChartType>('activity');
 
@@ -82,6 +104,123 @@ const EarTrainingExerciseDashboard = () => {
 				</motion.div>
 
 				<motion.div
+					key={'insights'}
+					layout={'position'}
+					className='space-y-4'
+				>
+					<h3 className='text-sm font-semibold'>Monthly insights</h3>
+					<div className='grid grid-cols-2 gap-4'>
+						{earTrainingExerciseStatisticsPending ? (
+							Array.from({ length: 2 }).map((_, index) => (
+								<Skeleton
+									key={index}
+									radius={'md'}
+									className='h-[6.55rem] before:!bg-transparent after:!bg-transparent after:bg-gradient-to-tr after:from-violet-600/15 after:to-violet-600/30 md:h-[7.05rem]'
+								/>
+							))
+						) : (
+							<>
+								<DashboardStatisticCard
+									label={'Average activity'}
+									value={earTrainingExerciseStatistics?.insights.averageActivity}
+									icon={<IconWrapper Icon={IconActivity} />}
+								/>
+								<DashboardStatisticCard
+									label={'Average score'}
+									value={earTrainingExerciseStatistics?.insights.averageScore}
+									icon={
+										<RingProgress
+											size={40}
+											roundCaps
+											thickness={2}
+											label={
+												<Center>
+													<ThemeIcon
+														color={resolvePracticeResultColor(earTrainingExerciseStatistics?.insights.averageScore!, 100)}
+														variant='light'
+														radius='xl'
+														size='md'
+													>
+														{resolvePracticeResultLevel(earTrainingExerciseStatistics?.insights.averageScore!, 100) === 'high' ? (
+															<IconCheck size={20} />
+														) : (
+															<IconAlertTriangle size={18} />
+														)}
+													</ThemeIcon>
+												</Center>
+											}
+											sections={[
+												{
+													value: earTrainingExerciseStatistics?.insights.averageScore!,
+													color: resolvePracticeResultColor(earTrainingExerciseStatistics?.insights.averageScore!, 100)
+												}
+											]}
+										/>
+									}
+								/>
+							</>
+						)}
+					</div>
+				</motion.div>
+
+				<motion.div
+					key={'common_errors'}
+					layout={'position'}
+					className='space-y-4'
+				>
+					<h3 className='text-sm font-semibold'>Common errors</h3>
+					{earTrainingExerciseErrorsPending ? (
+						Array.from({ length: 5 }).map((_, index) => (
+							<Skeleton
+								key={index}
+								radius={'md'}
+								className='h-[3.05rem] before:!bg-transparent after:!bg-transparent after:bg-gradient-to-tr after:from-violet-600/15 after:to-violet-600/30'
+							/>
+						))
+					) : !!earTrainingExerciseErrors && earTrainingExerciseErrors?.length > 0 ? (
+						<Accordion variant='separated'>
+							{earTrainingExerciseErrors.map(e => (
+								<Accordion.Item
+									key={e.questionType}
+									value={e.questionType}
+									className='rounded-lg border-none bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30'
+								>
+									<Accordion.Control classNames={{ chevron: 'text-white' }}>
+										<div className='flex items-center justify-between gap-4'>
+											<h3 className='font-medium text-violet-100'>{t(`${EAR_TRAINING_PRACTICE_TYPE_NAMESPACES[exerciseType]}.${e.questionType}`)}</h3>
+										</div>
+									</Accordion.Control>
+
+									<Accordion.Panel classNames={{ content: 'space-y-2 pt-0 pl-6' }}>
+										<List listStyleType='initial'>
+											{e.errors.map((mistakenType, index) => (
+												<List.Item
+													key={index}
+													className='text-sm'
+												>
+													{t(`${EAR_TRAINING_PRACTICE_TYPE_NAMESPACES[exerciseType]}.${mistakenType}`)}
+													{e.questionType === mistakenType && exerciseType === 'chord-identification' ? ` ${t('inversions').toLowerCase()}` : ''}
+												</List.Item>
+											))}
+										</List>
+									</Accordion.Panel>
+								</Accordion.Item>
+							))}
+						</Accordion>
+					) : (
+						<div className='flex h-80 flex-col items-center justify-center gap-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20'>
+							<div className='aspect-square rounded-full border-[1.5px] border-violet-600 bg-violet-600/25 p-2.5'>
+								<IconFilesOff
+									stroke={1.6}
+									className='stroke-violet-600'
+								/>
+							</div>
+							<p className='text-lg font-medium'>No document found</p>
+						</div>
+					)}
+				</motion.div>
+
+				<motion.div
 					key={'history'}
 					layout={'position'}
 					className='space-y-4'
@@ -92,77 +231,20 @@ const EarTrainingExerciseDashboard = () => {
 							<Skeleton
 								key={index}
 								radius={'md'}
-								className='h-20 before:!bg-transparent after:!bg-transparent after:bg-gradient-to-tr after:from-violet-600/15 after:to-violet-600/30 md:h-[5.5rem]'
+								className='h-[6.875rem] before:!bg-transparent after:!bg-transparent after:bg-gradient-to-tr after:from-violet-600/15 after:to-violet-600/30'
 							/>
 						))
 					) : !!practiceSessionList && practiceSessionList?.docs.length > 0 ? (
-						practiceSessionList?.docs.map((s, index) => {
-							const exerciseResultColor = resolvePracticeResultColor(s.result.correct, s.result.questionCount);
-
-							return (
-								<Card
-									key={index}
-									radius={'md'}
-									className='border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/30'
-								>
-									<div className='space-y-3'>
-										<div className='flex items-center justify-between gap-4'>
-											<p className='text-sm font-medium text-white md:text-base'>Date: {dayjs(s.createdAt).format('MMM DD, HH:mm')}</p>
-											<div className='flex items-center gap-1'>
-												<Badge
-													size={'lg'}
-													variant='light'
-													color={exerciseResultColor}
-												>
-													{s.result.score}%
-												</Badge>
-												<ActionIcon
-													mr={-8}
-													size={'sm'}
-													variant='transparent'
-													onClick={() => {
-														setSelectedPracticeSession(s);
-														openPracticeSessionDetailDrawer();
-													}}
-												>
-													<IconDotsVertical
-														size={16}
-														stroke={1.6}
-														className='stroke-white'
-													/>
-												</ActionIcon>
-											</div>
-										</div>
-										<Progress
-											value={s.result.score}
-											color={exerciseResultColor}
-											className='w-full'
-										/>
-										<div className='flex items-center justify-between text-sm text-white'>
-											<p>Duration: {dayjs.duration(s.duration, 'seconds').format(s.duration < 3600 ? 'mm:ss' : 'HH:mm:ss')}</p>
-											<div className='flex items-center gap-4'>
-												<div className='flex items-center gap-2'>
-													<IconCheck
-														size={14}
-														stroke={1.2}
-														className='rounded-full border border-green-500 bg-green-500 bg-opacity-25'
-													/>
-													<p>{s.result.correct}</p>
-												</div>
-												<div className='flex items-center gap-2'>
-													<IconX
-														size={14}
-														stroke={1.2}
-														className='rounded-full border border-red-500 bg-red-500 bg-opacity-25'
-													/>
-													<p>{s.result.incorrect}</p>
-												</div>
-											</div>
-										</div>
-									</div>
-								</Card>
-							);
-						})
+						practiceSessionList?.docs.map((session, index) => (
+							<EarTrainingSessionCard
+								key={index}
+								session={session}
+								handleDetailIconClick={() => {
+									setSelectedPracticeSession(session);
+									openPracticeSessionDetailDrawer();
+								}}
+							/>
+						))
 					) : (
 						<div className='flex h-80 flex-col items-center justify-center gap-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20'>
 							<div className='aspect-square rounded-full border-[1.5px] border-violet-600 bg-violet-600/25 p-2.5'>

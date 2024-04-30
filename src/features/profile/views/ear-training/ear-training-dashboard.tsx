@@ -13,6 +13,7 @@ import DashboardAreaChart from '../../components/chart/dashboard-area-chart';
 import DashboardBarChart from '../../components/chart/dashboard-bar-chart';
 import DashboardStatisticCard from '../../components/data-display/dashboard-statistic-card';
 import DashboardChartSegmentedControl from '../../components/input/dashboard-segmented-control';
+import IconWrapper from '../../components/misc/icon-wrapper';
 import { useEarTrainingOverallStatisticsQuery } from '../../services/ear-training-analytics.service';
 import { EarTrainingDashboardChartType } from '../../types';
 
@@ -152,16 +153,16 @@ const EarTrainingDashboard = () => {
 						) : (
 							<>
 								{[
-									{ Icon: IconActivity, label: 'Average activity', value: earTrainingOverallStatistics?.insights.activity.averageActivity },
-									{ Icon: IconStar, label: 'Best activity', value: earTrainingOverallStatistics?.insights.activity.bestActivity },
-									{ Icon: IconCalendar, label: 'Total active days', value: earTrainingOverallStatistics?.insights.activity.totalActiveDays },
-									{ Icon: IconHistory, label: 'Total activity', value: earTrainingOverallStatistics?.insights.activity.totalActivity }
+									{ Icon: <IconWrapper Icon={IconActivity} />, label: 'Average activity', value: earTrainingOverallStatistics?.insights.activity.averageActivity },
+									{ Icon: <IconWrapper Icon={IconStar} />, label: 'Best activity', value: earTrainingOverallStatistics?.insights.activity.bestActivity },
+									{ Icon: <IconWrapper Icon={IconCalendar} />, label: 'Total active days', value: earTrainingOverallStatistics?.insights.activity.totalActiveDays },
+									{ Icon: <IconWrapper Icon={IconHistory} />, label: 'Total activity', value: earTrainingOverallStatistics?.insights.activity.totalActivity }
 								].map((insight, index) => (
 									<DashboardStatisticCard
 										key={index}
 										label={insight.label}
 										value={insight.value}
-										Icon={insight.Icon}
+										icon={insight.Icon}
 									/>
 								))}
 							</>
@@ -262,7 +263,7 @@ const EarTrainingDashboard = () => {
 					layout={'position'}
 					className='space-y-4'
 				>
-					<h3 className='font-medium'>Ear training exercises</h3>
+					<h3 className='text-sm font-medium'>Ear training exercises</h3>
 					{earTrainingOverallStatisticsPending
 						? Array.from({ length: 3 }).map((_, index) => (
 								<Skeleton

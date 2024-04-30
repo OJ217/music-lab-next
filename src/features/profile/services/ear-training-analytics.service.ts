@@ -2,9 +2,17 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
+import { EarTrainingErrorStores, fetchEarTrainingErrorLocal } from '@/features/ear-training/practice/stores/ear-training-errors.store';
 import { IPaginatedDocuments, IResponse, IUseQueryBase } from '@/types';
 import { calculatePercentage } from '@/utils/format.util';
+import { isEmptyObject } from '@/utils/helper.util';
 import { useQuery } from '@tanstack/react-query';
+
+const earTrainingExerciseErrorStoreNames: Record<EarTrainingPracticeType, EarTrainingErrorStores> = {
+	'interval-identification': 'intervalErrors',
+	'chord-identification': 'chordErrors',
+	'mode-identification': 'modeErrors'
+};
 
 interface IEarTrainingStatisticsBase {
 	correct: number;
@@ -124,6 +132,10 @@ type IExerciseStatisticsResponse = Array<{ date: string } & IEarTrainingStatisti
 interface IUseExerciseStatisticsQueryResponse {
 	activity: Array<{ date: string; activity: number }>;
 	progress: Array<{ date: string; correct: number; activity: number; score: number }>;
+	insights: {
+		averageActivity: string;
+		averageScore: number;
+	};
 }
 
 export const useEarTrainingExerciseStatisticsQuery = ({ enabled = true, exerciseType }: IUseExerciseStatisticsQueryParams) => {
@@ -137,7 +149,11 @@ export const useEarTrainingExerciseStatisticsQuery = ({ enabled = true, exercise
 		if (!earTrainingExerciseStatistics || earTrainingExerciseStatistics.length === 0) {
 			return {
 				activity: [],
-				progress: []
+				progress: [],
+				insights: {
+					averageActivity: '--',
+					averageScore: 0
+				}
 			};
 		}
 
@@ -146,9 +162,22 @@ export const useEarTrainingExerciseStatisticsQuery = ({ enabled = true, exercise
 		const activity = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, activity: stat.activity }));
 		const progress = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, correct: stat.correct, activity: stat.activity, score: calculatePercentage(stat.correct, stat.activity) }));
 
+		const totalActivity = activity.map(stat => stat.activity).reduce((a, b) => a + b, 0);
+		const averageActivity = (totalActivity / activity.length).toFixed(1);
+		const averageScore = calculatePercentage(
+			progress.map(stat => stat.correct).reduce((a, b) => a + b, 0),
+			totalActivity
+		);
+
+		console.log({ averageActivity, averageScore });
+
 		return {
 			activity,
-			progress
+			progress,
+			insights: {
+				averageActivity,
+				averageScore
+			}
 		};
 	};
 
@@ -164,111 +193,57 @@ export const useEarTrainingExerciseStatisticsQuery = ({ enabled = true, exercise
 	};
 };
 
-interface IUsePracticeSessionActivityParams extends IUseQueryBase {
-	queryParams?: {
-		type?: EarTrainingPracticeType;
-	};
+interface IUseEarTrainingExerciseErrorsQueryParams extends IUseQueryBase {
+	exerciseType: EarTrainingPracticeType;
 }
 
-interface IPracticeSessionActivity {
-	activity: number;
-	date: string;
-}
+type IUseEarTrainingExerciseErrorsQueryResponse = Array<{ questionType: string; errors: string[]; errorCount: number }>;
 
-type IPracticeSessionActivityResponse = IPracticeSessionActivity[];
+export const useEarTrainingExerciseErrorsQuery = ({ enabled, exerciseType }: IUseEarTrainingExerciseErrorsQueryParams) => {
+	const fetchEarTrainingExerciseCommonErrors = async (): Promise<IUseEarTrainingExerciseErrorsQueryResponse> => {
+		const exerciseErrors = await fetchEarTrainingErrorLocal(earTrainingExerciseErrorStoreNames[exerciseType]);
 
-export const useEarTrainingPracticeSessionActivityQuery = ({ enabled = true, queryParams = {} }: IUsePracticeSessionActivityParams) => {
-	const fetchEarTrainingPracticeSessionActivity = async () => {
-		return (
-			await axios.get<IResponse<IPracticeSessionActivityResponse>>('/ear-training/analytics/activity', {
-				isPrivate: true,
-				params: queryParams
-			})
-		).data;
+		if (isEmptyObject(exerciseErrors)) {
+			return [];
+		}
+
+		const sortExerciseErrors = (errors: string[]) => {
+			const itemCount = errors.reduce((acc: Record<string, number>, item: string) => {
+				acc[item] = (acc[item] || 0) + 1;
+				return acc;
+			}, {});
+
+			return Object.entries(itemCount)
+				.toSorted((a, b) => b[1] - a[1])
+				.map(([item]) => item);
+		};
+
+		const sortedExerciseErrors = Object.entries(exerciseErrors)
+			.map(e => ({
+				questionType: e[0],
+				errors: e[1],
+				errorCount: e[1].length
+			}))
+			.toSorted((a, b) => b.errors.length - a.errors.length)
+			.slice(0, 5)
+			.map(e => ({
+				questionType: e.questionType,
+				errorCount: e.errorCount,
+				errors: sortExerciseErrors(e.errors)
+			}));
+
+		return sortedExerciseErrors;
 	};
 
 	const { data, isPending } = useQuery({
-		queryFn: fetchEarTrainingPracticeSessionActivity,
-		queryKey: ['ear-training', 'analytics', 'activity', queryParams],
+		queryFn: fetchEarTrainingExerciseCommonErrors,
+		queryKey: ['ear-training', 'errors', exerciseType],
 		enabled
 	});
 
 	return {
-		practiceSessionActivity: data?.data,
-		activityQueryPending: isPending
-	};
-};
-
-interface IUsePracticeSessionProgressParams extends IUseQueryBase {
-	queryParams?: {
-		type?: EarTrainingPracticeType;
-	};
-}
-
-interface IPracticeSessionProgress {
-	date: string;
-	correct: number;
-	questionCount: number;
-}
-
-type IPracticeSessionProgressResponse = IPracticeSessionProgress[];
-
-export const useEarTrainingPracticeSessionProgressQuery = ({ enabled, queryParams }: IUsePracticeSessionProgressParams) => {
-	const fetchEarTrainingPracticeSessionProgress = async () => {
-		const practiceSessionProgress = (
-			await axios.get<IResponse<IPracticeSessionProgressResponse>>('/ear-training/analytics/progress', {
-				isPrivate: true,
-				params: queryParams
-			})
-		).data.data;
-
-		return practiceSessionProgress.sort((a, b) => dayjs(a.date).diff(dayjs(b.date))).map(p => ({ ...p, score: calculatePercentage(p.correct, p.questionCount) }));
-	};
-
-	const { data, isPending } = useQuery({
-		queryFn: fetchEarTrainingPracticeSessionProgress,
-		queryKey: ['ear-training', 'analytics', 'progress', queryParams],
-		enabled
-	});
-
-	return {
-		practiceSessionProgress: data,
-		progressQueryPending: isPending
-	};
-};
-
-interface IPracticeSessionScore {
-	correct: number;
-	questionCount: number;
-	type: EarTrainingPracticeType;
-}
-
-type IPracticeSessionScoresResponse = IPracticeSessionScore[];
-
-export const useEarTrainingPracticeSessionScoresQuery = ({ enabled = true }: IUseQueryBase) => {
-	const fetchEarTrainingPracticeSessionScores = async () => {
-		const practiceSessionScores = (
-			await axios.get<IResponse<IPracticeSessionScoresResponse>>('/ear-training/analytics/scores', {
-				isPrivate: true
-			})
-		).data.data;
-
-		return practiceSessionScores.reduce((accumulator: Record<string, Omit<IPracticeSessionScore, 'type'>>, currentValue: IPracticeSessionScore) => {
-			const { type, ...rest } = currentValue;
-			accumulator[type] = rest;
-			return accumulator;
-		}, {});
-	};
-
-	const { data, isPending } = useQuery({
-		queryFn: fetchEarTrainingPracticeSessionScores,
-		queryKey: ['ear-training', 'analytics', 'scores'],
-		enabled
-	});
-
-	return {
-		practiceSessionScores: data,
-		scoresQueryPending: isPending
+		earTrainingExerciseErrors: data,
+		earTrainingExerciseErrorsPending: isPending
 	};
 };
 
@@ -319,52 +294,5 @@ export const useEarTrainingPracticeSessionListQuery = ({ enabled, queryParams }:
 	return {
 		practiceSessionList: data?.data,
 		practiceSessionListPending: isPending
-	};
-};
-
-interface IUsePracticeSessionQueryParams extends IUseQueryBase {
-	practiceSessionId: string;
-}
-
-interface IEarTrainingPracticeSessionDetail {
-	_id: string;
-	type: EarTrainingPracticeType;
-	duration: number;
-	result: {
-		score: number;
-		correct: number;
-		incorrect: number;
-		questionCount: number;
-	};
-	statistics: Array<{
-		score: number;
-		correct: number;
-		incorrect: number;
-		questionCount: number;
-		questionType: string;
-	}>;
-	createdAt: Date;
-}
-
-export const useEarTrainingPracticeSessionQuery = ({ enabled, practiceSessionId }: IUsePracticeSessionQueryParams) => {
-	const fecthEarTrainingPracticeSession = async () => {
-		const data = (
-			await axios.get<IResponse<IEarTrainingPracticeSessionDetail>>(`/ear-training/sessions/${practiceSessionId}`, {
-				isPrivate: true
-			})
-		).data;
-		return data;
-	};
-
-	const { data, isPending } = useQuery({
-		queryFn: fecthEarTrainingPracticeSession,
-		queryKey: ['ear-training', 'session', practiceSessionId],
-		staleTime: Infinity,
-		enabled
-	});
-
-	return {
-		practiceSessionDetail: data?.data,
-		practiceSessionDetailPending: isPending
 	};
 };
