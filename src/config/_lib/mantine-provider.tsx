@@ -82,7 +82,7 @@ const theme = createTheme({
 			classNames: {
 				content: 'pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] scrollbar-none',
 				header: 'pt-[env(safe-area-inset-top_0px)]',
-				body: 'scrollbar-nonde'
+				body: 'scrollbar-none pb-[calc(3rem_+_env(safe-area-inset-bottom))]'
 			}
 		},
 		Overlay: Overlay.extend({
