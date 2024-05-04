@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import PublicOnlyRoute from '@/context/auth/hoc/public-route';
 import { ActionIcon, Menu } from '@mantine/core';
-import { IconFlask2, IconMusic } from '@tabler/icons-react';
+import { IconMusic } from '@tabler/icons-react';
 
 interface IAuthLayoutProps {
 	children: React.ReactNode;
@@ -17,13 +17,11 @@ const AuthLayout: React.FC<IAuthLayoutProps> = ({ children }) => {
 					<div className='mx-auto max-w-4xl'>
 						<div className='flex items-center justify-between gap-8'>
 							<Link href={'/auth/sign-in'}>
-								<div className='inline-flex items-center gap-1 rounded-lg bg-gradient-to-tr from-cyan-600/20 to-violet-600/25 px-3 py-2'>
-									<IconFlask2
-										size={20}
-										stroke={1.8}
-									/>
-									<h1 className='text-lg font-medium'>Music Lab</h1>
-								</div>
+								<img
+									src={'/music-lab-icon-text-logo.svg'}
+									alt={'logo'}
+									className='h-12'
+								/>
 							</Link>
 							<Menu position={'top-end'}>
 								<Menu.Target>
