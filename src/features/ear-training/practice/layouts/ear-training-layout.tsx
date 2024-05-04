@@ -5,7 +5,7 @@ import { useAuth } from '@/context/auth/auth.context';
 import ProtectedRoute from '@/context/auth/hoc/protected-route';
 import { ActionIcon, Avatar, Menu, rem, Skeleton } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { IconChartBar, IconFlask2, IconLogout, IconSettings, IconUser } from '@tabler/icons-react';
+import { IconChartBar, IconLogout, IconSettings, IconUser } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import NavigationAffix from '../components/overlay/navigation-affix';
@@ -51,19 +51,17 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 
 	return (
 		<ProtectedRoute>
-			<main className='flex min-h-screen flex-col text-white'>
+			<main className='flex min-h-screen flex-col pb-[calc(1rem_+_env(safe-area-inset-bottom))] text-white'>
 				{/* Navigation */}
 				<nav className='sticky top-0 z-50 w-full flex-none border-b-2 border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/5 to-violet-600/20 px-4 pb-3 pt-[calc(0.75rem_+_env(safe-area-inset-top))] backdrop-blur-md md:px-6 md:py-4'>
 					<div className='mx-auto max-w-4xl'>
 						<div className='flex items-center justify-between gap-8'>
 							<Link href={'/ear-training/practice'}>
-								<div className='inline-flex items-center gap-1 rounded-lg bg-gradient-to-tr from-cyan-600/20 to-violet-600/25 px-3 py-2'>
-									<IconFlask2
-										size={20}
-										stroke={1.8}
-									/>
-									<h1 className='text-lg font-medium'>Music Lab</h1>
-								</div>
+								<img
+									src={'/music-lab-icon-text-logo.svg'}
+									alt={'logo'}
+									className='h-[44px]'
+								/>
 							</Link>
 							{!userInfo ? (
 								<div className='flex items-stretch space-x-4'>

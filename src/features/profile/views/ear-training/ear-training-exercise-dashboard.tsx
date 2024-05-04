@@ -9,7 +9,7 @@ import { EarTrainingPracticeType } from '@/features/ear-training/practice/servic
 import { resolvePracticeResultColor, resolvePracticeResultLevel } from '@/features/ear-training/practice/utils/practice-session.util';
 import { Accordion, Center, List, RingProgress, Skeleton, ThemeIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconActivity, IconAlertTriangle, IconCheck, IconFilesOff } from '@tabler/icons-react';
+import { IconActivity, IconAlertTriangle, IconCheck, IconFilesOff, IconPercentage } from '@tabler/icons-react';
 
 import ChartLoader from '../../components/chart/chart-loader';
 import DashboardAreaChart from '../../components/chart/dashboard-area-chart';
@@ -92,10 +92,10 @@ const EarTrainingExerciseDashboard = () => {
 					) : (
 						<ChartLoader
 							pending={earTrainingExerciseStatisticsPending}
-							data={earTrainingExerciseStatistics?.progress}
+							data={earTrainingExerciseStatistics?.scores}
 							chart={
 								<DashboardBarChart
-									data={earTrainingExerciseStatistics?.progress!}
+									data={earTrainingExerciseStatistics?.scores!}
 									dataKeys={{ bar: 'score', label: 'score', xAxis: 'date', yAxis: 'score' }}
 								/>
 							}
@@ -122,40 +122,44 @@ const EarTrainingExerciseDashboard = () => {
 							<>
 								<DashboardStatisticCard
 									label={'Average activity'}
-									value={earTrainingExerciseStatistics?.insights.averageActivity}
+									value={earTrainingExerciseStatistics?.insights?.averageActivity}
 									icon={<IconWrapper Icon={IconActivity} />}
 								/>
 								<DashboardStatisticCard
 									label={'Average score'}
-									value={earTrainingExerciseStatistics?.insights.averageScore}
+									value={earTrainingExerciseStatistics?.insights?.averageScore}
 									icon={
-										<RingProgress
-											size={40}
-											roundCaps
-											thickness={2}
-											label={
-												<Center>
-													<ThemeIcon
-														color={resolvePracticeResultColor(earTrainingExerciseStatistics?.insights.averageScore!, 100)}
-														variant='light'
-														radius='xl'
-														size='md'
-													>
-														{resolvePracticeResultLevel(earTrainingExerciseStatistics?.insights.averageScore!, 100) === 'high' ? (
-															<IconCheck size={20} />
-														) : (
-															<IconAlertTriangle size={18} />
-														)}
-													</ThemeIcon>
-												</Center>
-											}
-											sections={[
-												{
-													value: earTrainingExerciseStatistics?.insights.averageScore!,
-													color: resolvePracticeResultColor(earTrainingExerciseStatistics?.insights.averageScore!, 100)
+										earTrainingExerciseStatistics?.insights?.averageScore ? (
+											<RingProgress
+												size={40}
+												roundCaps
+												thickness={2}
+												label={
+													<Center>
+														<ThemeIcon
+															color={resolvePracticeResultColor(earTrainingExerciseStatistics?.insights?.averageScore, 100)}
+															variant='light'
+															radius='xl'
+															size='md'
+														>
+															{resolvePracticeResultLevel(earTrainingExerciseStatistics?.insights?.averageScore, 100) === 'high' ? (
+																<IconCheck size={20} />
+															) : (
+																<IconAlertTriangle size={18} />
+															)}
+														</ThemeIcon>
+													</Center>
 												}
-											]}
-										/>
+												sections={[
+													{
+														value: earTrainingExerciseStatistics?.insights.averageScore!,
+														color: resolvePracticeResultColor(earTrainingExerciseStatistics?.insights.averageScore, 100)
+													}
+												]}
+											/>
+										) : (
+											<IconWrapper Icon={IconPercentage} />
+										)
 									}
 								/>
 							</>
@@ -170,7 +174,7 @@ const EarTrainingExerciseDashboard = () => {
 				>
 					<h3 className='text-sm font-semibold'>Common errors</h3>
 					{earTrainingExerciseErrorsPending ? (
-						Array.from({ length: 2 }).map((_, index) => (
+						Array.from({ length: 5 }).map((_, index) => (
 							<Skeleton
 								key={index}
 								radius={'md'}
@@ -209,7 +213,7 @@ const EarTrainingExerciseDashboard = () => {
 							))}
 						</Accordion>
 					) : (
-						<div className='flex h-80 flex-col items-center justify-center gap-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20'>
+						<div className='flex h-[10rem] flex-col items-center justify-center gap-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20'>
 							<div className='aspect-square rounded-full border-[1.5px] border-violet-600 bg-violet-600/25 p-2.5'>
 								<IconFilesOff
 									stroke={1.6}

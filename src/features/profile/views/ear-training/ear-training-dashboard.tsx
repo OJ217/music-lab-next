@@ -124,10 +124,10 @@ const EarTrainingDashboard = () => {
 					) : (
 						<ChartLoader
 							pending={earTrainingOverallStatisticsPending}
-							data={earTrainingOverallStatistics?.progress}
+							data={earTrainingOverallStatistics?.scores}
 							chart={
 								<DashboardBarChart
-									data={earTrainingOverallStatistics?.progress!}
+									data={earTrainingOverallStatistics?.scores!}
 									dataKeys={{ bar: 'score', label: 'score', xAxis: 'date', yAxis: 'score' }}
 								/>
 							}
@@ -136,7 +136,7 @@ const EarTrainingDashboard = () => {
 				</motion.div>
 
 				<motion.div
-					key={'insights'}
+					key={'activity_insights'}
 					layout={'position'}
 					className='space-y-4'
 				>

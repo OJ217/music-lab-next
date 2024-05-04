@@ -46,7 +46,7 @@ export const DashboardBarChart = <T extends DataItem>({ data, dataKeys }: IPagin
 					<BarChart
 						barGap={10}
 						barCategoryGap={4}
-						className={'text-xs'}
+						className={'text-sm'}
 						data={paginatedData[page - 1]}
 					>
 						<defs>

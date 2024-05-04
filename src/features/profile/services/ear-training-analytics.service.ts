@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { EarTrainingErrorStores, fetchEarTrainingErrorLocal } from '@/features/ear-training/practice/stores/ear-training-errors.store';
 import { IPaginatedDocuments, IResponse, IUseQueryBase } from '@/types';
+import { wait } from '@/utils/api.util';
 import { calculatePercentage } from '@/utils/format.util';
 import { isEmptyObject } from '@/utils/helper.util';
 import { useQuery } from '@tanstack/react-query';
@@ -26,7 +27,7 @@ interface IOverallStatisticsResponse {
 
 interface IUseOverallStatisticsQueryResponse {
 	activity: Array<{ date: string; activity: number }>;
-	progress: Array<{ date: string; correct: number; activity: number; score: number }>;
+	scores: Array<{ date: string; correct: number; activity: number; score: number }>;
 	exercises: Array<{ type: EarTrainingPracticeType; score: number }>;
 	insights: {
 		activity: {
@@ -55,7 +56,7 @@ export const useEarTrainingOverallStatisticsQuery = ({ enabled }: IUseQueryBase)
 			return {
 				activity: [],
 				exercises: [],
-				progress: [],
+				scores: [],
 				insights: {
 					activity: {
 						averageActivity: '--',
@@ -79,7 +80,7 @@ export const useEarTrainingOverallStatisticsQuery = ({ enabled }: IUseQueryBase)
 
 		// ** Statistics Data
 		const activity = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, activity: stat.activity }));
-		const progress = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, correct: stat.correct, activity: stat.activity, score: calculatePercentage(stat.correct, stat.activity) }));
+		const scores = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, correct: stat.correct, activity: stat.activity, score: calculatePercentage(stat.correct, stat.activity) }));
 		const exercises = exerciseTypeStatisticsSorted.map(stat => ({ type: stat.type, score: calculatePercentage(stat.correct, stat.activity) }));
 
 		// ** Activity Insights
@@ -97,7 +98,7 @@ export const useEarTrainingOverallStatisticsQuery = ({ enabled }: IUseQueryBase)
 
 		return {
 			activity,
-			progress,
+			scores,
 			exercises,
 			insights: {
 				activity: {
@@ -131,10 +132,10 @@ type IExerciseStatisticsResponse = Array<{ date: string } & IEarTrainingStatisti
 
 interface IUseExerciseStatisticsQueryResponse {
 	activity: Array<{ date: string; activity: number }>;
-	progress: Array<{ date: string; correct: number; activity: number; score: number }>;
+	scores: Array<{ date: string; correct: number; activity: number; score: number }>;
 	insights: {
-		averageActivity: string;
-		averageScore: number;
+		averageActivity?: string;
+		averageScore?: number;
 	};
 }
 
@@ -149,31 +150,26 @@ export const useEarTrainingExerciseStatisticsQuery = ({ enabled = true, exercise
 		if (!earTrainingExerciseStatistics || earTrainingExerciseStatistics.length === 0) {
 			return {
 				activity: [],
-				progress: [],
-				insights: {
-					averageActivity: '--',
-					averageScore: 0
-				}
+				scores: [],
+				insights: {}
 			};
 		}
 
 		// ** Statistics Data Sorted
 		const dateRangeStatisticsSorted = earTrainingExerciseStatistics.toSorted((a, b) => dayjs(a.date).diff(dayjs(b.date)));
 		const activity = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, activity: stat.activity }));
-		const progress = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, correct: stat.correct, activity: stat.activity, score: calculatePercentage(stat.correct, stat.activity) }));
+		const scores = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, correct: stat.correct, activity: stat.activity, score: calculatePercentage(stat.correct, stat.activity) }));
 
 		const totalActivity = activity.map(stat => stat.activity).reduce((a, b) => a + b, 0);
 		const averageActivity = (totalActivity / activity.length).toFixed(1);
 		const averageScore = calculatePercentage(
-			progress.map(stat => stat.correct).reduce((a, b) => a + b, 0),
+			scores.map(stat => stat.correct).reduce((a, b) => a + b, 0),
 			totalActivity
 		);
 
-		console.log({ averageActivity, averageScore });
-
 		return {
 			activity,
-			progress,
+			scores,
 			insights: {
 				averageActivity,
 				averageScore
@@ -201,6 +197,8 @@ type IUseEarTrainingExerciseErrorsQueryResponse = Array<{ questionType: string; 
 
 export const useEarTrainingExerciseErrorsQuery = ({ enabled, exerciseType }: IUseEarTrainingExerciseErrorsQueryParams) => {
 	const fetchEarTrainingExerciseCommonErrors = async (): Promise<IUseEarTrainingExerciseErrorsQueryResponse> => {
+		await wait(300);
+
 		const exerciseErrors = await fetchEarTrainingErrorLocal(earTrainingExerciseErrorStoreNames[exerciseType]);
 
 		if (isEmptyObject(exerciseErrors)) {
