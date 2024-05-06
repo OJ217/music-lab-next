@@ -20,7 +20,7 @@ const AuthLayout: React.FC<IAuthLayoutProps> = ({ children }) => {
 								<img
 									src={'/music-lab-icon-text-logo.svg'}
 									alt={'logo'}
-									className='h-12'
+									className='h-[2.75rem]'
 								/>
 							</Link>
 							<Menu position={'top-end'}>

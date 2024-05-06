@@ -60,7 +60,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 								<img
 									src={'/music-lab-icon-text-logo.svg'}
 									alt={'logo'}
-									className='h-12'
+									className='h-[2.75rem]'
 								/>
 							</Link>
 							{!userInfo ? (
@@ -80,7 +80,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 									</div>
 									<Skeleton
 										circle
-										height={rem(48)}
+										height={rem(46)}
 									/>
 								</div>
 							) : (
@@ -88,7 +88,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 									position={'bottom-end'}
 									zIndex={1000}
 								>
-									<div className='flex items-center space-x-4'>
+									<div className='flex items-center sm:space-x-4'>
 										<div className='hidden h-full flex-col justify-between text-right sm:flex'>
 											<h3 className='font-bold'>{userInfo.username}</h3>
 											<p className='text-xs'>{userInfo?.email}</p>
@@ -97,14 +97,14 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 											{userInfo.picture ? (
 												<Avatar
 													radius={'xl'}
-													size={rem(48)}
+													size={rem(46)}
 													component={ActionIcon}
 													src={userInfo.picture}
 												/>
 											) : (
 												<Avatar
 													radius={'xl'}
-													size={rem(48)}
+													size={rem(46)}
 													variant='gradient'
 													gradient={{ from: 'violet', to: 'violet.7' }}
 													classNames={{
