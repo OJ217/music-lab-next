@@ -17,75 +17,78 @@ import IconWrapper from '../../components/misc/icon-wrapper';
 import { useEarTrainingOverallStatisticsQuery } from '../../services/ear-training-analytics.service';
 import { EarTrainingDashboardChartType } from '../../types';
 
-const EXERCISES_SCORE_META: Record<EarTrainingPracticeType, { icon: JSX.Element | React.ReactNode; label: string; description: string; badgeClass: string; cardClass: string }> = {
+const EXERCISES_SCORE_META: Record<
+	EarTrainingPracticeType,
+	{ icon: JSX.Element | React.ReactNode; label: string; description: string; badgeClass: string; labelDescriptionClass: string; cardClass: string }
+> = {
 	'interval-identification': {
 		label: 'Interval',
 		description: 'Distance between two notes',
 		icon: (
-			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50'>
 				<IconMusic
 					stroke={2}
 					size={20}
-					className='size-6 stroke-violet-400'
+					className='size-6 stroke-violet-300'
 				/>
 			</div>
 		),
-		cardClass: 'bg-gradient-to-tr from-violet-600/15 to-violet-600/30 bg-transparent',
-		badgeClass: 'bg-violet-600/75'
+		cardClass: 'bg-gradient-to-tr from-violet-600/25 to-violet-600/50 bg-transparent',
+		labelDescriptionClass: 'text-violet-100',
+		badgeClass: 'bg-violet-600'
 	},
 	'chord-identification': {
 		label: 'Chord',
 		description: 'Combination of three or more notes',
 		icon: (
-			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-sky-600/20 to-sky-600/40'>
+			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-sky-600/25 to-sky-600/50'>
 				<IconMusic
 					stroke={2}
 					size={20}
-					className='size-6 stroke-sky-400'
+					className='size-6 stroke-sky-300'
 				/>
 			</div>
 		),
-		cardClass: 'bg-gradient-to-tr from-sky-600/15 to-sky-600/30 bg-transparent',
-		badgeClass: 'bg-sky-600/75'
+		cardClass: 'bg-gradient-to-tr from-sky-600/25 to-sky-600/50 bg-transparent',
+		labelDescriptionClass: 'text-sky-100',
+		badgeClass: 'bg-sky-600'
 	},
 	'mode-identification': {
 		label: 'Mode',
 		description: 'Specific scale or tonal pattern',
 		icon: (
-			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-amber-600/20 to-amber-600/40'>
+			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-amber-600/25 to-amber-600/50'>
 				<IconMusic
 					stroke={2}
 					size={20}
-					className='size-6 stroke-amber-400'
+					className='size-6 stroke-amber-300'
 				/>
 			</div>
 		),
-		cardClass: 'bg-gradient-to-tr from-amber-600/15 to-amber-600/30 bg-transparent',
-		badgeClass: 'bg-amber-600/75'
+		cardClass: 'bg-gradient-to-tr from-amber-600/25 to-amber-600/50 bg-transparent',
+		labelDescriptionClass: 'text-amber-100',
+		badgeClass: 'bg-amber-600'
 	}
 };
 
-const MONTHLY_ACTIVITY_SUMMARY_META: Record<EarTrainingPracticeType, { tooltipClass: string; segmentClass: string; listBulletClass: string; label: string; badgeColor: MantineColor }> = {
+const MONTHLY_ACTIVITY_SUMMARY_META: Record<EarTrainingPracticeType, { tooltipClass: string; segmentClass: string; label: string; badgeColor: MantineColor }> = {
 	'interval-identification': {
-		tooltipClass: 'bg-violet-600/50 font-semibold text-white backdrop-blur-sm',
-		segmentClass: 'h-full bg-transparent bg-gradient-to-r from-violet-600/40 to-violet-600/80',
-		listBulletClass: 'aspect-square size-2 rounded-full bg-gradient-to-r from-violet-600/50 to-violet-600/75',
+		tooltipClass: 'bg-violet-600/75 font-semibold text-white backdrop-blur-sm',
+		segmentClass: 'h-full bg-violet-600',
 		label: 'Interval practice',
-		badgeColor: 'violet'
+		badgeColor: 'bg-violet-600'
 	},
 	'chord-identification': {
-		tooltipClass: 'bg-sky-600/50 font-semibold text-white backdrop-blur-sm',
-		segmentClass: 'h-full bg-transparent bg-gradient-to-r from-sky-600/40 to-sky-600/80',
-		listBulletClass: 'aspect-square size-2 rounded-full bg-gradient-to-r from-sky-600/50 to-sky-600/75',
+		tooltipClass: 'bg-sky-600/75 font-semibold text-white backdrop-blur-sm',
+		segmentClass: 'h-full bg-sky-600',
 		label: 'Chord practice',
-		badgeColor: 'blue'
+		badgeColor: 'bg-sky-600'
 	},
 	'mode-identification': {
-		tooltipClass: 'bg-amber-600/50 font-semibold text-white backdrop-blur-sm',
-		segmentClass: 'h-full bg-transparent bg-gradient-to-r from-amber-600/40 to-amber-600/80',
-		listBulletClass: 'aspect-square size-2 rounded-full bg-gradient-to-r from-amber-600/50 to-amber-600/75',
+		tooltipClass: 'bg-amber-600/75 font-semibold text-white backdrop-blur-sm',
+		segmentClass: 'h-full bg-amber-600',
 		label: 'Mode practice',
-		badgeColor: 'orange'
+		badgeColor: 'bg-amber-600'
 	}
 };
 
@@ -183,7 +186,7 @@ const EarTrainingDashboard = () => {
 						/>
 					) : (
 						// TODO: Extract a component
-						<div className='space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
+						<div className='space-y-4 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50 p-4 md:p-5'>
 							{!!earTrainingOverallStatistics?.insights?.exercises && earTrainingOverallStatistics?.insights?.exercises.length > 0 ? (
 								<>
 									<div className='flex h-2.5 items-stretch overflow-hidden rounded-2xl shadow-round-md'>
@@ -205,24 +208,17 @@ const EarTrainingDashboard = () => {
 									</div>
 									<div className='space-y-2'>
 										{earTrainingOverallStatistics.insights.exercises.map(exercise => {
-											const { listBulletClass, label, badgeColor } = MONTHLY_ACTIVITY_SUMMARY_META[exercise.type];
+											const { label, badgeColor } = MONTHLY_ACTIVITY_SUMMARY_META[exercise.type];
 
 											return (
 												<div
 													key={exercise.type}
 													className='flex items-center justify-between'
 												>
-													<div className='flex items-center gap-3 font-medium'>
-														<div className={listBulletClass} />
-														<p>{label}</p>
+													<p className='font-medium'>{label}</p>
+													<div className={`rounded-md ${badgeColor} px-2 py-0.5`}>
+														<p className='text-sm font-bold'>{exercise.activity}</p>
 													</div>
-													<Badge
-														size={'lg'}
-														variant='light'
-														color={badgeColor}
-													>
-														{exercise.activity ?? '--'}
-													</Badge>
 												</div>
 											);
 										})}
@@ -231,24 +227,17 @@ const EarTrainingDashboard = () => {
 							) : (
 								<div className='space-y-2'>
 									{Object.values(EarTrainingPracticeType).map(type => {
-										const { listBulletClass, label, badgeColor } = MONTHLY_ACTIVITY_SUMMARY_META[type];
+										const { label, badgeColor } = MONTHLY_ACTIVITY_SUMMARY_META[type];
 
 										return (
 											<div
 												key={type}
 												className='flex items-center justify-between'
 											>
-												<div className='flex items-center gap-3 font-medium'>
-													<div className={listBulletClass} />
-													<p>{label}</p>
+												<p className='font-medium'>{label}</p>
+												<div className={`rounded-md ${badgeColor} px-2 py-0.5`}>
+													<p className='text-sm font-bold'>--</p>
 												</div>
-												<Badge
-													size={'lg'}
-													variant='light'
-													color={badgeColor}
-												>
-													--
-												</Badge>
 											</div>
 										);
 									})}
@@ -275,7 +264,7 @@ const EarTrainingDashboard = () => {
 						: !!earTrainingOverallStatistics?.exercises && earTrainingOverallStatistics.exercises.length > 0
 							? // TODO: Extract a component
 								earTrainingOverallStatistics?.exercises.map(stat => {
-									const { icon, label, description, badgeClass, cardClass } = EXERCISES_SCORE_META[stat.type];
+									const { icon, label, description, badgeClass, labelDescriptionClass, cardClass } = EXERCISES_SCORE_META[stat.type];
 
 									return (
 										<div
@@ -287,7 +276,7 @@ const EarTrainingDashboard = () => {
 													{icon}
 													<div className='text-white'>
 														<h3 className='font-semibold'>{label}</h3>
-														<p className='text-sm'>{description}</p>
+														<p className={`text-[13px] ${labelDescriptionClass}`}>{description}</p>
 													</div>
 												</div>
 
@@ -308,7 +297,7 @@ const EarTrainingDashboard = () => {
 									);
 								})
 							: Object.values(EarTrainingPracticeType).map(type => {
-									const { icon, label, description, badgeClass, cardClass } = EXERCISES_SCORE_META[type];
+									const { icon, label, description, cardClass, labelDescriptionClass, badgeClass } = EXERCISES_SCORE_META[type];
 
 									return (
 										<div
@@ -320,7 +309,7 @@ const EarTrainingDashboard = () => {
 													{icon}
 													<div className='text-white'>
 														<h3 className='font-semibold'>{label}</h3>
-														<p className='text-sm'>{description}</p>
+														<p className={`text-[13px] ${labelDescriptionClass}`}>{description}</p>
 													</div>
 												</div>
 

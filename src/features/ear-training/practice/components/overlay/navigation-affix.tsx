@@ -22,7 +22,7 @@ const NavigationAffix = () => {
 					</ActionIcon>
 				</Menu.Target>
 
-				<Menu.Dropdown className='border border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/5 to-violet-600/20 backdrop-blur-3xl'>
+				<Menu.Dropdown className='border border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50 backdrop-blur-3xl'>
 					<Link
 						href={'/ear-training/practice/interval'}
 						className='block'

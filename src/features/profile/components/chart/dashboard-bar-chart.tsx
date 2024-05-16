@@ -38,7 +38,7 @@ export const DashboardBarChart = <T extends DataItem>({ data, dataKeys }: IPagin
 	return (
 		<>
 			{/* Bar Chart */}
-			<div className='relative rounded-lg border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/20 pb-2 pl-2 pr-4 pt-4'>
+			<div className='relative rounded-lg border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 pb-2 pl-2 pr-4 pt-4'>
 				<ResponsiveContainer
 					width={'100%'}
 					height={200}

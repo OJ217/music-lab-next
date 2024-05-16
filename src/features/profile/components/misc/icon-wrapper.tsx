@@ -6,10 +6,10 @@ interface IIconWrapperProps {
 
 const IconWrapper: React.FC<IIconWrapperProps> = ({ Icon }) => {
 	return (
-		<div className='grid aspect-square size-9 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40'>
+		<div className='grid aspect-square size-9 place-content-center rounded-full bg-violet-600'>
 			<Icon
-				size={20}
-				className='stroke-violet-400'
+				size={24}
+				className='stroke-white stroke-[1.8px]'
 			/>
 		</div>
 	);

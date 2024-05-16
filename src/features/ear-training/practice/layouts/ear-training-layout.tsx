@@ -118,7 +118,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 										</Menu.Target>
 									</div>
 
-									<Menu.Dropdown className='border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-700/15 to-violet-700/25 backdrop-blur-3xl'>
+									<Menu.Dropdown className='border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50 backdrop-blur-3xl'>
 										<Link href={'/profile/dashboard'}>
 											<Menu.Item
 												className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'
@@ -176,6 +176,8 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 						{children}
 					</div>
 				</div>
+
+				{/* Ear Training Practice Navigation */}
 				{showAffix && <NavigationAffix />}
 			</main>
 		</ProtectedRoute>

@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import React from 'react';
 
 import { resolvePracticeResultColor } from '@/features/ear-training/practice/utils/practice-session.util';
-import { ActionIcon, Badge, Card, Progress } from '@mantine/core';
+import { ActionIcon, Badge, Progress } from '@mantine/core';
 import { IconCheck, IconDotsVertical, IconX } from '@tabler/icons-react';
 
 import { IEarTrainingPracticeSession } from '../../services/ear-training-analytics.service';
@@ -16,10 +16,7 @@ const EarTrainingSessionCard: React.FC<IEarTrainingSessionCardProps> = ({ sessio
 	const exerciseResultColor = resolvePracticeResultColor(session.result.correct, session.result.questionCount);
 
 	return (
-		<Card
-			radius={'md'}
-			className='border-violet-600 bg-transparent bg-gradient-to-tr from-violet-600/10 to-violet-600/30'
-		>
+		<div className='rounded-lg border-violet-600 bg-gradient-to-tr from-violet-600/10 to-violet-600/30 p-4'>
 			<div className='space-y-3'>
 				<div className='flex items-center justify-between gap-4'>
 					<p className='text-sm font-medium text-white md:text-base'>Date: {dayjs(session.createdAt).format('MMM DD, HH:mm')}</p>
@@ -72,7 +69,7 @@ const EarTrainingSessionCard: React.FC<IEarTrainingSessionCardProps> = ({ sessio
 					</div>
 				</div>
 			</div>
-		</Card>
+		</div>
 	);
 };
 

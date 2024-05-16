@@ -76,7 +76,6 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 				setAuthenticated(false);
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [authStore]);
 
 	const signOut = () => {

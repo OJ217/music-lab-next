@@ -1,5 +1,3 @@
-import { Badge } from '@mantine/core';
-
 interface IDashboardStatisticCardProps {
 	label: string;
 	value: string | number | null | undefined;
@@ -8,12 +6,12 @@ interface IDashboardStatisticCardProps {
 
 const DashboardStatisticCard: React.FC<IDashboardStatisticCardProps> = ({ label, value, icon }) => {
 	return (
-		<div className='flex flex-col justify-between space-y-3 rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30 p-4 md:p-5'>
+		<div className='flex flex-col justify-between space-y-2 rounded-lg bg-gradient-to-tr from-violet-600/25 to-violet-600/50 px-4 py-3 md:px-5 md:py-4'>
 			<div className='flex justify-between'>
-				<h2 className='text-2xl font-semibold text-violet-100'>{!!value ? value : '--'}</h2>
+				<h2 className='text-2xl font-semibold'>{!!value ? value : '--'}</h2>
 				{icon}
 			</div>
-			<Badge variant='light'>{label}</Badge>
+			<span className='text-sm font-medium text-violet-100'>{label}</span>
 		</div>
 	);
 };

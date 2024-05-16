@@ -104,7 +104,7 @@ const SignInPage = () => {
 				</p> */}
 			</section>
 
-			<div className='w-full max-w-sm rounded-lg border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-700/15 to-violet-700/25 p-5'>
+			<div className='w-full max-w-sm rounded-lg border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-700/20 to-violet-700/40 p-5'>
 				<form
 					className='w-full space-y-5'
 					onSubmit={signInForm.onSubmit(handleSignIn)}
@@ -138,7 +138,7 @@ const SignInPage = () => {
 						fullWidth
 						variant='gradient'
 						gradient={{
-							from: 'violet.9',
+							from: 'violet.8',
 							to: 'violet.6'
 						}}
 						className='font-normal'

@@ -3,6 +3,7 @@ import '@mantine/carousel/styles.css';
 import Autoplay from 'embla-carousel-autoplay';
 import Link from 'next/link';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Carousel } from '@mantine/carousel';
 import { Badge, Button, Center, rem, RingProgress, ThemeIcon } from '@mantine/core';
@@ -11,13 +12,17 @@ import { IconArrowRight, IconCheck, IconMusic } from '@tabler/icons-react';
 import EarTrainingLayout from '../layouts/ear-training-layout';
 
 const PracticeHome = () => {
+	const { t } = useTranslation('ear_training_home');
 	const autoplay = useRef(Autoplay({ delay: 5000 }));
 
 	return (
-		<EarTrainingLayout centered={false}>
+		<EarTrainingLayout
+			centered={false}
+			showAffix={false}
+		>
 			<div className='mx-auto w-full max-w-lg space-y-8'>
-				<div className='space-y-4'>
-					<h3 className='text-sm font-semibold md:text-base'>Practice exercises</h3>
+				<div className='space-y-3'>
+					<h3 className='text-sm font-semibold md:text-base'>{t('earTrainingExercises')}</h3>
 					<Carousel
 						loop
 						withIndicators
@@ -37,23 +42,22 @@ const PracticeHome = () => {
 						<Carousel.Slide>
 							<Link
 								href={'/ear-training/practice/interval'}
-								className='from flex h-full items-center justify-between gap-4 rounded-xl bg-gradient-to-tr from-violet-600/[0.15] to-violet-600/25 px-6 py-4 transition-all duration-500 ease-in-out hover:opacity-90 sm:gap-16'
+								className='from flex h-full items-center justify-between gap-4 rounded-xl bg-gradient-to-tr from-violet-600/25 to-violet-600/50 px-6 py-4 transition-all duration-500 ease-in-out hover:opacity-90 sm:gap-16'
 							>
-								<div className='space-y-3'>
-									<h3 className='text-xl font-semibold leading-none text-violet-400'>Interval</h3>
-									<p className='text-sm leading-4 text-violet-100'>Practicing identifying intervals — the distance between two notes</p>
+								<div>
+									<h3 className='text-xl font-semibold leading-none text-violet-400'>{t('intervalIdentification')}</h3>
+									<p className='mt-2 text-sm text-violet-100'>Practicing identifying intervals — the distance between two notes</p>
 									<Badge
-										color='violet'
-										variant='light'
 										size='sm'
+										className='mt-4 bg-violet-600'
 									>
-										EAR TRAINING
+										{t('earTraining')}
 									</Badge>
 								</div>
-								<div className='grid aspect-square h-12 place-content-center rounded-full bg-gradient-to-tr from-violet-600/20 to-violet-600/40 md:h-12'>
+								<div className='grid aspect-square h-12 place-content-center rounded-full bg-violet-600 md:h-12'>
 									<IconMusic
 										stroke={2}
-										className='h-6 w-6 stroke-violet-400 md:h-7 md:w-7'
+										className='h-6 w-6 stroke-white md:h-7 md:w-7'
 									/>
 								</div>
 							</Link>
@@ -61,23 +65,22 @@ const PracticeHome = () => {
 						<Carousel.Slide>
 							<Link
 								href={'/ear-training/practice/chord'}
-								className='from flex h-full items-center justify-between gap-4 rounded-xl bg-gradient-to-tr from-sky-600/[0.15] to-sky-600/25 px-6 py-4 transition-all duration-500 ease-in-out hover:opacity-90 sm:gap-16'
+								className='from flex h-full items-center justify-between gap-4 rounded-xl bg-gradient-to-tr from-sky-600/25 to-sky-600/50 px-6 py-4 transition-all duration-500 ease-in-out hover:opacity-90 sm:gap-16'
 							>
-								<div className='space-y-3'>
-									<h3 className='text-xl font-semibold leading-none text-sky-300'>Chord</h3>
-									<p className='text-sm leading-4 text-sky-100'>Practicing identifying chords — the dombination of three or more notes</p>
+								<div>
+									<h3 className='text-xl font-semibold leading-none text-sky-400'>{t('chordIdentification')}</h3>
+									<p className='mt-2 text-sm text-sky-100'>Practicing identifying chords — the dombination of three or more notes</p>
 									<Badge
-										color='blue'
-										variant='light'
 										size='sm'
+										className='mt-4 bg-sky-600'
 									>
-										EAR TRAINING
+										{t('earTraining')}
 									</Badge>
 								</div>
-								<div className='grid aspect-square h-12 place-content-center rounded-full bg-gradient-to-tr from-sky-600/20 to-sky-600/40 md:h-12'>
+								<div className='grid aspect-square h-12 place-content-center rounded-full bg-sky-600 md:h-12'>
 									<IconMusic
 										stroke={2}
-										className='h-6 w-6 stroke-sky-400 md:h-7 md:w-7'
+										className='h-6 w-6 stroke-white md:h-7 md:w-7'
 									/>
 								</div>
 							</Link>
@@ -85,23 +88,22 @@ const PracticeHome = () => {
 						<Carousel.Slide>
 							<Link
 								href={'/ear-training/practice/mode'}
-								className='from flex h-full items-center justify-between gap-4 rounded-xl bg-gradient-to-tr from-amber-600/[0.15] to-amber-600/25 px-6 py-4 transition-all duration-500 ease-in-out hover:opacity-90 sm:gap-16'
+								className='from flex h-full items-center justify-between gap-4 rounded-xl bg-gradient-to-tr from-amber-600/25 to-amber-600/50 px-6 py-4 transition-all duration-500 ease-in-out hover:opacity-90 sm:gap-16'
 							>
-								<div className='space-y-3'>
-									<h3 className='text-xl font-semibold leading-none text-amber-200'>Mode</h3>
-									<p className='text-sm leading-4 text-amber-100'>Practicing identifying modes — specific scale or tonal pattern of music</p>
+								<div>
+									<h3 className='text-xl font-semibold leading-none text-amber-400'>{t('modeIdentification')}</h3>
+									<p className='mt-2 text-sm text-amber-100'>Practicing identifying modes — specific scale or tonal pattern of music</p>
 									<Badge
-										color='orange'
-										variant='light'
 										size='sm'
+										className='mt-4 bg-amber-600'
 									>
-										EAR TRAINING
+										{t('earTraining')}
 									</Badge>
 								</div>
-								<div className='grid aspect-square h-12 place-content-center rounded-full bg-gradient-to-tr from-amber-600/20 to-amber-600/40 md:h-12'>
+								<div className='grid aspect-square h-12 place-content-center rounded-full bg-amber-600 md:h-12'>
 									<IconMusic
 										stroke={2}
-										className='h-6 w-6 stroke-amber-400 md:h-7 md:w-7'
+										className='h-6 w-6 stroke-white md:h-7 md:w-7'
 									/>
 								</div>
 							</Link>
@@ -109,9 +111,9 @@ const PracticeHome = () => {
 					</Carousel>
 				</div>
 
-				<div className='space-y-4'>
+				<div className='space-y-3'>
 					<h3 className='text-sm font-semibold md:text-base'>Daily goal</h3>
-					<div className='rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/20 to-violet-600/40 p-4 shadow-2xl md:p-6'>
+					<div className='rounded-lg bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50 p-4 shadow-2xl md:p-6'>
 						<div className='mx-auto max-w-xs space-y-4'>
 							<div className='flex items-center justify-evenly gap-4'>
 								<RingProgress
@@ -185,18 +187,34 @@ const PracticeHome = () => {
 					</div>
 				</div>
 
-				<div className='space-y-4'>
+				<div className='space-y-3'>
 					<h3 className='text-sm font-semibold md:text-base'>Library</h3>
 					<div className='grid grid-cols-2 gap-4'>
-						<div className='from flex flex-col justify-between gap-2 rounded-xl bg-transparent bg-gradient-to-tr from-emerald-600/20 to-emerald-600/60 px-6 py-4 shadow-md transition-all duration-500 ease-in-out hover:opacity-90'>
+						<Link
+							href={'/ear-training/library/intervals'}
+							className='from flex flex-col justify-between gap-2 rounded-xl bg-gradient-to-tr from-violet-600/20 to-violet-600/60 px-6 py-4 shadow-md transition-all duration-500 ease-in-out hover:opacity-90'
+						>
 							<div className='space-y-2'>
-								<h3 className='text-lg font-semibold leading-none text-emerald-200'>Circle of Fifths</h3>
-								<p className='text-xs leading-4 text-emerald-100'>Relationship between 12 tones of the chromatic scale</p>
+								<h3 className='text-lg font-semibold leading-none text-violet-200'>Intervals</h3>
+								<p className='text-xs text-violet-100'>Set of simple and compound intervals with examples</p>
 							</div>
 							<Badge
-								color='teal'
-								variant='dot'
-								size='sm'
+								color='violet.6'
+								variant='filled'
+								size='md'
+							>
+								LIBRARY
+							</Badge>
+						</Link>
+						<div className='from flex flex-col justify-between gap-2 rounded-xl bg-transparent bg-gradient-to-tr from-sky-600/20 to-sky-600/60 px-6 py-4 shadow-md transition-all duration-500 ease-in-out hover:opacity-90'>
+							<div className='space-y-2'>
+								<h3 className='text-lg font-semibold leading-none text-sky-200'>Chords</h3>
+								<p className='text-xs text-sky-100'>Set of basic chords and their inversions</p>
+							</div>
+							<Badge
+								color='blue'
+								variant='filled'
+								size='md'
 							>
 								LIBRARY
 							</Badge>
@@ -204,51 +222,12 @@ const PracticeHome = () => {
 						<div className='from flex flex-col justify-between gap-2 rounded-xl bg-gradient-to-tr from-amber-600/20 to-amber-600/60 px-6 py-4 shadow-md transition-all duration-500 ease-in-out hover:opacity-90'>
 							<div className='space-y-2'>
 								<h3 className='text-lg font-semibold leading-none text-amber-200'>Modes</h3>
-								<p className='text-xs leading-4 text-amber-100'>Set of commonly used music modes and scales</p>
+								<p className='text-xs text-amber-100'>Set of commonly used music modes and scales</p>
 							</div>
 							<Badge
 								color='orange'
-								variant='dot'
-								size='sm'
-							>
-								LIBRARY
-							</Badge>
-						</div>
-						<div className='from flex flex-col justify-between gap-2 rounded-xl bg-gradient-to-tr from-violet-600/20 to-violet-600/60 px-6 py-4 shadow-md transition-all duration-500 ease-in-out hover:opacity-90'>
-							<div className='space-y-2'>
-								<h3 className='text-lg font-semibold leading-none text-violet-200'>Intervals</h3>
-								<p className='text-xs leading-4 text-violet-100'>Set of simple and compound intervals with examples</p>
-							</div>
-							<Badge
-								color='violet.6'
-								variant='dot'
-								size='sm'
-							>
-								LIBRARY
-							</Badge>
-						</div>
-						<div className='from flex flex-col justify-between gap-2 rounded-xl bg-transparent bg-gradient-to-tr from-sky-600/20 to-sky-600/60 px-6 py-4 shadow-md transition-all duration-500 ease-in-out hover:opacity-90'>
-							<div className='space-y-2'>
-								<h3 className='text-lg font-semibold leading-none text-sky-200'>Chords</h3>
-								<p className='text-xs leading-4 text-sky-100'>Set of basic chords and their inversions</p>
-							</div>
-							<Badge
-								color='blue'
-								variant='dot'
-								size='sm'
-							>
-								LIBRARY
-							</Badge>
-						</div>
-						<div className='from flex flex-col justify-between gap-2 rounded-xl bg-transparent bg-gradient-to-tr from-yellow-600/20 to-yellow-600/60 px-6 py-4 shadow-md transition-all duration-500 ease-in-out hover:opacity-90'>
-							<div className='space-y-2'>
-								<h3 className='text-lg font-semibold leading-none text-yellow-200'>Notes</h3>
-								<p className='text-xs leading-4 text-yellow-100'>Notes and their frequencies (with examples)</p>
-							</div>
-							<Badge
-								color='yellow'
-								variant='dot'
-								size='sm'
+								variant='filled'
+								size='md'
 							>
 								LIBRARY
 							</Badge>
@@ -256,16 +235,42 @@ const PracticeHome = () => {
 						<div className='from flex flex-col justify-between gap-2 rounded-xl bg-transparent bg-gradient-to-tr from-indigo-600/20 to-indigo-600/60 px-6 py-4 shadow-md transition-all duration-500 ease-in-out hover:opacity-90'>
 							<div className='space-y-2'>
 								<h3 className='text-lg font-semibold leading-none text-indigo-200'>Chord progression</h3>
-								<p className='text-xs leading-4 text-indigo-100'>Collection of common chord progressions</p>
+								<p className='text-xs text-indigo-100'>Collection of common chord progressions</p>
 							</div>
 							<Badge
 								color='indigo'
-								variant='dot'
-								size='sm'
+								variant='filled'
+								size='md'
 							>
 								LIBRARY
 							</Badge>
 						</div>
+						{/* <div className='from flex flex-col justify-between gap-2 rounded-xl bg-transparent bg-gradient-to-tr from-emerald-600/20 to-emerald-600/60 px-6 py-4 shadow-md transition-all duration-500 ease-in-out hover:opacity-90'>
+							<div className='space-y-2'>
+								<h3 className='text-lg font-semibold leading-none text-emerald-200'>Circle of Fifths</h3>
+								<p className='text-xs text-emerald-100'>Relationship between 12 tones of the chromatic scale</p>
+							</div>
+							<Badge
+								color='teal'
+								variant='filled'
+								size='md'
+							>
+								LIBRARY
+							</Badge>
+						</div> */}
+						{/* <div className='from flex flex-col justify-between gap-2 rounded-xl bg-transparent bg-gradient-to-tr from-yellow-600/20 to-yellow-600/60 px-6 py-4 shadow-md transition-all duration-500 ease-in-out hover:opacity-90'>
+							<div className='space-y-2'>
+								<h3 className='text-lg font-semibold leading-none text-yellow-200'>Notes</h3>
+								<p className='text-xs text-yellow-100'>Notes and their frequencies (with examples)</p>
+							</div>
+							<Badge
+								color='yellow'
+								variant='filled'
+								size='md'
+							>
+								LIBRARY
+							</Badge>
+						</div> */}
 					</div>
 				</div>
 			</div>

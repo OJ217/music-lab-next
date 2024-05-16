@@ -143,14 +143,14 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 											placeholder={settingsT('tempoPlaceholder')}
 											{...practiceSettingsForm.getInputProps('tempo')}
 										/>
-										<NumberInput
+										{/* <NumberInput
 											min={1}
 											max={30}
 											allowNegative={false}
 											description={settingsT('questionDuration')}
 											placeholder={settingsT('questionDurationPlaceholder')}
 											{...practiceSettingsForm.getInputProps('questionDuration')}
-										/>
+										/> */}
 									</div>
 									<Switch
 										label={settingsT('autoFeedback')}

@@ -187,7 +187,7 @@ const EarTrainingExerciseDashboard = () => {
 								<Accordion.Item
 									key={e.questionType}
 									value={e.questionType}
-									className='rounded-lg border-none bg-transparent bg-gradient-to-tr from-violet-600/15 to-violet-600/30'
+									className='rounded-lg border-none bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50'
 								>
 									<Accordion.Control classNames={{ chevron: 'text-white' }}>
 										<div className='flex items-center justify-between gap-4'>
