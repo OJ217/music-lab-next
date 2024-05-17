@@ -1,7 +1,9 @@
 import { useRouter } from 'next/router';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
+import { deleteEarTrainingErrorLocal } from '@/features/ear-training/practice/stores/ear-training-errors.store';
 import { notify } from '@/utils/notification.util';
 import { useLocalStorage } from '@mantine/hooks';
 import { useQueryClient } from '@tanstack/react-query';
@@ -19,6 +21,7 @@ interface AuthContextPayload {
 	authContextLoading: boolean;
 	userInfo: User | undefined;
 	setAuthStore: (val: AuthStore | ((prevState: AuthStore | null) => AuthStore | null) | null) => void;
+	signInLocal: (authStore: AuthStore) => void;
 	signOut: () => void;
 }
 
@@ -27,6 +30,7 @@ export const AuthContext = createContext<AuthContextPayload>({
 	authContextLoading: true,
 	userInfo: undefined,
 	setAuthStore: () => {},
+	signInLocal: (_authStore: AuthStore) => {},
 	signOut: () => {}
 });
 
@@ -55,8 +59,9 @@ const authStoreSchema = z.object({
 export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 	const router = useRouter();
 	const client = useQueryClient();
+	const { t: authT } = useTranslation('auth');
 
-	const [authStore, setAuthStore, removeAuthStore] = useLocalStorage<AuthStore | null>({
+	const [authStore, setAuthStore] = useLocalStorage<AuthStore | null>({
 		key: 'music_lab.auth_store'
 	});
 
@@ -64,7 +69,7 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 	const authContextLoading: boolean = authenticated === undefined;
 
 	useEffect(() => {
-		if (!authStore && !window.localStorage.getItem('music_lab.auth_store')) {
+		if (!window.localStorage.getItem('music_lab.auth_store')) {
 			setAuthenticated(false);
 		} else if (!!authStore) {
 			const authStoreParsed = authStoreSchema.safeParse(authStore);
@@ -77,10 +82,33 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 		}
 	}, [authStore]);
 
+	const signInLocal = (authStore: AuthStore) => {
+		const authStoreParsed = authStoreSchema.safeParse(authStore);
+
+		if (authStoreParsed.success) {
+			setAuthStore(authStore);
+			setAuthenticated(true);
+			router.push('/ear-training/practice');
+		} else {
+			setAuthenticated(false);
+		}
+	};
+
 	const signOut = () => {
-		removeAuthStore();
+		client.cancelQueries();
 		client.removeQueries();
-		router.push('/auth/sign-in').then(() => notify({ type: 'warning', title: 'Please sign in to continue.' }));
+
+		localStorage.clear();
+		deleteEarTrainingErrorLocal();
+
+		setAuthenticated(false);
+
+		router.push('/auth/sign-in').then(() =>
+			notify({
+				type: 'warning',
+				title: authT('signInMessage')
+			})
+		);
 	};
 
 	const authContextValue: AuthContextPayload = {
@@ -88,6 +116,7 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 		authContextLoading,
 		userInfo: authStore?.user,
 		setAuthStore,
+		signInLocal,
 		signOut
 	};
 

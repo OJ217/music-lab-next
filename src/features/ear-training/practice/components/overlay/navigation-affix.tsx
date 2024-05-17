@@ -22,26 +22,26 @@ const NavigationAffix = () => {
 					</ActionIcon>
 				</Menu.Target>
 
-				<Menu.Dropdown className='border border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/5 to-violet-600/20 backdrop-blur-3xl'>
+				<Menu.Dropdown className='border border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50 backdrop-blur-3xl'>
 					<Link
 						href={'/ear-training/practice/interval'}
 						className='block'
 					>
-						<Menu.Item className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'>Interval</Menu.Item>
+						<Menu.Item className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'>Интервал</Menu.Item>
 					</Link>
 
 					<Link
 						href={'/ear-training/practice/chord'}
 						className='block'
 					>
-						<Menu.Item className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'>Chord</Menu.Item>
+						<Menu.Item className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'>Аккорд</Menu.Item>
 					</Link>
 
 					<Link
 						href={'/ear-training/practice/mode'}
 						className='block'
 					>
-						<Menu.Item className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'>Mode</Menu.Item>
+						<Menu.Item className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'>Лад</Menu.Item>
 					</Link>
 				</Menu.Dropdown>
 			</Menu>

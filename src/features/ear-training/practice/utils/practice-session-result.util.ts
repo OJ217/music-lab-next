@@ -1,21 +1,21 @@
 import { calculatePercentage } from '@/utils/format.util';
 
-import { ChordQuestion, EarTrainingPracticeDetail, IntervalQuestion, ModeQuestion } from '../types/practice-session.type';
+import { ChordQuestion, EarTrainingExerciseQuestionBase, EarTrainingPracticeDetail, ModeQuestion } from '../types/practice-session.type';
 
-export const refineIntervalPracticeResult = (practiceSessionQuestions: Array<IntervalQuestion>): Array<EarTrainingPracticeDetail> => {
+export const refineEarTrainingSessionResult = (practiceSessionQuestions: Array<EarTrainingExerciseQuestionBase>): Array<EarTrainingPracticeDetail> => {
 	return Object.entries(
-		practiceSessionQuestions.reduce((questionGroup: Record<string, Array<IntervalQuestion>>, question: IntervalQuestion) => {
-			const interval = question.intervalName;
+		practiceSessionQuestions.reduce((questionGroup: Record<string, Array<EarTrainingExerciseQuestionBase>>, question: EarTrainingExerciseQuestionBase) => {
+			const questionValue = question.questionValue;
 
-			if (!questionGroup[interval]) {
-				questionGroup[interval] = [];
+			if (!questionGroup[questionValue]) {
+				questionGroup[questionValue] = [];
 			}
 
-			questionGroup[interval].push(question);
+			questionGroup[questionValue].push(question);
 
 			return questionGroup;
 		}, {})
-	).map(([interval, questions]) => {
+	).map(([questionName, questions]) => {
 		const correct = questions.filter(q => q.correct).length;
 		const incorrect = questions.length - correct;
 
@@ -24,7 +24,7 @@ export const refineIntervalPracticeResult = (practiceSessionQuestions: Array<Int
 			correct,
 			incorrect,
 			questionCount: questions.length,
-			questionType: interval
+			questionType: questionName
 		};
 	});
 };

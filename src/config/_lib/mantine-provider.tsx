@@ -1,4 +1,4 @@
-import { createTheme, MantineProvider as DefaultMantineProvider, Overlay, TextInput } from '@mantine/core';
+import { createTheme, MantineProvider as DefaultMantineProvider, MultiSelect, Overlay, TextInput } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
 
@@ -51,6 +51,13 @@ const theme = createTheme({
 				}
 			}
 		},
+		MultiSelect: {
+			defaultProps: {
+				classNames: {
+					input: 'focus-within:bg-violet-600/25 transition-all ease-in-out duration-500'
+				}
+			}
+		},
 		Combobox: {
 			defaultProps: {
 				transitionProps: { transition: 'pop', duration: 200, timingFunction: 'ease' }
@@ -73,7 +80,9 @@ const theme = createTheme({
 		},
 		Drawer: {
 			classNames: {
-				content: 'pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)]'
+				content: 'pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] scrollbar-none',
+				header: 'pt-[env(safe-area-inset-top_0px)]',
+				body: 'pb-[calc(3rem_+_env(safe-area-inset-bottom_0px))] scrollbar-none'
 			}
 		},
 		Overlay: Overlay.extend({
@@ -82,7 +91,15 @@ const theme = createTheme({
 				backgroundOpacity: 0.65,
 				blur: 1
 			}
-		})
+		}),
+		Tooltip: {
+			defaultProps: {
+				transitionProps: {
+					transition: 'pop',
+					duration: 300
+				}
+			}
+		}
 	}
 });
 

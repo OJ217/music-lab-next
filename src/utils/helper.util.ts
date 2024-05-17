@@ -66,9 +66,25 @@ export const randomWeightedSelection = (selectionArray: Array<{ value: string; w
  * Filters object keys based on given array
  * @param obj Object to filter
  * @param keys Array of keys
- * @returns
  */
 export const filterObjectByKeys = <T>(obj: Record<string, T>, keys: string[]): Record<string, T> => {
 	const filteredKeys = Object.keys(obj).filter(key => keys.includes(key));
 	return Object.fromEntries(filteredKeys.map(key => [key, obj[key]]));
+};
+
+/**
+ * Groups the array into subgroups of given size from the end
+ * @param array Original array
+ * @param size Size of the subgroup array
+ */
+export const chunkFromEnd = <T>(array: T[], size: number): T[][] => {
+	const result: T[][] = [];
+	let index: number = array?.length;
+
+	while (index > 0) {
+		result.unshift(array.slice(Math.max(index - size, 0), index));
+		index -= size;
+	}
+
+	return result;
 };

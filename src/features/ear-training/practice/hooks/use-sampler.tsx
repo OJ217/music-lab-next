@@ -65,3 +65,37 @@ export const useSamplerMethods = (): SamplerMethods => {
 		releaseNotes
 	};
 };
+
+interface VariableDurationSamplerMethods {
+	playNotes: (notes: Array<string | string[]>, noteDurations: Array<number>) => void;
+	releaseNotes: (releaseTime?: number | undefined) => void;
+}
+export const useVariableDurationSamplerMethodsWith = (): VariableDurationSamplerMethods => {
+	const samplerInstance = useSampler();
+
+	const playNotes = useCallback(
+		(notes: Array<string | string[]>, noteDurations: Array<number>) => {
+			let lastRecordedTime = 0;
+			notes.forEach((note, index) => {
+				const noteDuration = noteDurations[index];
+				console.log(lastRecordedTime);
+				const time = Tone.now() + (index ? lastRecordedTime + noteDurations[index - 1] : 0);
+				lastRecordedTime += index ? lastRecordedTime + noteDurations[index - 1] : 0;
+				samplerInstance?.current?.triggerAttackRelease(note, noteDuration, time);
+			});
+		},
+		[samplerInstance]
+	);
+
+	const releaseNotes = useCallback(
+		(releaseTime?: number | undefined) => {
+			samplerInstance.current?.releaseAll(releaseTime);
+		},
+		[samplerInstance]
+	);
+
+	return {
+		playNotes,
+		releaseNotes
+	};
+};

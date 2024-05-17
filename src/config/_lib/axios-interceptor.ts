@@ -1,9 +1,9 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig, RawAxiosRequestHeaders } from 'axios';
 
 import { IResponse } from '@/types';
-import { notify } from '@/utils/notification.util';
 
 import { API_URL } from '../constants/api.constant';
+import { queryClient } from './react-query-provider';
 
 declare module 'axios' {
 	interface AxiosRequestConfig {
@@ -12,11 +12,12 @@ declare module 'axios' {
 	}
 }
 
+// TODO: Refactor interceptors to comply with current auth method (header, cookie)
 axios.interceptors.request.use((config: InternalAxiosRequestConfig<any>) => {
 	// @ts-ignore
 	config.headers = {
 		'Content-Type': 'application/json',
-		'Accept-Language': 'en',
+		'Accept-Language': 'mn',
 		...(config.headers as RawAxiosRequestHeaders)
 	};
 
@@ -34,8 +35,6 @@ axios.interceptors.request.use((config: InternalAxiosRequestConfig<any>) => {
 		}
 	}
 
-	config.withCredentials = true;
-
 	if (config.url && !config.url.startsWith('http')) {
 		config.url = config.isPrivate ? `${API_URL.private}${config.url}` : `${API_URL.public}${config.url}`;
 	}
@@ -50,28 +49,15 @@ axios.interceptors.response.use(
 	(error: AxiosError<any>) => {
 		console.error(error);
 
-		let errorNotification: { title?: string; message?: string } = {};
-		const errorObj = error?.response?.data?.error;
-
-		if (errorObj?.isReadableMessage) {
-			errorNotification = {
-				title: errorObj?.title,
-				message: errorObj?.message
-			};
-		} else if (error?.response?.status === 401) {
+		if (error?.response?.status === 401) {
+			queryClient.cancelQueries();
+			queryClient.removeQueries();
 			window.localStorage.removeItem('music_lab.auth_store');
 			if (window.location.pathname !== '/auth/sign-in') {
 				window.location.pathname = '/auth/sign-in';
 			}
-			notify({ type: 'warning', title: 'Please sign in to continue.' });
 			return Promise.reject(error?.response);
 		}
-
-		notify({
-			type: 'fail',
-			title: errorNotification.title ?? 'Error occured',
-			...(errorNotification.message && { message: errorNotification.message })
-		});
 
 		return Promise.reject(error?.response);
 	}

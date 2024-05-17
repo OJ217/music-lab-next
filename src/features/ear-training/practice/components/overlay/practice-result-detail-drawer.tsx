@@ -5,6 +5,7 @@ import { capitalize } from '@/utils/format.util';
 import { Accordion, Badge, Card, Center, Drawer, List, Progress, RingProgress, ScrollArea, ThemeIcon } from '@mantine/core';
 import { IconCheck, IconSettings, IconX } from '@tabler/icons-react';
 
+import { EarTrainingExerciseType } from '../../types/practice-session.type';
 import { resolvePracticeResultColor, resolvePracticeResultMessage } from '../../utils/practice-session.util';
 
 interface IPracticeResultDetailDrawerProps {
@@ -36,7 +37,7 @@ interface IPracticeResultDetailDrawerProps {
 	}>;
 
 	// ** Translation
-	translationNamespace: 'interval' | 'chord' | 'mode';
+	exerciseType: EarTrainingExerciseType;
 }
 
 const PracticeResultDetailDrawer: FC<IPracticeResultDetailDrawerProps> = ({
@@ -48,7 +49,7 @@ const PracticeResultDetailDrawer: FC<IPracticeResultDetailDrawerProps> = ({
 	practiceScorePercentage,
 	practiceSessionSettings: practiceSettings,
 	practiceSessionQuestionGroups,
-	translationNamespace
+	exerciseType
 }) => {
 	const { t } = useTranslation();
 	const practiceResultColor = resolvePracticeResultColor(totalCorrectAnswers, totalQuestions);
@@ -60,9 +61,9 @@ const PracticeResultDetailDrawer: FC<IPracticeResultDetailDrawerProps> = ({
 			title='Practice Overview'
 			opened={practiceDetailDrawerOpened && sessionEnded}
 			onClose={closePracticeDetailDrawer}
-			scrollAreaComponent={ScrollArea.Autosize}
 			closeButtonProps={{ size: 'sm' }}
 			classNames={{ title: 'font-semibold text-sm' }}
+			scrollAreaComponent={ScrollArea.Autosize}
 			withinPortal
 		>
 			<div className='mt-6 space-y-6'>
@@ -133,7 +134,7 @@ const PracticeResultDetailDrawer: FC<IPracticeResultDetailDrawerProps> = ({
 									<List.Item>{practiceSettings.numberOfQuestions} questions</List.Item>
 									<List.Item>{capitalize(practiceSettings.playingMode)} playing mode</List.Item>
 									<List.Item>
-										{capitalize(practiceSettings.typeGroup)} {translationNamespace}s
+										{capitalize(practiceSettings.typeGroup)} {exerciseType}s
 									</List.Item>
 									{practiceSettings.fixedRoot.enabled && <List.Item>{practiceSettings.fixedRoot.rootNote} fixed root note</List.Item>}
 								</List>
@@ -153,7 +154,7 @@ const PracticeResultDetailDrawer: FC<IPracticeResultDetailDrawerProps> = ({
 								className='space-y-2 p-3'
 							>
 								<div className='flex items-center justify-between gap-4 text-sm text-white'>
-									<p className='font-medium'>{t(`${translationNamespace}.${questionType}`)}</p>
+									<p className='font-medium'>{t(`${exerciseType}.${questionType}`)}</p>
 									<Badge
 										variant='light'
 										color={exerciseResultColor}

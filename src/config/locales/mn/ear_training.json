@@ -14,9 +14,16 @@
 	"intervalIdentification": "Интервал сонсох",
 	"chordIdentification": "Аккорд сонсох",
 	"modeIdentification": "Лад сонсох",
+	"intervals": "Интервалууд",
+	"chords": "Аккордууд",
+	"modes": "Ладууд",
+	"intervalTitle": "Интервал",
+	"chordTitle": "Аккорд",
+	"modeTitle": "Лад",
 	"selectedChord": "Сонгосон аккорд",
 	"chordInversion": "{{inversion}}-р хөнтрөл",
 	"rootInversion": "Суурь хөнтрөл",
+	"inversions": "Хөнтрөлүүд",
 
 	"settings": {
 		"practiceSettings": "Дасгалын тохиргоо",
@@ -41,7 +48,7 @@
 		"questionDurationPlaceholder": "1 - 30 хооронд",
 		"autoFeedback": "Хариугаа шууд шалгах",
 		"chordInversions": "Хөнтрөлүүд",
-		"chordInversionsPlaceholder": "Сонсон хөнтрөлөө сонгоно уу"
+		"chordInversionsPlaceholder": "Сонсох хөнтрөлөө сонгоно уу"
 	},
 	"selectOptions": {
 		"ascending": "Өгсөх",

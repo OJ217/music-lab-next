@@ -21,9 +21,20 @@ export const NON_HARMONIC_PLAYING_MODE_SELECT_OPTIONS: SelectData<NonHarmonicPla
 // *********************
 // ** Fixed Root Note **
 // *********************
-export const FIXED_ROOT_NOTES = ['C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4', 'G#4', 'A4', 'A#4', 'B4'];
-
-export const FIXED_ROOT_NOTE_SELECT_OPTIONS = FIXED_ROOT_NOTES.map(note => ({ label: note, value: note }));
+export const FIXED_ROOT_NOTE_SELECT_OPTIONS = [
+	{ label: 'C', value: 'C4' },
+	{ label: 'C#', value: 'C#4' },
+	{ label: 'D', value: 'D4' },
+	{ label: 'D#', value: 'D#4' },
+	{ label: 'E', value: 'E4' },
+	{ label: 'F', value: 'F4' },
+	{ label: 'F#', value: 'F#3' },
+	{ label: 'G', value: 'G3' },
+	{ label: 'G#', value: 'G#3' },
+	{ label: 'A', value: 'A3' },
+	{ label: 'A#', value: 'A#3' },
+	{ label: 'B', value: 'B3' }
+];
 
 // *******************
 // ** Note Duration **
@@ -106,7 +117,7 @@ export const DEFAULT_INTERVAL_PRACTICE_SETTINGS: IntervalPracticeSettings = {
 };
 
 export const intervalPracticeSettingsSchema = practiceSettingsBaseSchema.extend({
-	intervalTypeGroup: z.enum(INTERVAL_TYPES).default('all'),
+	typeGroup: z.enum(INTERVAL_TYPES).default('all'),
 	playingMode: z.enum(PLAYING_MODES).default('harmonic'),
 	noteDuration: z.enum(NOTE_DURATIONS).default('whole')
 });
@@ -148,22 +159,22 @@ export interface ChordPracticeSettings extends EarTrainingPracticeSettingsBase {
 export const DEFAULT_CHORD_PRACTICE_SETTINGS: ChordPracticeSettings = {
 	numberOfQuestions: 10,
 	typeGroup: 'all',
-	inversions: ['0', '1', '2', '3'],
+	inversions: ['0'],
 	fixedRoot: {
 		enabled: false,
 		rootNote: 'C4'
 	},
 	playingMode: 'harmonic',
-	tempo: 100,
+	tempo: 80,
 	questionDuration: 30,
 	autoFeedback: true,
 	settingsLocked: false,
-	noteDuration: 'whole'
+	noteDuration: 'quarter'
 };
 
 export const chordPracticeSettingsSchema = practiceSettingsBaseSchema.extend({
-	modeTypeGroup: z.enum(CHORD_TYPES).default('all'),
-	playingMode: z.enum(PLAYING_MODES).default('harmonic'),
+	typeGroup: z.enum(CHORD_TYPES).default('all'),
+	playingMode: z.enum(PLAYING_MODES).default('ascending'),
 	noteDuration: z.enum(NOTE_DURATIONS).default('whole')
 });
 
@@ -196,7 +207,7 @@ export const DEFAULT_MODE_PRACTICE_SETTINGS: ModePracticeSettings = {
 		rootNote: 'C4'
 	},
 	playingMode: 'ascending',
-	tempo: 80,
+	tempo: 60,
 	questionDuration: 30,
 	autoFeedback: true,
 	settingsLocked: false,
@@ -204,7 +215,7 @@ export const DEFAULT_MODE_PRACTICE_SETTINGS: ModePracticeSettings = {
 };
 
 export const modePracticeSettingsSchema = practiceSettingsBaseSchema.extend({
-	modeTypeGroup: z.enum(MODE_TYPES).default('all'),
+	typeGroup: z.enum(MODE_TYPES).default('all'),
 	playingMode: z.enum(NON_HARMONIC_PLAYING_MODES).default('ascending'),
 	noteDuration: z.enum(NOTE_DURATIONS).default('eighth')
 });

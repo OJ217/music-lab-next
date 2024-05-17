@@ -4,11 +4,15 @@ interface IQueryClientProviderProps {
 	children: React.ReactNode;
 }
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			refetchOnWindowFocus: false,
 			networkMode: 'always',
+			retry: false,
+			staleTime: Infinity
+		},
+		mutations: {
 			retry: false
 		}
 	}

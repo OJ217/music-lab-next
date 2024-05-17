@@ -24,13 +24,13 @@ export const resolvePracticeResultLevel = (totalCorrectAnswers: number, totalQue
 	let practiceResultLevel: PracticeResultLevel;
 
 	switch (true) {
-		case correctAnswerPercentage >= 0.8:
+		case correctAnswerPercentage >= 0.7:
 			practiceResultLevel = 'high';
 			break;
-		case correctAnswerPercentage >= 0.6:
+		case correctAnswerPercentage >= 0.5:
 			practiceResultLevel = 'medium-high';
 			break;
-		case correctAnswerPercentage >= 0.4:
+		case correctAnswerPercentage >= 0.3:
 			practiceResultLevel = 'medium-low';
 			break;
 		default:

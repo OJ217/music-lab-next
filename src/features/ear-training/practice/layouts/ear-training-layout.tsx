@@ -5,7 +5,7 @@ import { useAuth } from '@/context/auth/auth.context';
 import ProtectedRoute from '@/context/auth/hoc/protected-route';
 import { ActionIcon, Avatar, Menu, rem, Skeleton } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { IconChartBar, IconFlask2, IconLogout, IconSettings, IconUser } from '@tabler/icons-react';
+import { IconChartBar, IconLogout, IconSettings, IconUser } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import NavigationAffix from '../components/overlay/navigation-affix';
@@ -44,26 +44,24 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 			labels: { confirm: systemT('yes'), cancel: systemT('no') },
 			onConfirm: () => {
 				signOut();
-				queryClient.invalidateQueries();
+				queryClient.removeQueries();
 			}
 		});
 	};
 
 	return (
 		<ProtectedRoute>
-			<main className='flex min-h-screen flex-col text-white'>
+			<main className='flex min-h-screen flex-col pb-[calc(1rem_+_env(safe-area-inset-bottom))] text-white'>
 				{/* Navigation */}
 				<nav className='sticky top-0 z-50 w-full flex-none border-b-2 border-violet-600/10 bg-transparent bg-gradient-to-tr from-violet-600/5 to-violet-600/20 px-4 pb-3 pt-[calc(0.75rem_+_env(safe-area-inset-top))] backdrop-blur-md md:px-6 md:py-4'>
 					<div className='mx-auto max-w-4xl'>
 						<div className='flex items-center justify-between gap-8'>
 							<Link href={'/ear-training/practice'}>
-								<div className='inline-flex items-center gap-1 rounded-lg bg-gradient-to-tr from-cyan-600/20 to-violet-600/25 px-3 py-2'>
-									<IconFlask2
-										size={20}
-										stroke={1.8}
-									/>
-									<h1 className='text-lg font-medium'>Music Lab</h1>
-								</div>
+								<img
+									src={'/music-lab-icon-text-logo.svg'}
+									alt={'logo'}
+									className='h-[2.75rem]'
+								/>
 							</Link>
 							{!userInfo ? (
 								<div className='flex items-stretch space-x-4'>
@@ -82,7 +80,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 									</div>
 									<Skeleton
 										circle
-										height={rem(44)}
+										height={rem(46)}
 									/>
 								</div>
 							) : (
@@ -90,8 +88,8 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 									position={'bottom-end'}
 									zIndex={1000}
 								>
-									<div className='flex items-center space-x-4'>
-										<div className='hidden text-right sm:block'>
+									<div className='flex items-center sm:space-x-4'>
+										<div className='hidden h-full flex-col justify-between text-right sm:flex'>
 											<h3 className='font-bold'>{userInfo.username}</h3>
 											<p className='text-xs'>{userInfo?.email}</p>
 										</div>
@@ -99,14 +97,14 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 											{userInfo.picture ? (
 												<Avatar
 													radius={'xl'}
-													size={rem(44)}
+													size={rem(46)}
 													component={ActionIcon}
 													src={userInfo.picture}
 												/>
 											) : (
 												<Avatar
 													radius={'xl'}
-													size={rem(44)}
+													size={rem(46)}
 													variant='gradient'
 													gradient={{ from: 'violet', to: 'violet.7' }}
 													classNames={{
@@ -120,7 +118,7 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 										</Menu.Target>
 									</div>
 
-									<Menu.Dropdown className='border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-700/15 to-violet-700/25 backdrop-blur-3xl'>
+									<Menu.Dropdown className='border border-violet-800/25 bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50 backdrop-blur-3xl'>
 										<Link href={'/profile/dashboard'}>
 											<Menu.Item
 												className='text-white transition-colors duration-300 ease-in-out hover:bg-violet-600'
@@ -178,6 +176,8 @@ const EarTrainingLayout: React.FC<IEarTrainingLayoutProps> = ({ children, center
 						{children}
 					</div>
 				</div>
+
+				{/* Ear Training Practice Navigation */}
 				{showAffix && <NavigationAffix />}
 			</main>
 		</ProtectedRoute>
