@@ -26,14 +26,14 @@ export interface AuthResponse {
 				type: InstitutionType;
 			};
 			picture?: string;
-			createdAt: Date;
+			createdAt: string;
 		};
 		earTrainingProfile: {
 			xp: number;
 			currentStreak: {
 				count: number;
-				startDate: Date;
-				lastLogDate: Date;
+				startDate: string;
+				lastLogDate: string;
 			};
 			goals: {
 				exerciseType: EarTrainingPracticeType;
@@ -45,8 +45,8 @@ export interface AuthResponse {
 			};
 			bestStreak?: {
 				count: number;
-				startDate: Date;
-				endDate: Date;
+				startDate: string;
+				endDate: string;
 			};
 		};
 	};
