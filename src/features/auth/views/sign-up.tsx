@@ -24,7 +24,7 @@ const SignUpPage = () => {
 			try {
 				const googleOAuthResponse = await mutateGoogleOAuth(credentialResponse);
 
-				setAuthStore(googleOAuthResponse);
+				setAuthStore(googleOAuthResponse.auth);
 				router.push('/ear-training/practice');
 
 				notify({
@@ -83,7 +83,7 @@ const SignUpPage = () => {
 		try {
 			const signUpResponse = await mutateSignUp(data);
 
-			setAuthStore(signUpResponse.data);
+			setAuthStore(signUpResponse.auth);
 			router.push('/ear-training/practice');
 
 			notify({
