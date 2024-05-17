@@ -59,10 +59,6 @@ const IntervalLibrary = () => {
 						<span className='font-semibold'>Тон хэмжигдэхүүн:</span>
 						<span>{Interval.get(selectedInterval).semitones}</span>
 					</div>
-					<div className='space-x-2'>
-						<span className='font-semibold'>Интервалын чанар:</span>
-						<span>Цэвэр</span>
-					</div>
 				</div>
 				<Button
 					disabled={samplerDisabled}

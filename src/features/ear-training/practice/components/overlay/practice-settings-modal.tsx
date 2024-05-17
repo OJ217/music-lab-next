@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { notify } from '@/utils/notification.util';
 import { Box, Button, Collapse, Modal, MultiSelect, NumberInput, ScrollArea, Select, Switch } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 
@@ -44,14 +43,6 @@ export const IntervalPracticeSettingsModal: React.FC<IPracticeSettingsModalProps
 		if (settings.playingMode !== 'harmonic') {
 			practiceSettingsForm.setFieldValue('noteDuration', 'quarter');
 		}
-
-		notify({
-			type: 'success',
-			title: 'Interval identification settings',
-			message: `${settings.numberOfQuestions} questions will be played in ${settings.playingMode} mode${
-				settings.fixedRoot.enabled ? ' with a fixed ' + settings.fixedRoot.rootNote + ' root note' : ''
-			}.`
-		});
 
 		closeSettings();
 	};
@@ -218,14 +209,6 @@ export const ChordPracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Ch
 			practiceSettingsForm.setFieldValue('noteDuration', 'whole');
 		}
 
-		notify({
-			type: 'success',
-			title: 'Chord identification settings',
-			message: `${settings.numberOfQuestions} questions will be played in ${settings.playingMode} mode${
-				settings.fixedRoot.enabled ? ' with a fixed ' + settings.fixedRoot.rootNote + ' root note' : ''
-			}.`
-		});
-
 		closeSettings();
 	};
 
@@ -390,14 +373,6 @@ export const ModePracticeSettingsModal: React.FC<IPracticeSettingsModalProps<Mod
 	};
 
 	const handleSettingsFormSubmit = (settings: ModePracticeSettings) => {
-		notify({
-			type: 'success',
-			title: 'Mode identification settings',
-			message: `${settings.numberOfQuestions} questions will be played in ${settings.playingMode} mode${
-				settings.fixedRoot.enabled ? ' with a fixed ' + settings.fixedRoot.rootNote + ' root note' : ''
-			}.`
-		});
-
 		closeSettings();
 	};
 

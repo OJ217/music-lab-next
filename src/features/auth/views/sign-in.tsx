@@ -1,9 +1,9 @@
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { GOOGLE_OAUTH } from '@/config/constants/api.constant';
 import { useAuth } from '@/context/auth/auth.context';
+import { useMetaData } from '@/context/meta/meta.context';
 import { notify } from '@/utils/notification.util';
 import { Button, Divider, PasswordInput, TextInput } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
@@ -13,9 +13,9 @@ import AuthLayout from '../layouts/auth-layout';
 import { useGoogleOAuthMutation, useSignInMutation } from '../services/auth.service';
 
 const SignInPage = () => {
-	const router = useRouter();
 	const { t: authT } = useTranslation('auth');
-	const { setAuthStore } = useAuth();
+	const { signInLocal } = useAuth();
+	const { setUpMetaDataStore } = useMetaData();
 
 	const { mutateGoogleOAuth, googleOAuthPending } = useGoogleOAuthMutation();
 
@@ -24,8 +24,8 @@ const SignInPage = () => {
 			try {
 				const googleOAuthResponse = await mutateGoogleOAuth(credentialResponse);
 
-				setAuthStore(googleOAuthResponse);
-				router.push('/ear-training/practice');
+				setUpMetaDataStore(googleOAuthResponse.meta);
+				signInLocal(googleOAuthResponse.auth);
 
 				notify({
 					type: 'success',
@@ -36,7 +36,7 @@ const SignInPage = () => {
 
 				notify({
 					type: 'fail',
-					title: 'Google account - аар нэвтрэхэд алдаа гарлаа'
+					title: authT('googleSignInUnsuccessful')
 				});
 			}
 		},
@@ -45,7 +45,7 @@ const SignInPage = () => {
 
 			notify({
 				type: 'fail',
-				title: 'Google account - аар нэвтрэхэд алдаа гарлаа'
+				title: authT('googleSignInUnsuccessful')
 			});
 		},
 		flow: 'auth-code'
@@ -72,19 +72,19 @@ const SignInPage = () => {
 		try {
 			const signInResponse = await mutateSignIn(values);
 
-			setAuthStore(signInResponse.data);
-			router.push('/ear-training/practice');
+			setUpMetaDataStore(signInResponse.meta);
+			signInLocal(signInResponse.auth);
 
 			notify({
 				type: 'success',
-				title: 'Signed in successfully'
+				title: authT('signInSuccessful')
 			});
 		} catch (error) {
 			console.error(error);
 
 			notify({
 				type: 'fail',
-				title: 'Could not sign in'
+				title: authT('signInUnsuccessful')
 			});
 		}
 	};

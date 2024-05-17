@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
 import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
@@ -22,8 +23,8 @@ const EXERCISES_SCORE_META: Record<
 	{ icon: JSX.Element | React.ReactNode; label: string; description: string; badgeClass: string; labelDescriptionClass: string; cardClass: string }
 > = {
 	'interval-identification': {
-		label: 'Interval',
-		description: 'Distance between two notes',
+		label: 'Интервал',
+		description: 'Хоёр нотны хоорондох зай',
 		icon: (
 			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50'>
 				<IconMusic
@@ -38,8 +39,8 @@ const EXERCISES_SCORE_META: Record<
 		badgeClass: 'bg-violet-600'
 	},
 	'chord-identification': {
-		label: 'Chord',
-		description: 'Combination of three or more notes',
+		label: 'Аккорд',
+		description: 'Гурав болон түүнээс дээш нотны хамтран дуугаралт',
 		icon: (
 			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-sky-600/25 to-sky-600/50'>
 				<IconMusic
@@ -54,8 +55,8 @@ const EXERCISES_SCORE_META: Record<
 		badgeClass: 'bg-sky-600'
 	},
 	'mode-identification': {
-		label: 'Mode',
-		description: 'Specific scale or tonal pattern',
+		label: 'Лад',
+		description: 'Дэвсгэр хөгийн зохион байгуулалт',
 		icon: (
 			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-amber-600/25 to-amber-600/50'>
 				<IconMusic
@@ -75,24 +76,25 @@ const MONTHLY_ACTIVITY_SUMMARY_META: Record<EarTrainingPracticeType, { tooltipCl
 	'interval-identification': {
 		tooltipClass: 'bg-violet-600/75 font-semibold text-white backdrop-blur-sm',
 		segmentClass: 'h-full bg-violet-600',
-		label: 'Interval practice',
+		label: 'Интервал сонсох',
 		badgeColor: 'bg-violet-600'
 	},
 	'chord-identification': {
 		tooltipClass: 'bg-sky-600/75 font-semibold text-white backdrop-blur-sm',
 		segmentClass: 'h-full bg-sky-600',
-		label: 'Chord practice',
+		label: 'Аккорд сонсох',
 		badgeColor: 'bg-sky-600'
 	},
 	'mode-identification': {
 		tooltipClass: 'bg-amber-600/75 font-semibold text-white backdrop-blur-sm',
 		segmentClass: 'h-full bg-amber-600',
-		label: 'Mode practice',
+		label: 'Лад сонсох',
 		badgeColor: 'bg-amber-600'
 	}
 };
 
 const EarTrainingDashboard = () => {
+	const { t: dashboardT } = useTranslation('ear_training_dashboard');
 	const { earTrainingOverallStatistics, earTrainingOverallStatisticsPending } = useEarTrainingOverallStatisticsQuery({});
 	const [dashboardChartType, setDashboardChartType] = useState<EarTrainingDashboardChartType>('activity');
 
@@ -143,7 +145,7 @@ const EarTrainingDashboard = () => {
 					layout={'position'}
 					className='space-y-4'
 				>
-					<h3 className='text-sm font-medium'>Monthly activity insights</h3>
+					<h3 className='text-sm font-medium'>{dashboardT('monthlyActivityInsights')}</h3>
 					<div className='grid grid-cols-2 gap-4'>
 						{earTrainingOverallStatisticsPending ? (
 							Array.from({ length: 4 }).map((_, index) => (
@@ -156,10 +158,10 @@ const EarTrainingDashboard = () => {
 						) : (
 							<>
 								{[
-									{ Icon: <IconWrapper Icon={IconActivity} />, label: 'Average activity', value: earTrainingOverallStatistics?.insights.activity.averageActivity },
-									{ Icon: <IconWrapper Icon={IconStar} />, label: 'Best activity', value: earTrainingOverallStatistics?.insights.activity.bestActivity },
-									{ Icon: <IconWrapper Icon={IconCalendar} />, label: 'Total active days', value: earTrainingOverallStatistics?.insights.activity.totalActiveDays },
-									{ Icon: <IconWrapper Icon={IconHistory} />, label: 'Total activity', value: earTrainingOverallStatistics?.insights.activity.totalActivity }
+									{ Icon: <IconWrapper Icon={IconActivity} />, label: dashboardT('averageActivity'), value: earTrainingOverallStatistics?.insights.activity.averageActivity },
+									{ Icon: <IconWrapper Icon={IconStar} />, label: dashboardT('bestActivity'), value: earTrainingOverallStatistics?.insights.activity.bestActivity },
+									{ Icon: <IconWrapper Icon={IconCalendar} />, label: dashboardT('totalActiveDays'), value: earTrainingOverallStatistics?.insights.activity.totalActiveDays },
+									{ Icon: <IconWrapper Icon={IconHistory} />, label: dashboardT('totalActivity'), value: earTrainingOverallStatistics?.insights.activity.totalActivity }
 								].map((insight, index) => (
 									<DashboardStatisticCard
 										key={index}
@@ -178,7 +180,7 @@ const EarTrainingDashboard = () => {
 					layout={'position'}
 					className='space-y-4'
 				>
-					<h3 className='text-sm font-medium'>Monthly activity summary</h3>
+					<h3 className='text-sm font-medium'>{dashboardT('monthlyExerciseRatios')}</h3>
 					{earTrainingOverallStatisticsPending ? (
 						<Skeleton
 							radius={'md'}
@@ -213,11 +215,11 @@ const EarTrainingDashboard = () => {
 											return (
 												<div
 													key={exercise.type}
-													className='flex items-center justify-between'
+													className='flex items-center justify-between text-sm'
 												>
 													<p className='font-medium'>{label}</p>
 													<div className={`rounded-md ${badgeColor} px-2 py-0.5`}>
-														<p className='text-sm font-bold'>{exercise.activity}</p>
+														<p className='font-bold'>{exercise.activity}</p>
 													</div>
 												</div>
 											);
@@ -252,7 +254,7 @@ const EarTrainingDashboard = () => {
 					layout={'position'}
 					className='space-y-4'
 				>
-					<h3 className='text-sm font-medium'>Ear training exercises</h3>
+					<h3 className='text-sm font-medium'>{dashboardT('exerciseDetail')}</h3>
 					{earTrainingOverallStatisticsPending
 						? Array.from({ length: 3 }).map((_, index) => (
 								<Skeleton
@@ -274,7 +276,7 @@ const EarTrainingDashboard = () => {
 											<div className='flex items-center justify-between gap-4'>
 												<div className='flex items-center gap-4'>
 													{icon}
-													<div className='text-white'>
+													<div className={labelDescriptionClass}>
 														<h3 className='font-semibold'>{label}</h3>
 														<p className={`text-[13px] ${labelDescriptionClass}`}>{description}</p>
 													</div>
@@ -307,7 +309,7 @@ const EarTrainingDashboard = () => {
 											<div className='flex items-center justify-between gap-4'>
 												<div className='flex items-center gap-4'>
 													{icon}
-													<div className='text-white'>
+													<div className={labelDescriptionClass}>
 														<h3 className='font-semibold'>{label}</h3>
 														<p className={`text-[13px] ${labelDescriptionClass}`}>{description}</p>
 													</div>

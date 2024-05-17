@@ -21,7 +21,7 @@ const Settings = () => {
 								</div>
 								<div className='flex-grow'>
 									<h4 className='text-base font-semibold'>Profile</h4>
-									<p className='text-[13px] font-medium text-violet-200'>Edit general information</p>
+									<p className='text-[13px] text-violet-200'>Edit general information</p>
 								</div>
 							</div>
 							<IconChevronRight className='stroke-violet-200 stroke-[1.8px]' />
@@ -33,7 +33,7 @@ const Settings = () => {
 								</div>
 								<div className='flex-grow'>
 									<h4 className='text-base font-semibold'>Account</h4>
-									<p className='text-[13px] font-medium text-violet-200'>Manage your account</p>
+									<p className='text-[13px] text-violet-200'>Manage your account</p>
 								</div>
 							</div>
 							<IconChevronRight className='stroke-violet-200 stroke-[1.8px]' />
@@ -45,7 +45,7 @@ const Settings = () => {
 								</div>
 								<div className='flex-grow'>
 									<h4 className='text-base font-semibold'>Daily goal</h4>
-									<p className='text-[13px] font-medium text-violet-200'>Edit daily goal for ear training</p>
+									<p className='text-[13px] text-violet-200'>Edit daily goal for ear training</p>
 								</div>
 							</div>
 							<IconChevronRight className='stroke-violet-200 stroke-[1.8px]' />
@@ -62,7 +62,7 @@ const Settings = () => {
 								</div>
 								<div className='flex-grow'>
 									<h4 className='text-base font-semibold'>Language</h4>
-									<p className='text-[13px] font-medium text-violet-200'>Primary language for the app</p>
+									<p className='text-[13px] text-violet-200'>Primary language for the app</p>
 								</div>
 							</div>
 							<div className='rounded bg-violet-600 px-2 py-0.5'>
@@ -76,11 +76,11 @@ const Settings = () => {
 								</div>
 								<div className='flex-grow'>
 									<h4 className='text-base font-semibold'>Notification</h4>
-									<p className='text-[13px] font-medium text-violet-200'>Receive reminder for practice</p>
+									<p className='text-[13px] text-violet-200'>Receive reminder for practice</p>
 								</div>
 							</div>
 							<Switch
-								checked
+								checked={false}
 								color='violet.6'
 							/>
 						</div>
@@ -91,7 +91,7 @@ const Settings = () => {
 								</div>
 								<div className='flex-grow'>
 									<h4 className='text-base font-semibold'>Motivational message</h4>
-									<p className='text-[13px] font-medium text-violet-200'>Get motivational feedback</p>
+									<p className='text-[13px] text-violet-200'>Get motivational feedback</p>
 								</div>
 							</div>
 							<Switch
@@ -114,7 +114,7 @@ const Settings = () => {
 								</div>
 								<div className='flex-grow'>
 									<h4 className='text-base font-semibold'>Help center</h4>
-									<p className='text-[13px] font-medium text-violet-200'>Frequently asked questions</p>
+									<p className='text-[13px] text-violet-200'>Frequently asked questions</p>
 								</div>
 							</div>
 							<IconChevronRight className='stroke-violet-200 stroke-[1.8px]' />
@@ -129,7 +129,7 @@ const Settings = () => {
 								</div>
 								<div className='flex-grow'>
 									<h4 className='text-base font-semibold'>Feedback</h4>
-									<p className='text-[13px] font-medium text-violet-200'>Give feedback to the app</p>
+									<p className='text-[13px] text-violet-200'>Give feedback to the app</p>
 								</div>
 							</div>
 							<IconChevronRight className='stroke-violet-200 stroke-[1.8px]' />
@@ -141,7 +141,7 @@ const Settings = () => {
 								</div>
 								<div className='flex-grow'>
 									<h4 className='text-base font-semibold'>Terms and Policy</h4>
-									<p className='text-[13px] font-medium text-violet-200'>View app legal documents</p>
+									<p className='text-[13px] text-violet-200'>View app legal documents</p>
 								</div>
 							</div>
 							<IconChevronRight className='stroke-violet-200 stroke-[1.8px]' />

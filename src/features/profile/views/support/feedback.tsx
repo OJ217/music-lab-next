@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
-import { Button, FileButton, Textarea } from '@mantine/core';
+import { Button, FileButton, Textarea, Tooltip } from '@mantine/core';
 import { IconFileUpload, IconSpy } from '@tabler/icons-react';
 
 import IconWrapper from '../../components/misc/icon-wrapper';
@@ -26,7 +26,7 @@ const Feedback = () => {
 						</div>
 						<Textarea
 							spellCheck={false}
-							placeholder='Write your feedback to contribute to the future development app.'
+							placeholder={`Write your feedback to contribute to the further development of the 'Music Lab'.`}
 							classNames={{
 								input: 'bg-violet-600/50 placeholder:text-violet-200 h-[220px] border-violet-600 transition-all ease-in-out duration-500 text-white'
 							}}
@@ -52,7 +52,15 @@ const Feedback = () => {
 							)}
 						</FileButton>
 					</div>
-					<Button fullWidth>Submit</Button>
+					<Tooltip label={'Удахгүй ашиглалтанд орно :)'}>
+						<Button
+							fullWidth
+							disabled
+							className='disabled:bg-violet-600/50 disabled:text-white/50'
+						>
+							Submit
+						</Button>
+					</Tooltip>
 				</div>
 			</div>
 		</EarTrainingLayout>

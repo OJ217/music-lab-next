@@ -95,3 +95,7 @@ export const addEarTrainingErrorLocal = async (errors: Record<string, Array<stri
 		timestamp: new Date()
 	});
 };
+
+export const deleteEarTrainingErrorLocal = async () => {
+	await earTrainingErrorIDB.delete();
+};

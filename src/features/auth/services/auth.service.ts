@@ -1,25 +1,67 @@
+export enum InstitutionType {
+	UNIVERSITY = 'university',
+	COLLEGE = 'college',
+	HIGH_SCHOOL = 'high_school',
+	OTHER = 'other'
+}
+
 export interface AuthResponse {
-	accessToken: string;
-	refreshToken: string;
-	user: {
-		_id: string;
-		email: string;
-		username: string;
-		picture?: string;
-		createdAt: Date;
+	auth: {
+		accessToken: string;
+		refreshToken: string;
+		user: {
+			_id: string;
+			email: string;
+			username: string;
+			picture: string | undefined;
+			createdAt: Date;
+		};
+	};
+	meta: {
+		profile: {
+			firstName?: string;
+			lastName?: string;
+			institution?: {
+				name: string;
+				type: InstitutionType;
+			};
+			picture?: string;
+			createdAt: Date;
+		};
+		earTrainingProfile: {
+			xp: number;
+			currentStreak: {
+				count: number;
+				startDate: Date;
+				lastLogDate: Date;
+			};
+			goals: {
+				exerciseType: EarTrainingPracticeType;
+				target: number;
+			}[];
+			stats: {
+				totalSessions: number;
+				totalDuration: number;
+			};
+			bestStreak?: {
+				count: number;
+				startDate: Date;
+				endDate: Date;
+			};
+		};
 	};
 }
 
 import axios from 'axios';
 
-import { WEB_APP_URL } from '@/config/constants/api.constant';
+import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { IResponse } from '@/types';
 import { CodeResponse } from '@react-oauth/google';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useSignInMutation = () => {
 	const signIn = async (signInCredentials: { email: string; password: string }) => {
-		return (await axios.post<IResponse<AuthResponse>>('/auth/sign-in', signInCredentials)).data;
+		return (await axios.post<IResponse<AuthResponse>>('/auth/sign-in', signInCredentials)).data?.data;
 	};
 
 	const client = useQueryClient();
@@ -46,7 +88,7 @@ export const useSignInMutation = () => {
 
 export const useSignUpMutation = () => {
 	const signUp = async (signUpCredentials: { username: string; email: string; password: string; passwordConfirmation: string }) => {
-		return (await axios.post<IResponse<AuthResponse>>('/auth/sign-up', signUpCredentials)).data;
+		return (await axios.post<IResponse<AuthResponse>>('/auth/sign-up', signUpCredentials)).data?.data;
 	};
 
 	const client = useQueryClient();
@@ -73,8 +115,7 @@ export const useSignUpMutation = () => {
 
 export const useGoogleOAuthMutation = () => {
 	const handleGoogleOAuth = async (googleOAuthCredentials: Omit<CodeResponse, 'error' | 'error_description' | 'error_uri'>) => {
-		const googleOAuthResponse = (await axios.post<IResponse<AuthResponse>>('/auth/google', googleOAuthCredentials)).data;
-		return googleOAuthResponse?.data;
+		return (await axios.post<IResponse<AuthResponse>>('/auth/google', googleOAuthCredentials)).data?.data;
 	};
 
 	const client = useQueryClient();
@@ -97,12 +138,4 @@ export const useGoogleOAuthMutation = () => {
 		googleOAuthError,
 		mutateGoogleOAuth
 	};
-};
-
-export const removeAuthCredentials = async () => {
-	try {
-		await axios.post(WEB_APP_URL.API_ROUTE('/sign-out'));
-	} catch (error) {
-		console.error(error);
-	}
 };

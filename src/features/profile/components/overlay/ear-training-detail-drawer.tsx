@@ -23,11 +23,12 @@ interface IEarTrainingDetailDrawerProps {
 // TODO: Translation
 const EarTrainingDetailDrawer: React.FC<IEarTrainingDetailDrawerProps> = ({ earTrainingDetailDrawerOpened, closeEarTrainingDetailDrawer, earTrainingSession, earTrainingExerciseType }) => {
 	const { t } = useTranslation();
+	const { t: dashboardT } = useTranslation('ear_training_dashboard');
 
 	return (
 		<Drawer
 			position='left'
-			title={'Practice session detail'}
+			title={dashboardT('exerciseDetail')}
 			opened={earTrainingDetailDrawerOpened}
 			onClose={closeEarTrainingDetailDrawer}
 			closeButtonProps={{ size: 'sm' }}
@@ -48,7 +49,7 @@ const EarTrainingDetailDrawer: React.FC<IEarTrainingDetailDrawerProps> = ({ earT
 								className='h-[6.75rem]'
 							/>
 						</div>
-						<h3 className='text-sm font-medium text-white'>Exercises</h3>
+						<h3 className='text-sm font-medium text-white'>{dashboardT('exercises')}</h3>
 						<div className='space-y-3'>
 							{Array.from({ length: 8 }).map((_, index) => (
 								<Skeleton
@@ -106,7 +107,7 @@ const EarTrainingDetailDrawer: React.FC<IEarTrainingDetailDrawerProps> = ({ earT
 						</div>
 
 						<div className='space-y-4'>
-							<h3 className='text-sm font-medium text-white'>Exercises</h3>
+							<h3 className='text-sm font-medium text-white'>{dashboardT('exercises')}</h3>
 							{earTrainingSession?.statistics.map(({ score, correct, incorrect, questionType, questionCount }) => {
 								const exerciseResultColor = resolvePracticeResultColor(correct, questionCount);
 

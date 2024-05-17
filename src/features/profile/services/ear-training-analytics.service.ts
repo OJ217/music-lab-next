@@ -87,7 +87,7 @@ export const useEarTrainingOverallStatisticsQuery = ({ enabled }: IUseQueryBase)
 		const totalActiveDays = dateRangeStatisticsSorted.filter(stat => stat.activity > 0).length;
 		const totalActivity = dateRangeStatisticsSorted.map(stat => stat.activity).reduce((a, b) => a + b, 0);
 		const bestActivity = Math.max(...dateRangeStatisticsSorted.map(stat => stat.activity));
-		const averageActivity = (totalActivity / dateRangeStatisticsSorted.length).toFixed(1);
+		const averageActivity = (totalActivity / totalActiveDays).toFixed(1);
 
 		// ** Exercise Insights
 		const exerciseInsights = exerciseTypeStatisticsSorted.map(exercise => ({
@@ -159,9 +159,10 @@ export const useEarTrainingExerciseStatisticsQuery = ({ enabled = true, exercise
 		const dateRangeStatisticsSorted = earTrainingExerciseStatistics.toSorted((a, b) => dayjs(a.date).diff(dayjs(b.date)));
 		const activity = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, activity: stat.activity }));
 		const scores = dateRangeStatisticsSorted.map(stat => ({ date: stat.date, correct: stat.correct, activity: stat.activity, score: calculatePercentage(stat.correct, stat.activity) }));
+		const totalActiveDays = dateRangeStatisticsSorted.filter(stat => stat.activity > 0).length;
 
 		const totalActivity = activity.map(stat => stat.activity).reduce((a, b) => a + b, 0);
-		const averageActivity = (totalActivity / activity.length).toFixed(1);
+		const averageActivity = (totalActivity / totalActiveDays).toFixed(1);
 		const averageScore = calculatePercentage(
 			scores.map(stat => stat.correct).reduce((a, b) => a + b, 0),
 			totalActivity

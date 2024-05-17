@@ -40,6 +40,7 @@ const EarTrainingExerciseDashboard = () => {
 	const exerciseType = router.query?.exercise as EarTrainingPracticeType;
 
 	const { t } = useTranslation();
+	const { t: dashboardT } = useTranslation('ear_training_dashboard');
 
 	const { earTrainingExerciseStatistics, earTrainingExerciseStatisticsPending } = useEarTrainingExerciseStatisticsQuery({
 		enabled: !!exerciseType,
@@ -66,7 +67,7 @@ const EarTrainingExerciseDashboard = () => {
 			centered={false}
 			showAffix={false}
 		>
-			<div className='mx-auto w-full max-w-lg space-y-8'>
+			<div className='mx-auto w-full max-w-md space-y-8'>
 				<motion.div
 					key={'charts'}
 					layout={'position'}
@@ -108,7 +109,7 @@ const EarTrainingExerciseDashboard = () => {
 					layout={'position'}
 					className='space-y-4'
 				>
-					<h3 className='text-sm font-semibold'>Monthly insights</h3>
+					<h3 className='text-sm font-semibold'>{dashboardT('monthlyActivityInsights')}</h3>
 					<div className='grid grid-cols-2 gap-4'>
 						{earTrainingExerciseStatisticsPending ? (
 							Array.from({ length: 2 }).map((_, index) => (
@@ -121,12 +122,12 @@ const EarTrainingExerciseDashboard = () => {
 						) : (
 							<>
 								<DashboardStatisticCard
-									label={'Average activity'}
+									label={dashboardT('averageActivity')}
 									value={earTrainingExerciseStatistics?.insights?.averageActivity}
 									icon={<IconWrapper Icon={IconActivity} />}
 								/>
 								<DashboardStatisticCard
-									label={'Average score'}
+									label={dashboardT('averageScore')}
 									value={earTrainingExerciseStatistics?.insights?.averageScore}
 									icon={
 										earTrainingExerciseStatistics?.insights?.averageScore ? (
@@ -172,7 +173,7 @@ const EarTrainingExerciseDashboard = () => {
 					layout={'position'}
 					className='space-y-4'
 				>
-					<h3 className='text-sm font-semibold'>Common errors</h3>
+					<h3 className='text-sm font-semibold'>{dashboardT('commonErrors')}</h3>
 					{earTrainingExerciseErrorsPending ? (
 						Array.from({ length: 5 }).map((_, index) => (
 							<Skeleton
@@ -230,7 +231,7 @@ const EarTrainingExerciseDashboard = () => {
 					layout={'position'}
 					className='space-y-4'
 				>
-					<h3 className='text-sm font-semibold'>Practice session history</h3>
+					<h3 className='text-sm font-semibold'>{dashboardT('practiceHistory')}</h3>
 					{practiceSessionListPending ? (
 						Array.from({ length: 10 }).map((_, index) => (
 							<Skeleton

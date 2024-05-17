@@ -16,7 +16,6 @@ import { usePracticeMode } from '../hooks/use-practice-mode';
 import EarTrainingLayout from '../layouts/ear-training-layout';
 import { EarTrainingPracticeType, saveEarTrainingPracticeSessionSchema, useSaveEarTrainingPracticeSessionMutation } from '../services/practice-session.service';
 import { addEarTrainingErrorLocal } from '../stores/ear-training-errors.store';
-import { addEarTrainingSessionLocal } from '../stores/ear-training-session.store';
 import { DEFAULT_MODE_PRACTICE_SETTINGS, MODE_TYPE_GROUPS, ModePracticeSettings, modePracticeSettingsSchema } from '../types/practice-session-settings.type';
 import { refineEarTrainingSessionResult } from '../utils/practice-session-result.util';
 
@@ -101,8 +100,6 @@ const PracticeIntervalView: React.FC<IPracticeModeView> = ({ modePracticeSetting
 				const {
 					data: { _id }
 				} = await mutateSaveEarTrainingPracticeSession(practiceSessionDataParsed.data);
-
-				void addEarTrainingSessionLocal({ _id, ...practiceSessionDataParsed.data, timestamp: new Date() }, 'modeSessions');
 
 				notify({ type: 'success', title: 'Practice session saved' });
 			} catch (error) {

@@ -26,18 +26,12 @@ dependencies:
   '@react-oauth/google':
     specifier: ^0.11.1
     version: 0.11.1(react-dom@18.3.1)(react@18.3.1)
-  '@slnsw/react-sheet-music':
-    specifier: ^0.0.6
-    version: 0.0.6(react@18.3.1)
   '@tabler/icons-react':
     specifier: ^2.37.0
     version: 2.37.0(react@18.3.1)
   '@tanstack/react-query':
     specifier: ^5.0.5
     version: 5.0.5(react-dom@18.3.1)(react@18.3.1)
-  abcjs:
-    specifier: ^6.3.0
-    version: 6.3.0
   axios:
     specifier: ^1.6.0
     version: 1.6.0
@@ -1732,15 +1726,6 @@ packages:
     resolution: {integrity: sha512-EF3948ckf3f5uPgYbQ6GhyA56Dmv8yg0+ir+BroRjwdxyZJsekhZzawOecC2rOTPCz173t7ZcR1HHZu0dZgOCw==}
     dev: true
 
-  /@slnsw/react-sheet-music@0.0.6(react@18.3.1):
-    resolution: {integrity: sha512-I4ZTQ1/AGblyFV5RyPCmjLgjQO0BOK9q9UEIOYdZb4MPsdtTm+7bm3TcbMcJ+QpUhBkyupZWVq8fWLqYvvcyXg==}
-    peerDependencies:
-      react: '>=16'
-    dependencies:
-      abcjs: 5.12.0
-      react: 18.3.1
-    dev: false
-
   /@surma/rollup-plugin-off-main-thread@2.2.3:
     resolution: {integrity: sha512-lR8q/9W7hZpMWweNiAKU7NQerBnzQQLvi8qnTDU/fxItPhtZVMbPV3lbCwjhIlNBe9Bbr5V+KHshvWmVSG9cxQ==}
     dependencies:
@@ -2284,30 +2269,6 @@ packages:
 
   /@xtuc/long@4.2.2:
     resolution: {integrity: sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==}
-    dev: false
-
-  /abcjs@5.10.3:
-    resolution: {integrity: sha512-YGmW4CUWd7T2/HqZa/SQOTE+lXg7Z68HwwpJhHJBvdHqLi1uLCiYva1ZRGhB/MPyl1QKqJMfF+LQ1jGAEK69XQ==}
-    dependencies:
-      midi: github.com/paulrosen/MIDI.js/e593ffef81a0350f99448e3ab8111957145ff6b2
-    dev: false
-
-  /abcjs@5.11.0:
-    resolution: {integrity: sha512-kLehHwwttcTCVhKQaDkmqYbWBLAWmfyzYSbUQoEDAOTOX5RzDGakX8tXpzlsNHw6Lh8W8odZw44e0siwbG4TKA==}
-    dependencies:
-      abcjs: 5.10.3
-      midi: github.com/paulrosen/MIDI.js/e593ffef81a0350f99448e3ab8111957145ff6b2
-    dev: false
-
-  /abcjs@5.12.0:
-    resolution: {integrity: sha512-pvi7SjOAKT7cRyRtywUSwYB0SNtRHKLxZUZ9Oc4E+nvpBHr8Z2/M9Pfyv3oIaiEpxlWTFK+B/H5t/DckiNFgpg==}
-    dependencies:
-      abcjs: 5.11.0
-      midi: github.com/paulrosen/MIDI.js/e593ffef81a0350f99448e3ab8111957145ff6b2
-    dev: false
-
-  /abcjs@6.3.0:
-    resolution: {integrity: sha512-cXYvACLCJ/PGMh2LLtRB8Ks+tDbDySTaNNPXFsChBIFoscZFoTE4Ks4JIYru2nELjZujZBnfN0Syk5VLtzJuMQ==}
     dev: false
 
   /acorn-import-assertions@1.9.0(acorn@8.11.3):
@@ -6347,10 +6308,4 @@ packages:
 
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
-    dev: false
-
-  github.com/paulrosen/MIDI.js/e593ffef81a0350f99448e3ab8111957145ff6b2:
-    resolution: {tarball: https://codeload.github.com/paulrosen/MIDI.js/tar.gz/e593ffef81a0350f99448e3ab8111957145ff6b2}
-    name: midi
-    version: 0.4.2
     dev: false
