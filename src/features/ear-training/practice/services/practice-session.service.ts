@@ -56,7 +56,7 @@ export const useSaveEarTrainingPracticeSessionMutation = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: ['ear-training', 'analytics'],
-				exact: true
+				exact: false
 			});
 		}
 	});
