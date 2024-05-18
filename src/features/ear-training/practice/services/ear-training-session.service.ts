@@ -1,18 +1,12 @@
 import axios from 'axios';
 import { z } from 'zod';
 
-import { IResponse } from '@/types';
+import { EarTrainingType, IResponse } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-export enum EarTrainingPracticeType {
-	IntervalIdentification = 'interval-identification',
-	ChordIdentification = 'chord-identification',
-	ModeIdentification = 'mode-identification'
-}
 
 export const saveEarTrainingPracticeSessionSchema = z
 	.object({
-		type: z.nativeEnum(EarTrainingPracticeType),
+		type: z.nativeEnum(EarTrainingType),
 		duration: z.number().min(0),
 		result: z.object({
 			score: z.number().min(0).max(100),
@@ -43,7 +37,7 @@ export type SaveEarTrainingPracticeSessionRequestData = z.infer<typeof saveEarTr
 export const useSaveEarTrainingPracticeSessionMutation = () => {
 	const saveEarTrainingPracticeSession = async (practiceSessionData: SaveEarTrainingPracticeSessionRequestData) => {
 		return (
-			await axios.post<IResponse<{ _id: string; xp: number }>>('/ear-training/sessions', practiceSessionData, {
+			await axios.post<IResponse<{ _id: string; xp: number; streakUpdated: boolean }>>('/ear-training/sessions', practiceSessionData, {
 				isPrivate: true
 			})
 		).data;
@@ -54,9 +48,8 @@ export const useSaveEarTrainingPracticeSessionMutation = () => {
 	const { isPending: savePracticeSessionPending, mutateAsync: mutateSaveEarTrainingPracticeSession } = useMutation({
 		mutationFn: saveEarTrainingPracticeSession,
 		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: ['ear-training', 'analytics'],
-				exact: false
+			queryClient.removeQueries({
+				queryKey: ['ear-training', 'analytics']
 			});
 		}
 	});

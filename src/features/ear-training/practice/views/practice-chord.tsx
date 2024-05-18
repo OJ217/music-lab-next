@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo } from 'react';
 
+import { useMetaDataLocalStorage } from '@/common/hooks/use-parsed-local-storage';
+import { EarTrainingType } from '@/types';
 import { notify } from '@/utils/notification.util';
 import { useForm, UseFormReturnType, zodResolver } from '@mantine/form';
 
@@ -14,7 +16,7 @@ import PracticeResultModal from '../components/overlay/practice-result-modal';
 import { ChordPracticeSettingsModal } from '../components/overlay/practice-settings-modal';
 import { usePracticeChord } from '../hooks/use-practice-chord';
 import EarTrainingLayout from '../layouts/ear-training-layout';
-import { EarTrainingPracticeType, saveEarTrainingPracticeSessionSchema, useSaveEarTrainingPracticeSessionMutation } from '../services/practice-session.service';
+import { saveEarTrainingPracticeSessionSchema, useSaveEarTrainingPracticeSessionMutation } from '../services/ear-training-session.service';
 import { addEarTrainingErrorLocal } from '../stores/ear-training-errors.store';
 import { CHORD_TYPE_GROUPS, ChordPracticeSettings, chordPracticeSettingsSchema, DEFAULT_CHORD_PRACTICE_SETTINGS } from '../types/practice-session-settings.type';
 import { refineEarTrainingSessionResult } from '../utils/practice-session-result.util';
@@ -68,6 +70,9 @@ const PracticeChordView: React.FC<IPracticeChordView> = ({ chordPracticeSettings
 	// ** Practice Session Mutation
 	const { mutateSaveEarTrainingPracticeSession, savePracticeSessionPending } = useSaveEarTrainingPracticeSessionMutation();
 
+	// ** Meta Data Storage
+	const { setMetaDataEarTrainingProfile } = useMetaDataLocalStorage();
+
 	const handleSaveEarTrainingPracticeSession = async () => {
 		if (practiceSessionMeta.sessionEnded) {
 			// ** Save errors locally
@@ -89,7 +94,7 @@ const PracticeChordView: React.FC<IPracticeChordView> = ({ chordPracticeSettings
 						incorrect: practiceSessionSettingsMeta.TOTAL_QUESTIONS - practiceSessionMeta.totalCorrectAnswers,
 						questionCount: practiceSessionSettingsMeta.TOTAL_QUESTIONS
 					},
-					type: EarTrainingPracticeType.ChordIdentification,
+					type: EarTrainingType.ChordIdentification,
 					duration: dayjs().diff(practiceSessionResultMeta?.startTime, 'seconds'),
 					statistics: refineEarTrainingSessionResult(practiceSessionQuestions)
 				};
@@ -101,8 +106,14 @@ const PracticeChordView: React.FC<IPracticeChordView> = ({ chordPracticeSettings
 				}
 
 				const {
-					data: { _id }
+					data: { _id, xp, streakUpdated }
 				} = await mutateSaveEarTrainingPracticeSession(practiceSessionDataParsed.data);
+
+				setMetaDataEarTrainingProfile({
+					xp,
+					streakUpdated,
+					duration: practiceSessionData.duration
+				});
 
 				notify({ type: 'success', title: 'Practice session saved' });
 			} catch (error) {

@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo } from 'react';
 
+import { useMetaDataLocalStorage } from '@/common/hooks/use-parsed-local-storage';
+import { EarTrainingType } from '@/types';
 import { notify } from '@/utils/notification.util';
 import { useForm, UseFormReturnType, zodResolver } from '@mantine/form';
 
@@ -14,7 +16,7 @@ import PracticeResultModal from '../components/overlay/practice-result-modal';
 import { ModePracticeSettingsModal } from '../components/overlay/practice-settings-modal';
 import { usePracticeMode } from '../hooks/use-practice-mode';
 import EarTrainingLayout from '../layouts/ear-training-layout';
-import { EarTrainingPracticeType, saveEarTrainingPracticeSessionSchema, useSaveEarTrainingPracticeSessionMutation } from '../services/practice-session.service';
+import { saveEarTrainingPracticeSessionSchema, useSaveEarTrainingPracticeSessionMutation } from '../services/ear-training-session.service';
 import { addEarTrainingErrorLocal } from '../stores/ear-training-errors.store';
 import { DEFAULT_MODE_PRACTICE_SETTINGS, MODE_TYPE_GROUPS, ModePracticeSettings, modePracticeSettingsSchema } from '../types/practice-session-settings.type';
 import { refineEarTrainingSessionResult } from '../utils/practice-session-result.util';
@@ -65,6 +67,9 @@ const PracticeIntervalView: React.FC<IPracticeModeView> = ({ modePracticeSetting
 	// ** Practice Session Mutation
 	const { mutateSaveEarTrainingPracticeSession, savePracticeSessionPending } = useSaveEarTrainingPracticeSessionMutation();
 
+	// ** Meta Data Storage
+	const { setMetaDataEarTrainingProfile } = useMetaDataLocalStorage();
+
 	const handleSaveEarTrainingPracticeSession = async () => {
 		if (practiceSessionMeta.sessionEnded) {
 			// ** Save errors locally
@@ -86,7 +91,7 @@ const PracticeIntervalView: React.FC<IPracticeModeView> = ({ modePracticeSetting
 						incorrect: practiceSessionSettingsMeta.TOTAL_QUESTIONS - practiceSessionMeta.totalCorrectAnswers,
 						questionCount: practiceSessionSettingsMeta.TOTAL_QUESTIONS
 					},
-					type: EarTrainingPracticeType.ModeIdentification,
+					type: EarTrainingType.ModeIdentification,
 					duration: dayjs().diff(practiceSessionResultMeta?.startTime, 'seconds'),
 					statistics: refineEarTrainingSessionResult(practiceSessionQuestions)
 				};
@@ -98,8 +103,14 @@ const PracticeIntervalView: React.FC<IPracticeModeView> = ({ modePracticeSetting
 				}
 
 				const {
-					data: { _id }
+					data: { _id, xp, streakUpdated }
 				} = await mutateSaveEarTrainingPracticeSession(practiceSessionDataParsed.data);
+
+				setMetaDataEarTrainingProfile({
+					xp,
+					streakUpdated,
+					duration: practiceSessionData.duration
+				});
 
 				notify({ type: 'success', title: 'Practice session saved' });
 			} catch (error) {

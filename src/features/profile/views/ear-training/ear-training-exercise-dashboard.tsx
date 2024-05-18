@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
-import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { resolvePracticeResultColor, resolvePracticeResultLevel } from '@/features/ear-training/practice/utils/practice-session.util';
+import { EarTrainingType } from '@/types';
 import { Accordion, Center, List, RingProgress, Skeleton, ThemeIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconActivity, IconAlertTriangle, IconCheck, IconFilesOff, IconPercentage } from '@tabler/icons-react';
@@ -27,7 +27,7 @@ import {
 } from '../../services/ear-training-analytics.service';
 import { EarTrainingDashboardChartType } from '../../types';
 
-const EAR_TRAINING_PRACTICE_TYPE_NAMESPACES: Record<EarTrainingPracticeType, string> = {
+const EAR_TRAINING_PRACTICE_TYPE_NAMESPACES: Record<EarTrainingType, string> = {
 	'interval-identification': 'interval',
 	'chord-identification': 'chord',
 	'mode-identification': 'mode'
@@ -37,7 +37,7 @@ dayjs.extend(duration);
 
 const EarTrainingExerciseDashboard = () => {
 	const router = useRouter();
-	const exerciseType = router.query?.exercise as EarTrainingPracticeType;
+	const exerciseType = router.query?.exercise as EarTrainingType;
 
 	const { t } = useTranslation();
 	const { t: dashboardT } = useTranslation('ear_training_dashboard');

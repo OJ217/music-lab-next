@@ -1,12 +1,12 @@
 import Dexie, { Table } from 'dexie';
 import { z } from 'zod';
 
-import { EarTrainingPracticeType } from '../services/practice-session.service';
+import { EarTrainingType } from '@/types';
 
 const earTrainingSessionSchema = z
 	.object({
 		_id: z.string(),
-		type: z.nativeEnum(EarTrainingPracticeType),
+		type: z.nativeEnum(EarTrainingType),
 		duration: z.number().min(0),
 		result: z.object({
 			score: z.number().min(0).max(100),

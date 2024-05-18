@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
+import { useMetaDataLocalStorage } from '@/common/hooks/use-parsed-local-storage';
 import { GOOGLE_OAUTH } from '@/config/constants/api.constant';
 import { useAuth } from '@/context/auth/auth.context';
-import { useMetaData } from '@/context/meta/meta.context';
 import { notify } from '@/utils/notification.util';
 import { Button, Divider, PasswordInput, TextInput } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
@@ -15,7 +15,7 @@ import { useGoogleOAuthMutation, useSignInMutation } from '../services/auth.serv
 const SignInPage = () => {
 	const { t: authT } = useTranslation('auth');
 	const { signInLocal } = useAuth();
-	const { setUpMetaDataStore } = useMetaData();
+	const { setMetaDataStore } = useMetaDataLocalStorage();
 
 	const { mutateGoogleOAuth, googleOAuthPending } = useGoogleOAuthMutation();
 
@@ -24,7 +24,7 @@ const SignInPage = () => {
 			try {
 				const googleOAuthResponse = await mutateGoogleOAuth(credentialResponse);
 
-				setUpMetaDataStore(googleOAuthResponse.meta);
+				setMetaDataStore(googleOAuthResponse.meta);
 				signInLocal(googleOAuthResponse.auth);
 
 				notify({
@@ -72,7 +72,7 @@ const SignInPage = () => {
 		try {
 			const signInResponse = await mutateSignIn(values);
 
-			setUpMetaDataStore(signInResponse.meta);
+			setMetaDataStore(signInResponse.meta);
 			signInLocal(signInResponse.auth);
 
 			notify({

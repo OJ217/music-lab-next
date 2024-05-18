@@ -1,63 +1,13 @@
-export enum InstitutionType {
-	UNIVERSITY = 'university',
-	COLLEGE = 'college',
-	HIGH_SCHOOL = 'high_school',
-	OTHER = 'other'
-}
-
-export interface AuthResponse {
-	auth: {
-		accessToken: string;
-		refreshToken: string;
-		user: {
-			_id: string;
-			email: string;
-			username: string;
-			picture: string | undefined;
-			createdAt: Date;
-		};
-	};
-	meta: {
-		profile: {
-			firstName?: string;
-			lastName?: string;
-			institution?: {
-				name: string;
-				type: InstitutionType;
-			};
-			picture?: string;
-			createdAt: string;
-		};
-		earTrainingProfile: {
-			xp: number;
-			currentStreak: {
-				count: number;
-				startDate: string;
-				lastLogDate: string;
-			};
-			goals: {
-				exerciseType: EarTrainingPracticeType;
-				target: number;
-			}[];
-			stats: {
-				totalSessions: number;
-				totalDuration: number;
-			};
-			bestStreak?: {
-				count: number;
-				startDate: string;
-				endDate: string;
-			};
-		};
-	};
-}
-
 import axios from 'axios';
 
-import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
-import { IResponse } from '@/types';
+import { IResponse, UserAuth, UserMetaData } from '@/types';
 import { CodeResponse } from '@react-oauth/google';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+export interface AuthResponse {
+	auth: UserAuth;
+	meta: UserMetaData;
+}
 
 export const useSignInMutation = () => {
 	const signIn = async (signInCredentials: { email: string; password: string }) => {

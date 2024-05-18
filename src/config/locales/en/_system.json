@@ -3,5 +3,6 @@
 	"no": "No",
 	"dashboard": "Dashboard",
 	"profile": "Profile",
-	"settings": "Settings"
+	"settings": "Settings",
+	"dataNotAvailable": "Data not found"
 }

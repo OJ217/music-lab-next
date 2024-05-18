@@ -34,12 +34,14 @@ const Feedback = () => {
 						<FileButton
 							onChange={setAttachment}
 							accept='image/png,image/jpeg'
+							disabled
 						>
 							{props => (
 								<Button
 									{...props}
-									className='border border-violet-600 bg-violet-600/50'
+									className='border border-violet-600 bg-violet-600/50 disabled:bg-violet-600/50 disabled:text-white/50'
 									fullWidth
+									disabled
 								>
 									<div className='flex items-center gap-2'>
 										<span>Attach file</span>
