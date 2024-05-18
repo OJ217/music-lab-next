@@ -12,6 +12,7 @@ export enum FeedbackType {
 }
 
 export enum InstitutionType {
+	CONSERVATORY = 'conservatory',
 	UNIVERSITY = 'university',
 	COLLEGE = 'college',
 	HIGH_SCHOOL = 'high_school',

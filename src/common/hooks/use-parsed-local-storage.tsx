@@ -62,6 +62,13 @@ const metaDataEarTrainingProfileSchema = z.object({
 		startDate: z.string().datetime(),
 		lastLogDate: z.string().datetime()
 	}),
+	bestStreak: z
+		.object({
+			count: z.number(),
+			startDate: z.string().datetime(),
+			endDate: z.string().datetime()
+		})
+		.optional(),
 	goals: z.array(
 		z.object({
 			exerciseType: z.nativeEnum(EarTrainingType),
@@ -72,13 +79,6 @@ const metaDataEarTrainingProfileSchema = z.object({
 		.object({
 			totalSessions: z.number(),
 			totalDuration: z.number()
-		})
-		.optional(),
-	bestStreak: z
-		.object({
-			count: z.number(),
-			startDate: z.string().datetime(),
-			endDate: z.string().datetime()
 		})
 		.optional()
 });
