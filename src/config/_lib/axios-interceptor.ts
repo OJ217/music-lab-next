@@ -1,8 +1,10 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig, RawAxiosRequestHeaders } from 'axios';
 
+import { deleteEarTrainingErrorLocal } from '@/features/ear-training/practice/stores/ear-training-errors.store';
 import { IResponse } from '@/types';
 
 import { API_URL } from '../constants/api.constant';
+import { AUTH_HEADER_KEYS, AUTH_STORE_KEY } from '../constants/auth.constant';
 import { queryClient } from './react-query-provider';
 
 declare module 'axios' {
@@ -12,7 +14,6 @@ declare module 'axios' {
 	}
 }
 
-// TODO: Refactor interceptors to comply with current auth method (header, cookie)
 axios.interceptors.request.use((config: InternalAxiosRequestConfig<any>) => {
 	// @ts-ignore
 	config.headers = {
@@ -22,16 +23,16 @@ axios.interceptors.request.use((config: InternalAxiosRequestConfig<any>) => {
 	};
 
 	if (config.isPrivate) {
-		const authStore = JSON.parse(window.localStorage.getItem('music_lab.auth_store')!);
+		const authStore = JSON.parse(window.localStorage.getItem(AUTH_STORE_KEY)!);
 		const accessToken = authStore?.accessToken;
 		const refreshToken = authStore?.refreshToken;
 
 		if (accessToken) {
-			config.headers['Music-Lab-X-Access-Token'] = accessToken;
+			config.headers[AUTH_HEADER_KEYS.ACCESS_TOKEN] = accessToken;
 		}
 
 		if (refreshToken) {
-			config.headers['Music-Lab-X-Refresh-Token'] = refreshToken;
+			config.headers[AUTH_HEADER_KEYS.REFRESH_TOKEN] = refreshToken;
 		}
 	}
 
@@ -52,7 +53,8 @@ axios.interceptors.response.use(
 		if (error?.response?.status === 401) {
 			queryClient.cancelQueries();
 			queryClient.removeQueries();
-			window.localStorage.removeItem('music_lab.auth_store');
+			void deleteEarTrainingErrorLocal();
+			window.localStorage.removeItem(AUTH_STORE_KEY);
 			if (window.location.pathname !== '/auth/sign-in') {
 				window.location.pathname = '/auth/sign-in';
 			}

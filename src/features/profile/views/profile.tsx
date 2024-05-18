@@ -1,15 +1,15 @@
 import dayjs from 'dayjs';
 
+import { useMetaDataLocalStorage } from '@/common/hooks/use-parsed-local-storage';
 import { useAuth } from '@/context/auth/auth.context';
-import { useMetaData } from '@/context/meta/meta.context';
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
-import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
+import { EarTrainingType } from '@/types';
 import { Avatar, rem } from '@mantine/core';
 import { IconCalendarTime, IconFlame, IconMusic, IconSeeding, IconStar } from '@tabler/icons-react';
 
 const Profile = () => {
 	const { userInfo } = useAuth();
-	const { metaDataStore } = useMetaData();
+	const { metaDataStore } = useMetaDataLocalStorage();
 
 	return (
 		<EarTrainingLayout
@@ -108,7 +108,7 @@ const Profile = () => {
 							<div className='rounded-md bg-violet-600 px-2 py-0.5'>
 								<p className='text-sm font-bold'>
 									{metaDataStore?.earTrainingProfile?.goals
-										? metaDataStore?.earTrainingProfile?.goals?.find(g => g.exerciseType === EarTrainingPracticeType.IntervalIdentification)?.target ?? 0
+										? metaDataStore?.earTrainingProfile?.goals?.find(g => g.exerciseType === EarTrainingType.IntervalIdentification)?.target ?? 0
 										: 0}
 								</p>
 							</div>
@@ -118,7 +118,7 @@ const Profile = () => {
 							<div className='rounded-md bg-sky-600 px-2 py-0.5'>
 								<p className='text-sm font-bold'>
 									{metaDataStore?.earTrainingProfile?.goals
-										? metaDataStore?.earTrainingProfile?.goals?.find(g => g.exerciseType === EarTrainingPracticeType.ChordIdentification)?.target ?? 0
+										? metaDataStore?.earTrainingProfile?.goals?.find(g => g.exerciseType === EarTrainingType.ChordIdentification)?.target ?? 0
 										: 0}
 								</p>
 							</div>
@@ -128,7 +128,7 @@ const Profile = () => {
 							<div className='rounded-md bg-amber-600 px-2 py-0.5'>
 								<p className='text-sm font-bold'>
 									{metaDataStore?.earTrainingProfile?.goals
-										? metaDataStore?.earTrainingProfile?.goals?.find(g => g.exerciseType === EarTrainingPracticeType.ModeIdentification)?.target ?? 0
+										? metaDataStore?.earTrainingProfile?.goals?.find(g => g.exerciseType === EarTrainingType.ModeIdentification)?.target ?? 0
 										: 0}
 								</p>
 							</div>

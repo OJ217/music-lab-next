@@ -35,8 +35,6 @@ const IntervalLibrary = () => {
 	const [samplerDisabled, setSamplerDisabled] = useState<boolean>(false);
 	const [librarySettingsDrawerOpened, { open: openLibrarySettingsDrawer, close: closeLibrarySettingsDrawer }] = useDisclosure();
 
-	console.log(Interval.get(selectedInterval));
-
 	return (
 		<EarTrainingLayout
 			centered={true}

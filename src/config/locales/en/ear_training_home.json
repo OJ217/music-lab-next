@@ -1,0 +1,23 @@
+{
+	"exercise": "Дасгал",
+	"earTrainingExercises": "Cоноршуулгын дасгалууд",
+	"intervalIdentification": "Интервал сонсох",
+	"chordIdentification": "Аккорд сонсох",
+	"modeIdentification": "Лад сонсох",
+	"intervalIdentificationDesc": "Энгийн интервалууд сонсох дасгал",
+	"chordIdentificationDesc": "Гурвал эгшиг болон септаккорд сонсох дасгал",
+	"modeIdentificationDesc": "Диатоник лад болон мажор, минорын гамм сонсох дасгал",
+
+	"dailyGoal": "Өдрийн зорилт",
+
+	"library": "Сан",
+	"earTrainingLibraries": "Соноршуулгын сан",
+	"interval": "Интервал",
+	"chord": "Аккорд",
+	"mode": "Лад",
+	"chordProgression": "Аккордын цуваа",
+	"intervalLibraryDesc": "Энгийн болон онцлог интервал",
+	"chordLibraryDesc": "Гурвал эгшиг болон септаккорд",
+	"modeLibraryDesc": "Диатоник лад болон мажор, минорын гамм",
+	"chordProgressionLibraryDesc": "Түгээмэл ашигладдаг аккордын цуваа"
+}

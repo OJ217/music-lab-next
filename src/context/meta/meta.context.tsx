@@ -1,14 +1,8 @@
 import { createContext, useContext } from 'react';
 import { z } from 'zod';
 
-import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
+import { EarTrainingType, InstitutionType } from '@/types';
 import { useLocalStorage } from '@mantine/hooks';
-
-type DeepPartial<T> = T extends object
-	? {
-			[P in keyof T]?: DeepPartial<T[P]>;
-		}
-	: T;
 
 export interface User {
 	_id: string;
@@ -27,13 +21,6 @@ export const MetaDataContext = createContext<MetaDataContextPayload>({
 	metaDataStore: null,
 	setUpMetaDataStore: _metaDataStore => {}
 });
-
-export enum InstitutionType {
-	UNIVERSITY = 'university',
-	COLLEGE = 'college',
-	HIGH_SCHOOL = 'high_school',
-	OTHER = 'other'
-}
 
 interface MetaDataStore {
 	profile: {
@@ -54,7 +41,7 @@ interface MetaDataStore {
 			lastLogDate: string;
 		};
 		goals: {
-			exerciseType: EarTrainingPracticeType;
+			exerciseType: EarTrainingType;
 			target: number;
 		}[];
 		stats?: {
@@ -72,8 +59,6 @@ interface MetaDataStore {
 interface IMetaDataProvider {
 	children: React.ReactNode;
 }
-
-type T = z.infer<typeof metaDataSchema>;
 
 const metaDataSchema = z.object({
 	profile: z.object({
@@ -97,7 +82,7 @@ const metaDataSchema = z.object({
 		}),
 		goals: z.array(
 			z.object({
-				exerciseType: z.nativeEnum(EarTrainingPracticeType),
+				exerciseType: z.nativeEnum(EarTrainingType),
 				target: z.number()
 			})
 		),

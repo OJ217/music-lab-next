@@ -99,7 +99,7 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
 		client.removeQueries();
 
 		localStorage.clear();
-		deleteEarTrainingErrorLocal();
+		void deleteEarTrainingErrorLocal();
 
 		setAuthenticated(false);
 

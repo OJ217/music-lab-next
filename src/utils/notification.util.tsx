@@ -3,10 +3,11 @@ import { IconAlertTriangle, IconCheck, IconFileCode, IconX } from '@tabler/icons
 
 type NotificationType = 'success' | 'fail' | 'warning' | 'log';
 
-// * Utility function actions:
-// * [+] New notification caller function with above notification type
-// * [+] autoClose timing is passed as seconds
-
+/**
+ * Utility function actions:
+ * - New notification caller function with above notification type
+ * - autoClose timing is passed as seconds
+ */
 export const notify = ({ type, title, message = null, autoClose = 10 }: { type: NotificationType; title: string | React.ReactNode; message?: string | React.ReactNode | null; autoClose?: number }) => {
 	const notificationStyle: Record<NotificationType, { iconClass: string; icon: JSX.Element }> = {
 		success: {

@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next';
 
-import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { resolvePracticeResultColor, resolvePracticeResultMessage } from '@/features/ear-training/practice/utils/practice-session.util';
+import { EarTrainingType } from '@/types';
 import { Badge, Card, Center, Drawer, Progress, RingProgress, ScrollArea, Skeleton, ThemeIcon } from '@mantine/core';
 import { IconCheck, IconX } from '@tabler/icons-react';
 
 import { IEarTrainingPracticeSession } from '../../services/ear-training-analytics.service';
 
-const EAR_TRAINING_PRACTICE_TYPE_NAMESPACES: Record<EarTrainingPracticeType, string> = {
+const EAR_TRAINING_PRACTICE_TYPE_NAMESPACES: Record<EarTrainingType, string> = {
 	'interval-identification': 'interval',
 	'chord-identification': 'chord',
 	'mode-identification': 'mode'
@@ -17,7 +17,7 @@ interface IEarTrainingDetailDrawerProps {
 	earTrainingDetailDrawerOpened: boolean;
 	closeEarTrainingDetailDrawer: () => void;
 	earTrainingSession: IEarTrainingPracticeSession | null;
-	earTrainingExerciseType: EarTrainingPracticeType;
+	earTrainingExerciseType: EarTrainingType;
 }
 
 // TODO: Translation

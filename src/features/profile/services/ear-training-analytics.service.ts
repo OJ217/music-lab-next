@@ -1,15 +1,14 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 
-import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
 import { EarTrainingErrorStores, fetchEarTrainingErrorLocal } from '@/features/ear-training/practice/stores/ear-training-errors.store';
-import { IPaginatedDocuments, IResponse, IUseQueryBase } from '@/types';
+import { EarTrainingType, IPaginatedDocuments, IResponse, IUseQueryBase } from '@/types';
 import { wait } from '@/utils/api.util';
 import { calculatePercentage } from '@/utils/format.util';
 import { isEmptyObject } from '@/utils/helper.util';
 import { useQuery } from '@tanstack/react-query';
 
-const earTrainingExerciseErrorStoreNames: Record<EarTrainingPracticeType, EarTrainingErrorStores> = {
+const earTrainingExerciseErrorStoreNames: Record<EarTrainingType, EarTrainingErrorStores> = {
 	'interval-identification': 'intervalErrors',
 	'chord-identification': 'chordErrors',
 	'mode-identification': 'modeErrors'
@@ -22,13 +21,13 @@ interface IEarTrainingStatisticsBase {
 
 interface IOverallStatisticsResponse {
 	dateRangeStatistics: Array<{ date: string } & IEarTrainingStatisticsBase>;
-	exerciseTypeStatistics: Array<{ type: EarTrainingPracticeType } & IEarTrainingStatisticsBase>;
+	exerciseTypeStatistics: Array<{ type: EarTrainingType } & IEarTrainingStatisticsBase>;
 }
 
 interface IUseOverallStatisticsQueryResponse {
 	activity: Array<{ date: string; activity: number }>;
 	scores: Array<{ date: string; correct: number; activity: number; score: number }>;
-	exercises: Array<{ type: EarTrainingPracticeType; score: number }>;
+	exercises: Array<{ type: EarTrainingType; score: number }>;
 	insights: {
 		activity: {
 			averageActivity: number | string;
@@ -37,7 +36,7 @@ interface IUseOverallStatisticsQueryResponse {
 			totalActivity: number | string;
 		};
 		exercises: Array<{
-			type: EarTrainingPracticeType;
+			type: EarTrainingType;
 			activity: number | string;
 			segmentPercentage: number;
 		}>;
@@ -71,7 +70,7 @@ export const useEarTrainingOverallStatisticsQuery = ({ enabled }: IUseQueryBase)
 
 		// ** Statistics Data Sorted
 		const dateRangeStatisticsSorted = earTrainingOverallStatistics.dateRangeStatistics.toSorted((a, b) => dayjs(a.date).diff(dayjs(b.date)));
-		const exerciseTypeOrders: Record<EarTrainingPracticeType, number> = {
+		const exerciseTypeOrders: Record<EarTrainingType, number> = {
 			'interval-identification': 0,
 			'chord-identification': 1,
 			'mode-identification': 2
@@ -125,7 +124,7 @@ export const useEarTrainingOverallStatisticsQuery = ({ enabled }: IUseQueryBase)
 };
 
 interface IUseExerciseStatisticsQueryParams extends IUseQueryBase {
-	exerciseType: EarTrainingPracticeType;
+	exerciseType: EarTrainingType;
 }
 
 type IExerciseStatisticsResponse = Array<{ date: string } & IEarTrainingStatisticsBase>;
@@ -191,7 +190,7 @@ export const useEarTrainingExerciseStatisticsQuery = ({ enabled = true, exercise
 };
 
 interface IUseEarTrainingExerciseErrorsQueryParams extends IUseQueryBase {
-	exerciseType: EarTrainingPracticeType;
+	exerciseType: EarTrainingType;
 }
 
 type IUseEarTrainingExerciseErrorsQueryResponse = Array<{ questionType: string; errors: string[]; errorCount: number }>;
@@ -248,7 +247,7 @@ export const useEarTrainingExerciseErrorsQuery = ({ enabled, exerciseType }: IUs
 
 interface IUsePracticeSessionListParams extends IUseQueryBase {
 	queryParams: {
-		type: EarTrainingPracticeType;
+		type: EarTrainingType;
 		page?: number;
 		limit?: number;
 	};
@@ -256,7 +255,7 @@ interface IUsePracticeSessionListParams extends IUseQueryBase {
 
 export interface IEarTrainingPracticeSession {
 	_id: string;
-	type: EarTrainingPracticeType;
+	type: EarTrainingType;
 	duration: number;
 	result: {
 		score: number;

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EarTrainingLayout from '@/features/ear-training/practice/layouts/ear-training-layout';
-import { EarTrainingPracticeType } from '@/features/ear-training/practice/services/practice-session.service';
+import { EarTrainingType } from '@/types';
 import { Badge, MantineColor, Skeleton, Tooltip } from '@mantine/core';
 import { IconActivity, IconCalendar, IconChevronRight, IconHistory, IconMusic, IconStar } from '@tabler/icons-react';
 
@@ -18,61 +18,59 @@ import IconWrapper from '../../components/misc/icon-wrapper';
 import { useEarTrainingOverallStatisticsQuery } from '../../services/ear-training-analytics.service';
 import { EarTrainingDashboardChartType } from '../../types';
 
-const EXERCISES_SCORE_META: Record<
-	EarTrainingPracticeType,
-	{ icon: JSX.Element | React.ReactNode; label: string; description: string; badgeClass: string; labelDescriptionClass: string; cardClass: string }
-> = {
-	'interval-identification': {
-		label: 'Интервал',
-		description: 'Хоёр нотны хоорондох зай',
-		icon: (
-			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50'>
-				<IconMusic
-					stroke={2}
-					size={20}
-					className='size-6 stroke-violet-300'
-				/>
-			</div>
-		),
-		cardClass: 'bg-gradient-to-tr from-violet-600/25 to-violet-600/50 bg-transparent',
-		labelDescriptionClass: 'text-violet-100',
-		badgeClass: 'bg-violet-600'
-	},
-	'chord-identification': {
-		label: 'Аккорд',
-		description: 'Гурав болон түүнээс дээш нотны хамтран дуугаралт',
-		icon: (
-			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-sky-600/25 to-sky-600/50'>
-				<IconMusic
-					stroke={2}
-					size={20}
-					className='size-6 stroke-sky-300'
-				/>
-			</div>
-		),
-		cardClass: 'bg-gradient-to-tr from-sky-600/25 to-sky-600/50 bg-transparent',
-		labelDescriptionClass: 'text-sky-100',
-		badgeClass: 'bg-sky-600'
-	},
-	'mode-identification': {
-		label: 'Лад',
-		description: 'Дэвсгэр хөгийн зохион байгуулалт',
-		icon: (
-			<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-amber-600/25 to-amber-600/50'>
-				<IconMusic
-					stroke={2}
-					size={20}
-					className='size-6 stroke-amber-300'
-				/>
-			</div>
-		),
-		cardClass: 'bg-gradient-to-tr from-amber-600/25 to-amber-600/50 bg-transparent',
-		labelDescriptionClass: 'text-amber-100',
-		badgeClass: 'bg-amber-600'
-	}
-};
+const EXERCISES_SCORE_META: Record<EarTrainingType, { icon: JSX.Element | React.ReactNode; label: string; description: string; badgeClass: string; labelDescriptionClass: string; cardClass: string }> =
+	{
+		'interval-identification': {
+			label: 'Интервал',
+			description: 'Хоёр нотны хоорондох зай',
+			icon: (
+				<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-violet-600/25 to-violet-600/50'>
+					<IconMusic
+						stroke={2}
+						size={20}
+						className='size-6 stroke-violet-300'
+					/>
+				</div>
+			),
+			cardClass: 'bg-gradient-to-tr from-violet-600/25 to-violet-600/50 bg-transparent',
+			labelDescriptionClass: 'text-violet-100',
+			badgeClass: 'bg-violet-600'
+		},
+		'chord-identification': {
+			label: 'Аккорд',
+			description: 'Гурав болон түүнээс дээш нотны хамтран дуугаралт',
+			icon: (
+				<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-sky-600/25 to-sky-600/50'>
+					<IconMusic
+						stroke={2}
+						size={20}
+						className='size-6 stroke-sky-300'
+					/>
+				</div>
+			),
+			cardClass: 'bg-gradient-to-tr from-sky-600/25 to-sky-600/50 bg-transparent',
+			labelDescriptionClass: 'text-sky-100',
+			badgeClass: 'bg-sky-600'
+		},
+		'mode-identification': {
+			label: 'Лад',
+			description: 'Дэвсгэр хөгийн зохион байгуулалт',
+			icon: (
+				<div className='grid aspect-square size-10 place-content-center rounded-md bg-transparent bg-gradient-to-tr from-amber-600/25 to-amber-600/50'>
+					<IconMusic
+						stroke={2}
+						size={20}
+						className='size-6 stroke-amber-300'
+					/>
+				</div>
+			),
+			cardClass: 'bg-gradient-to-tr from-amber-600/25 to-amber-600/50 bg-transparent',
+			labelDescriptionClass: 'text-amber-100',
+			badgeClass: 'bg-amber-600'
+		}
+	};
 
-const MONTHLY_ACTIVITY_SUMMARY_META: Record<EarTrainingPracticeType, { tooltipClass: string; segmentClass: string; label: string; badgeColor: MantineColor }> = {
+const MONTHLY_ACTIVITY_SUMMARY_META: Record<EarTrainingType, { tooltipClass: string; segmentClass: string; label: string; badgeColor: MantineColor }> = {
 	'interval-identification': {
 		tooltipClass: 'bg-violet-600/75 font-semibold text-white backdrop-blur-sm',
 		segmentClass: 'h-full bg-violet-600',
@@ -228,7 +226,7 @@ const EarTrainingDashboard = () => {
 								</>
 							) : (
 								<div className='space-y-2'>
-									{Object.values(EarTrainingPracticeType).map(type => {
+									{Object.values(EarTrainingType).map(type => {
 										const { label, badgeColor } = MONTHLY_ACTIVITY_SUMMARY_META[type];
 
 										return (
@@ -298,7 +296,7 @@ const EarTrainingDashboard = () => {
 										</div>
 									);
 								})
-							: Object.values(EarTrainingPracticeType).map(type => {
+							: Object.values(EarTrainingType).map(type => {
 									const { icon, label, description, cardClass, labelDescriptionClass, badgeClass } = EXERCISES_SCORE_META[type];
 
 									return (

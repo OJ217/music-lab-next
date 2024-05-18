@@ -1,3 +1,70 @@
+// ** Common
+export enum EarTrainingType {
+	IntervalIdentification = 'interval-identification',
+	ChordIdentification = 'chord-identification',
+	ModeIdentification = 'mode-identification'
+}
+
+export enum FeedbackType {
+	BUG = 'bug',
+	FEATURE_REQUEST = 'feature_request',
+	GENERAL = 'general'
+}
+
+export enum InstitutionType {
+	CONSERVATORY = 'conservatory',
+	UNIVERSITY = 'university',
+	COLLEGE = 'college',
+	HIGH_SCHOOL = 'high_school',
+	OTHER = 'other'
+}
+
+export interface UserAuth {
+	accessToken: string;
+	refreshToken: string;
+	user: {
+		_id: string;
+		email: string;
+		username: string;
+		picture: string | undefined;
+		createdAt: Date;
+	};
+}
+
+export interface UserMetaData {
+	profile: {
+		firstName?: string;
+		lastName?: string;
+		institution?: {
+			name: string;
+			type: InstitutionType;
+		};
+		picture?: string;
+		createdAt: string;
+	};
+	earTrainingProfile: {
+		xp: number;
+		currentStreak: {
+			count: number;
+			startDate: string;
+			lastLogDate: string;
+		};
+		goals: {
+			exerciseType: EarTrainingType;
+			target: number;
+		}[];
+		stats: {
+			totalSessions: number;
+			totalDuration: number;
+		};
+		bestStreak?: {
+			count: number;
+			startDate: string;
+			endDate: string;
+		};
+	};
+}
+
 // ** API Response
 export interface IResponse<DataType> {
 	success: boolean;
@@ -41,3 +108,9 @@ export interface SelectItem<T = string> {
 }
 
 export type SelectData<T = string> = SelectItem<T>[];
+
+// ** Locale
+export enum Locale {
+	MONGOLIAN = 'mn',
+	ENGLISH = 'en'
+}
