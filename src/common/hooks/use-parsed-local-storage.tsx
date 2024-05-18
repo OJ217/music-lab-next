@@ -114,7 +114,7 @@ export const useMetaDataLocalStorage = () => {
 				if (currentStreak.count === 0) {
 					currentStreak.startDate = currentDate;
 				}
-				currentStreak.count = currentStreak.count;
+				currentStreak.count = currentStreak.count + 1;
 				currentStreak.lastLogDate = currentDate;
 			}
 
